@@ -23,15 +23,16 @@
 .shop-sidebar {
     position: sticky;
     top: 100px;
-    background: #c8ffe74a;
+    background: #c9ffba5e;
     padding: var(--spacing-lg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
 }
+
 .filter-group {
-  padding-bottom: 1.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px dashed var(--color-border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--color-border);
 }
 
 
@@ -80,12 +81,13 @@
     /* Light primary tint */
     font-weight: 700;
 }
+
 .shop-divider {
-  width: 64px;
-  height: 1px;
-  margin: 1rem auto;
-  background: #E6F0EB;
-  border-radius: 0px;
+    width: 64px;
+    height: 1px;
+    margin: 1rem auto;
+    background: #E6F0EB;
+    border-radius: 0px;
 }
 
 /* Shop Controls (Sort, Count) */
@@ -95,11 +97,12 @@
     align-items: center;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: var(--spacing-lg);
-    padding: 20px;
+    padding: 10px;
     margin-bottom: var(--spacing-lg);
     /* Spacer between controls and search/grid */
     background: white;
 }
+
 /* Search Bar Spacer */
 .shop-search {
     position: relative;
@@ -113,7 +116,7 @@
     padding: 16px 16px 16px 48px;
     /* Larger padding */
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
+    border-radius: 999px;
     font-size: 1rem;
     transition: all 0.2s;
     background-color: #FAFAFA;
@@ -142,15 +145,15 @@
 }
 
 .select-wrapper {
-  position: relative;
+    position: relative;
 }
 
 .select-icon {
-  position: absolute;
-  right: 12px;
-  top: 25%;
-  pointer-events: none;
-  color: var(--color-text-secondary);
+    position: absolute;
+    right: 12px;
+    top: 25%;
+    pointer-events: none;
+    color: var(--color-text-secondary);
 }
 
 
@@ -166,9 +169,9 @@
 }
 
 .shop-results {
-  font-size: 1rem;
-  letter-spacing: 0.04em;
-  opacity: 0.9;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
 }
 
 
@@ -216,4 +219,8 @@
         width: 100%;
         justify-content: space-between;
     }
+}
+
+.shop-main {
+    padding: 10px;
 }

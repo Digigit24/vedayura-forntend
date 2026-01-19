@@ -1,0 +1,90 @@
+/* ===== Overlay ===== */
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 1500;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s ease;
+}
+
+.drawer-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===== Drawer ===== */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 420px;
+  max-width: 90vw;
+  background: #ffffff;
+  z-index: 1510;
+  display: flex;
+  border-left: 1px solid rgba(23, 83, 51, 0.08);
+  box-shadow: -15px 0 40px rgba(0, 0, 0, 0.08);
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drawer.active {
+  transform: translateX(0);
+}
+
+/* ===== Close button ===== */
+.drawer-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: #f8f8f8;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.drawer-close:hover {
+  background: #eee;
+  transform: rotate(90deg);
+}
+
+/* ===== Content ===== */
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  height: 100%;
+}
+
+/* Scrollbar Style */
+.drawer-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.drawer-content::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .drawer {
+    width: 100vw;
+    max-width: 100vw;
+  }
+}

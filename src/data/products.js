@@ -1,4 +1,4 @@
-export const products = [
+const products = [
     {
         id: 1,
         name: "Radiant Saffron Night Cream",
@@ -240,3 +240,5 @@ export const products = [
         stock: 65,
     }
 ];
+
+export default products;

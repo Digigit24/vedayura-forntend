@@ -122,7 +122,8 @@ const Shop = () => {
                     </aside>
 
                     {/* Product Grid */}
-                    <main className="shop-main">
+                    <main className="shop-main" data-category={selectedCategory}>
+
                         <div className="shop-controls p-20 flex justify-between items-center mb-xl">
                             <button
                                 className="btn btn-outline hidden-desktop flex items-center gap-sm"
@@ -161,7 +162,8 @@ const Shop = () => {
                             <>
                                 <div className="product-grid">
                                     {filteredProducts.map(product => (
-                                        <ProductCard key={product.id} product={product} />
+                                      <ProductCard key={product.id} product={product} activeCategory={selectedCategory}/>
+
                                     ))}
                                 </div>
 

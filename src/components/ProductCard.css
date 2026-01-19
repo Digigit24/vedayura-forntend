@@ -1,3 +1,18 @@
+:root {
+  /* Category Accent Colors */
+
+  --cat-skincare: #1DB04C;
+  /* fresh, calming – skincare */
+  --cat-haircare: #175333;
+  /* strong, rooted – haircare */
+  --cat-tablets: #7A642B;
+  /* earthy, medicinal – tablets */
+  --cat-oils: #0F3F2A;
+  /* deep, premium – oils */
+  --cat-default: #94A3A0;
+  /* neutral fallback */
+}
+
 .product-card {
   background-color: var(--color-surface);
   border-radius: var(--radius-xl);
@@ -50,6 +65,7 @@
   border-radius: 999px;
   letter-spacing: 0.03em;
 }
+
 .wishlist-btn {
   position: absolute;
   top: 12px;
@@ -104,6 +120,7 @@
   min-height: 2.9em;
   text-decoration: none;
 }
+
 .product-price {
   display: flex;
   align-items: center;
@@ -123,13 +140,14 @@
   color: #9ca3af;
   text-decoration: line-through;
 }
+
 .add-to-cart-btn {
   margin-top: auto;
   width: 100%;
   padding: 10px;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-primary);
-  background-color:#d6ffbe2a;
+  background-color: #d6ffbe2a;
   color: var(--color-primary);
   font-size: 0.85rem;
   font-weight: 500;
@@ -139,4 +157,38 @@
 .add-to-cart-btn:hover {
   background-color: var(--color-primary);
   color: white;
+}
+
+.product-card {
+  --accent: var(--cat-default);
+}
+
+.product-card[data-category="Skincare"] {
+  --accent: var(--cat-skincare);
+}
+
+.product-card[data-category="Haircare"] {
+  --accent: var(--cat-haircare);
+}
+
+.product-card[data-category="Ayurvedic Tablets"] {
+  --accent: var(--cat-tablets);
+}
+
+.product-card[data-category="Wellness Oils"] {
+  --accent: var(--cat-oils);
+}
+
+.card-accent {
+  height: 2px;
+  width: 100%;
+  background: var(--accent);
+}
+
+.product-category {
+  color: var(--accent);
+}
+
+.product-card:hover {
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 25%, transparent);
 }
