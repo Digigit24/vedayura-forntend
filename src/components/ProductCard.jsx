@@ -10,10 +10,13 @@ const ProductCard = ({ product }) => {
 
     return (
         <div className="product-card">
-            <div className="product-image-container">
-                <Link to={`/product/${product.id}`}>
-                    <img src={product.image} alt={product.name} className="product-image" />
-                </Link>
+           <div className="product-image-container">
+  <Link to={`/product/${product.id}`} className="product-image-link">
+    <div className="product-image-wrapper">
+      <img src={product.image} alt={product.name} className="product-image" />
+    </div>
+  </Link>
+
                 {product.discount_price < product.price && (
                     <span className="discount-badge">
                         -{Math.round(((product.price - product.discount_price) / product.price) * 100)}%

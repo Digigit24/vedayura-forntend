@@ -23,17 +23,17 @@
 .shop-sidebar {
     position: sticky;
     top: 100px;
-    background: white;
+    background: #c8ffe74a;
     padding: var(--spacing-lg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
 }
-
 .filter-group {
-    margin-bottom: var(--spacing-xl);
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: var(--spacing-lg);
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px dashed var(--color-border);
 }
+
 
 .filter-group:last-child {
     border-bottom: none;
@@ -80,6 +80,13 @@
     /* Light primary tint */
     font-weight: 700;
 }
+.shop-divider {
+  width: 64px;
+  height: 1px;
+  margin: 1rem auto;
+  background: #E6F0EB;
+  border-radius: 0px;
+}
 
 /* Shop Controls (Sort, Count) */
 .shop-controls {
@@ -88,11 +95,11 @@
     align-items: center;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: var(--spacing-lg);
+    padding: 20px;
     margin-bottom: var(--spacing-lg);
     /* Spacer between controls and search/grid */
     background: white;
 }
-
 /* Search Bar Spacer */
 .shop-search {
     position: relative;
@@ -115,7 +122,7 @@
 .shop-search input:focus {
     border-color: var(--color-primary);
     background-color: white;
-    box-shadow: 0 0 0 4px rgba(26, 60, 52, 0.1);
+    box-shadow: 0 0 0 4px rgba(88, 174, 121, 0.217);
     outline: none;
 }
 
@@ -135,8 +142,17 @@
 }
 
 .select-wrapper {
-    position: relative;
+  position: relative;
 }
+
+.select-icon {
+  position: absolute;
+  right: 12px;
+  top: 25%;
+  pointer-events: none;
+  color: var(--color-text-secondary);
+}
+
 
 .sort-select {
     appearance: none;
@@ -148,6 +164,13 @@
     font-size: 0.9rem;
     min-width: 180px;
 }
+
+.shop-results {
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  opacity: 0.9;
+}
+
 
 /* Price Slider Spacing */
 .price-slider {

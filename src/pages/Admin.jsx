@@ -39,7 +39,7 @@ const Admin = () => {
                 <div className="text-center p-xl border rounded-lg shadow-sm bg-white">
                     <h2 className="text-xl font-bold mb-md text-error">Access Restricted</h2>
                     <p className="mb-md text-secondary">You must be an administrator to view this page.</p>
-                    <Link to="/login" className="btn btn-primary">Login as Admin</Link>
+                    <Link to="/login" className="btn btn-primary btn-txt ">Login as Admin</Link>
                 </div>
             </div>
         );
@@ -213,7 +213,7 @@ const Admin = () => {
                             </div>
                             <div className="flex justify-end gap-sm pt-md">
                                 <button type="button" onClick={() => setIsProductModalOpen(false)} className="btn btn-outline">Cancel</button>
-                                <button type="submit" className="btn btn-primary">Save Product</button>
+                                <button type="submit" className="btn btn-primary btn-txt">Save Product</button>
                             </div>
                         </form>
                     </div>
@@ -306,7 +306,7 @@ const Inventory = ({ products, onEdit, onDelete, onAdd }) => (
                 <p className="text-xs text-secondary">Manage {products.length} products</p>
             </div>
             <div className="flex gap-sm">
-                <button onClick={onAdd} className="btn btn-primary text-sm gap-xs"><Plus size={16} /> Add Product</button>
+                <button onClick={onAdd} className="btn btn-primary btn-txt text-sm gap-xs"><Plus size={16} /> Add Product</button>
             </div>
         </div>
 
@@ -419,7 +419,7 @@ const Orders = () => {
                                 {order.status === 'Shipped' ? (
                                     <button onClick={() => handleTrack(order.id)} className="btn btn-outline text-blue-600 border-blue-200 hover:bg-blue-50 btn-sm text-xs gap-xs flex items-center"><Truck size={14} /> Track Shipment</button>
                                 ) : (
-                                    <button onClick={() => handleShip(order.id)} className="btn btn-primary btn-sm text-xs">Ship Now</button>
+                                    <button onClick={() => handleShip(order.id)} className="btn btn-primary btn-txt btn-sm text-xs">Ship Now</button>
                                 )}
                             </div>
                         </div>

@@ -17,7 +17,7 @@ const Cart = () => {
             <div className="cart-page container section text-center py-2xl">
                 <h2 className="mb-md">Your Cart is Empty</h2>
                 <p className="text-secondary mb-lg">Looks like you haven't added anything to your cart yet.</p>
-                <Link to="/shop" className="btn btn-primary">Start Shopping</Link>
+                <Link to="/shop" className="btn btn-primary btn-txt">Start Shopping</Link>
             </div>
         );
     }
@@ -76,7 +76,7 @@ const Cart = () => {
                         <span>Total</span>
                         <span>₹{total}</span>
                     </div>
-                    <button className="btn btn-primary w-full mt-lg" onClick={() => navigate('/checkout')}>
+                    <button className="btn btn-primary btn-txt w-full mt-lg" onClick={() => navigate('/checkout')}>
                         Proceed to Checkout
                     </button>
                 </div>

@@ -81,7 +81,7 @@ const Profile = () => {
                                 </div>
                                 <div className="flex gap-md pt-sm border-t border-dashed">
                                     <button onClick={() => handleInvoice('AYU1024')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                    <button onClick={() => handleTrackOrder('AYU1024')} className="btn btn-sm btn-primary text-xs flex-1 sm:flex-none">Track Order</button>
+                                    <button onClick={() => handleTrackOrder('AYU1024')} className="btn btn-smbtn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
                                 </div>
                             </div>
 
@@ -96,7 +96,7 @@ const Profile = () => {
                                 </div>
                                 <div className="flex gap-md pt-sm border-t border-dashed">
                                     <button onClick={() => handleInvoice('AYU1020')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                    <button onClick={() => handleTrackOrder('AYU1020')} className="btn btn-sm btn-primary text-xs flex-1 sm:flex-none">Track Order</button>
+                                    <button onClick={() => handleTrackOrder('AYU1020')} className="btn btn-smbtn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
                                 </div>
                             </div>
                         </div>

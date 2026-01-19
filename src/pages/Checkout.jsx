@@ -32,7 +32,7 @@ const Checkout = () => {
                 <CheckCircle size={64} className="text-success mx-auto mb-md" />
                 <h1 className="mb-md">Order Placed Successfully!</h1>
                 <p className="text-secondary mb-lg">Thank you for shopping with AyurvedaMart. Your order #AYU{Math.floor(Math.random() * 10000)} is confirmed.</p>
-                <button onClick={() => navigate('/')} className="btn btn-primary">Back to Home</button>
+                <button onClick={() => navigate('/')} className="btn btn-primary btn-txt">Back to Home</button>
             </div>
         );
     }
@@ -82,7 +82,7 @@ const Checkout = () => {
                                     <label>Phone Number</label>
                                     <input type="tel" required className="form-input" />
                                 </div>
-                                <button type="submit" className="btn btn-primary mt-lg">Continue to Payment</button>
+                                <button type="submit" className="btn btn-primary btn-txt mt-lg">Continue to Payment</button>
                             </form>
                         </div>
                     )}
@@ -129,7 +129,7 @@ const Checkout = () => {
 
                             <div className="flex gap-md mt-lg">
                                 <button className="btn btn-outline" onClick={() => setStep(1)}>Back</button>
-                                <button className="btn btn-primary flex-1" onClick={handlePayment}>Pay ₹{total}</button>
+                                <button className="btn btn-primary btn-txt flex-1" onClick={handlePayment}>Pay ₹{total}</button>
                             </div>
                         </div>
                     )}

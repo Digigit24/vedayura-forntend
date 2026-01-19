@@ -11,7 +11,7 @@ const Wishlist = () => {
             <div className="container section text-center py-2xl">
                 <h2 className="mb-md">Your Wishlist is Empty</h2>
                 <p className="text-secondary mb-lg">Save items you love here.</p>
-                <Link to="/shop" className="btn btn-primary">Start Shopping</Link>
+                <Link to="/shop" className="btn btn-primary btn-txt">Start Shopping</Link>
             </div>
         );
     }

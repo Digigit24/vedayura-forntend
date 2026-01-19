@@ -1,18 +1,29 @@
 :root {
-  /* Extracted from Vedayura Logo & Premium Palette */
-  --color-primary: #1A3C34;
-  --color-primary-light: #2F6F4E;
-  --color-secondary: #60A349;
-  --color-accent: #8B5A2B;
+  /* Vedayura – Natural / Ayurvedic Brand Palette */
 
-  --color-background: #FDFBF7;
+  /* Primary Brand Greens */
+  --color-primary: #175333;          /* Green Pea – main brand */
+  --color-primary-dark: #0F3F2A;     /* Woodland – deep grounding */
+  --color-primary-light: #1DB04C;    /* Mountain Meadow – fresh accent */
+
+  /* Earthy Accent */
+  --color-accent: #7A642B;           /* Pesto – premium / earthy */
+
+  /* Backgrounds & Surfaces */
+  --color-background: #FDFBF7;       /* soft off-white */
   --color-surface: #FFFFFF;
 
-  --color-text-primary: #1F2937;
-  --color-text-secondary: #4B5563;
-  --color-border: #E5E7EB;
+  /* Text Colors */
+  --color-text-primary: #0F3F2A;     /* strong readable green */
+  --color-text-secondary: #4B5563;   /* neutral gray */
+  --color-text-inverse: #FFFFFF;
 
-  --color-success: #059669;
+  /* Borders & Dividers */
+  --color-border: rgba(23, 83, 51, 0.12); /* based on primary */
+
+
+  /* State Colors (aligned with brand) */
+  --color-success: #1DB04C;          /* reuse Mountain Meadow */
   --color-error: #DC2626;
 
   --font-heading: 'Poppins', sans-serif;
@@ -50,7 +61,6 @@
 html {
   scroll-behavior: smooth;
 }
-
 body {
   font-family: var(--font-body);
   background-color: var(--color-background);
@@ -59,6 +69,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
+
 
 h1,
 h2,
@@ -69,9 +80,10 @@ h6 {
   font-family: var(--font-heading);
   font-weight: 600;
   line-height: 1.25;
-  color: var(--color-primary);
+  color: var(--color-primary-dark); /* deeper, premium */
   letter-spacing: -0.02em;
 }
+
 
 a {
   text-decoration: none;
@@ -113,6 +125,7 @@ img {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-top: 30px;
   padding: var(--spacing-sm) var(--spacing-xl);
   border-radius: var(--radius-full);
   font-weight: 500;
@@ -121,21 +134,26 @@ img {
   position: relative;
   overflow: hidden;
 }
-
 .btn-primary {
-  background-color: var(--color-primary);
-  color: white;
+  background-color: var(--color-primary-light);
+  color: var(--color-text-inverse);
 }
 
 .btn-primary:hover {
-  background-color: #143029;
+  background-color: var(--color-primary-dark);
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+  color: var(--color-text-inverse);
 }
 
 .btn-secondary {
   background-color: var(--color-accent);
-  color: white;
+  color: var(--color-text-inverse);
+}
+
+.btn-secondary:hover {
+  background-color: #6a5524; /* slightly darker pesto */
+  box-shadow: var(--shadow-md);
 }
 
 .btn-outline {
@@ -146,8 +164,9 @@ img {
 
 .btn-outline:hover {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
 }
+
 
 /* Animations */
 @keyframes fadeIn {
@@ -278,10 +297,105 @@ img {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--color-primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-primary-dark);
+}
+/* Ayurvedic divider motif */
+.veda-divider {
+  width: 64px;
+  height: 3px;
+  margin: 1.5rem auto;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-accent),
+    transparent
+  );
+  border-radius: 999px;
+  opacity: 0.8;
+}
+.hero-frame {
+  padding: 4rem 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px);
+  position: relative;
+}
+
+.hero-frame::before,
+.hero-frame::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.hero-frame::before {
+  top: -12px;
+  left: -12px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.hero-frame::after {
+  bottom: -12px;
+  right: -12px;
+  border-left: none;
+  border-top: none;
+}
+.product-grid-wrapper {
+  position: relative;
+}
+
+.product-grid-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(
+    circle at center,
+    rgba(23, 83, 51, 0.04),
+    transparent 70%
+  );
+  z-index: 0;
+}
+
+.testimonial-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(23, 83, 51, 0.08);
+}
+/* Signature Hover: Vedayura Flow */
+.signature-hover {
+  position: relative;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.signature-hover::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary-light),
+    transparent
+  );
+  transform: translateX(-50%);
+  transition: width 0.4s ease;
+}
+
+.signature-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(23, 83, 51, 0.12);
+}
+
+.signature-hover:hover::after {
+  width: 80%;
 }

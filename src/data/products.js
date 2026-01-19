@@ -8,7 +8,7 @@ export const products = [
         description: "A luxurious night cream infused with Kashmiri Saffron to brighten and nourish your skin while you sleep.",
         ingredients: "Saffron, Aloe Vera, Almond Oil, Sandalwood",
         usage: "Apply a small amount to cleansed face and neck before bedtime.",
-        image: "https://picsum.photos/id/1/400/400",
+        image: "https://manaayurvedam.com/cdn/shop/files/AF7505BE-E877-4848-A64E-DE65D9C2AB06.jpg?v=1693238942",
         stock: 50,
     },
     {
@@ -20,7 +20,7 @@ export const products = [
         description: "Promotes healthy hair growth and reduces hair fall with the power of Bhringraj and Amla.",
         ingredients: "Bhringraj, Amla, Coconut Oil, Hibiscus",
         usage: "Massage into scalp and leave for at least an hour before washing.",
-        image: "https://picsum.photos/id/2/400/400",
+        image: "https://m.media-amazon.com/images/I/71RGtfG6bKL._AC_UF1000,1000_QL80_.jpg",
         stock: 30,
     },
     {
@@ -32,7 +32,7 @@ export const products = [
         description: "Boost your immunity and reduce stress naturally with pure Ashwagandha extract.",
         ingredients: "Ashwagandha Root Extract",
         usage: "Take one tablet twice daily with warm water or milk.",
-        image: "https://picsum.photos/id/3/400/400",
+        image: "https://5.imimg.com/data5/SELLER/Default/2024/12/476689916/EG/XL/IP/237586957/ayurvedic-ashwagandha-tablet-16-250x250.jpg",
         stock: 100,
     },
     {
@@ -44,7 +44,7 @@ export const products = [
         description: "Experience the glow of pure gold with this classic Ayurvedic preparation for radiant skin.",
         ingredients: "Kumkumadi Tailam, Saffron, Lotus Pollen",
         usage: "Apply 2-3 drops on face and massage gently.",
-        image: "https://picsum.photos/id/4/400/400",
+        image: "https://sheshaayurveda.com/cdn/shop/files/NYKSHESHA0012_3.jpg?v=1768293171&width=533",
         stock: 20,
     },
     {

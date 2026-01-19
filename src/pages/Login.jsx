@@ -68,7 +68,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-full mt-md">
+                    <button type="submit" className="btn btn-primary btn-txt w-full mt-md">
                         {isRegister ? 'Sign Up' : 'Login'}
                     </button>
                 </form>

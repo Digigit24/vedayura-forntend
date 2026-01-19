@@ -24,7 +24,7 @@ const ProductDetails = () => {
         .slice(0, 4);
 
     if (!product) {
-        return <div className="container section text-center"><h2>Product not found</h2><Link to="/shop" className="btn btn-primary mt-md">Back to Shop</Link></div>;
+        return <div className="container section text-center"><h2>Product not found</h2><Link to="/shop" className="btn btn-primary btn-txt mt-md">Back to Shop</Link></div>;
     }
 
     const handleQuantityChange = (val) => {
@@ -98,7 +98,7 @@ const ProductDetails = () => {
                                     <button className="px-md py-sm hover:bg-light" onClick={() => handleQuantityChange(1)}><Plus size={18} /></button>
                                 </div>
                                 <button
-                                    className="btn btn-primary flex-1 py-md text-lg shadow-lg hover:shadow-xl transition-all"
+                                    className="btn btn-primary btn-txt flex-1 py-md text-lg shadow-lg hover:shadow-xl transition-all"
                                     onClick={() => addToCart(product, quantity)}
                                 >
                                     <ShoppingBag className="mr-sm" /> Add to Cart

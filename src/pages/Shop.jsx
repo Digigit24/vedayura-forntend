@@ -67,11 +67,15 @@ const Shop = () => {
         <div className="shop-page">
             {/* Shop Hero Banner */}
             <div className="shop-hero">
-                <div className="container text-center">
-                    <h1>Our Collection</h1>
-                    <p className="text-large">Pure. Potent. Authentic. Explore our range of Ayurvedic essentials.</p>
-                </div>
-            </div>
+  <div className="container text-center">
+    <h1 className="shop-title">Our Collection</h1>
+    <div className="shop-divider"></div>
+    <p className="text-large">
+      Pure. Potent. Authentic. Explore our range of Ayurvedic essentials.
+    </p>
+  </div>
+</div>
+
 
             <div className="container section">
                 <div className="shop-layout">
@@ -119,7 +123,7 @@ const Shop = () => {
 
                     {/* Product Grid */}
                     <main className="shop-main">
-                        <div className="shop-controls flex justify-between items-center mb-xl">
+                        <div className="shop-controls p-20 flex justify-between items-center mb-xl">
                             <button
                                 className="btn btn-outline hidden-desktop flex items-center gap-sm"
                                 onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
@@ -127,7 +131,7 @@ const Shop = () => {
                                 <Filter size={18} /> Filters
                             </button>
 
-                            <p className="text-secondary hidden-mobile">{filteredProducts.length} Results</p>
+                            <p className="text-secondary shop-results hidden-mobile">{filteredProducts.length} Results</p>
 
                             <div className="sort-wrapper flex items-center gap-sm">
                                 <span className="text-secondary text-sm hidden-mobile">Sort By:</span>
@@ -137,7 +141,7 @@ const Shop = () => {
                                         <option value="price-low">Price: Low to High</option>
                                         <option value="price-high">Price: High to Low</option>
                                     </select>
-                                    <ChevronDown size={14} className="select-icon" />
+                                     <ChevronDown size={18} className="select-icon" />
                                 </div>
                             </div>
                         </div>
@@ -164,7 +168,7 @@ const Shop = () => {
                                 {/* Mock Pagination */}
                                 <div className="pagination flex justify-center mt-2xl gap-sm">
                                     <button disabled className="btn btn-outline disabled">Prev</button>
-                                    <button className="btn btn-primary">1</button>
+                                    <button className="btn btn-primary btn-txt btn-txt">1</button>
                                     <button className="btn btn-outline">2</button>
                                     <button className="btn btn-outline">Next</button>
                                 </div>
@@ -174,7 +178,7 @@ const Shop = () => {
                                 <h3>No products found.</h3>
                                 <p className="text-secondary mb-md">Try adjusting your search or filters.</p>
                                 <button
-                                    className="btn btn-primary"
+                                    className="btn btn-primary btn-txt btn-txt"
                                     onClick={() => { setSelectedCategory('All'); setPriceRange(2000); setSortBy('featured'); setActiveSearch(''); }}
                                 >
                                     Clear All Filters
