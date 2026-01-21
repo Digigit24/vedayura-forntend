@@ -21,7 +21,7 @@
 }
 
 .hero-right img {
-  width: 40%;  /* Make the image take up the full width of the container */
+  width: 50%;  /* Make the image take up the full width of the container */
   object-fit: cover;  /* This ensures the image fills the container without distortion */
   object-position: center; /* Keeps the image centered */
   transition: transform 0.5s ease; /* Smooth zoom effect when the image is hovered */

@@ -31,7 +31,7 @@ const Home = () => {
         </div>
     </div>
     <div className="hero-image-container">
-        <img src="/public/hero-img.png" alt="Ayurvedic Product" />
+        <img src="/src/assets/hero-img.png" alt="Ayurvedic Product" />
     </div>
 </section>
 

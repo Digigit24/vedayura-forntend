@@ -122,33 +122,6 @@ const ProductDetails = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Tabs */}
-                        <div className="details-tabs mt-xl">
-                            <div className="flex border-b mb-md overflow-x-auto">
-                                {['Description', 'Ingredients', 'How to Use', 'Video'].map(tab => (
-                                    <button
-                                        key={tab}
-                                        className={`px-lg py-sm font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.toLowerCase().replace(/ /g, '') || (tab === 'How to Use' && activeTab === 'usage') ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-primary'}`}
-                                        onClick={() => setActiveTab(tab === 'How to Use' ? 'usage' : tab.toLowerCase())}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="tab-content text-secondary leading-relaxed bg-light p-lg rounded-lg">
-                                {(activeTab === 'description') && <p>{product.description} Experience the purity of nature with every use.</p>}
-                                {activeTab === 'ingredients' && <ul className="list-disc pl-md space-y-xs">
-                                    {product.ingredients.split(',').map((ing, i) => <li key={i}>{ing.trim()}</li>)}
-                                </ul>}
-                                {activeTab === 'usage' && <p>{product.usage}</p>}
-                                {activeTab === 'video' && (
-                                    <div className="aspect-video bg-black rounded-lg flex items-center justify-center text-white min-h-[300px]">
-                                        <p>Video Demonstration Placeholder for {product.name}</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
                     </div>
                 </div>
 
