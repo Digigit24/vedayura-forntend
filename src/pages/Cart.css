@@ -71,6 +71,7 @@
 .cart-items {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 10px 20px;
 }
 

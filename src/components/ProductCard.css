@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: 0 8px 24px rgba(15, 63, 42, 0.06);
+  box-shadow: 0 8px 24px rgba(143, 222, 188, 0.333);
   transition: transform 0.35s ease, box-shadow 0.35s ease;
 }
 
@@ -33,7 +33,7 @@
 .product-image-container {
   position: relative;
   padding-top: 120%;
-  background-color: #f4f6f3;
+  background-color: #f4f6f300;
 }
 
 .product-image-wrapper {
@@ -46,6 +46,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  padding: 15px;
   transition: transform 0.6s ease;
 }
 
@@ -144,39 +145,39 @@
 .add-to-cart-btn {
   margin-top: auto;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   border-radius: var(--radius-full);
-  border: 1px solid var(--color-primary);
-  background-color: #d6ffbe2a;
+  border: 2px solid var(--color-primary);
+  background-color: transparent;
   color: var(--color-primary);
   font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.25s ease;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .add-to-cart-btn:hover {
   background-color: var(--color-primary);
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(23, 83, 51, 0.2);
 }
 
 .product-card {
   --accent: var(--cat-default);
 }
 
-.product-card[data-category="Skincare"] {
+.product-card[data-category="Liquid"] {
   --accent: var(--cat-skincare);
 }
 
-.product-card[data-category="Haircare"] {
+.product-card[data-category="Powder"] {
   --accent: var(--cat-haircare);
 }
 
-.product-card[data-category="Ayurvedic Tablets"] {
+.product-card[data-category="Capsules"] {
   --accent: var(--cat-tablets);
-}
-
-.product-card[data-category="Wellness Oils"] {
-  --accent: var(--cat-oils);
 }
 
 .card-accent {
@@ -191,4 +192,73 @@
 
 .product-card:hover {
   box-shadow: 0 12px 30px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+@media (max-width: 768px) {
+  .product-image {
+    padding: 6px;
+  }
+
+  .product-info {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .product-name {
+    font-size: 0.8rem;
+    min-height: 2.8em;
+    margin-bottom: 0.25rem;
+  }
+
+  .product-price {
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .current-price {
+    font-size: 0.85rem;
+  }
+
+  .original-price {
+    font-size: 0.7rem;
+  }
+
+  .add-to-cart-btn {
+    padding: 8px 4px;
+    font-size: 0.65rem;
+    letter-spacing: 0;
+  }
+
+  .wishlist-btn {
+    width: 28px;
+    height: 28px;
+    top: 6px;
+    right: 6px;
+  }
+
+  .wishlist-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .discount-badge {
+    top: 6px;
+    left: 6px;
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-info {
+    padding: 0.5rem 0.25rem;
+  }
+
+  .product-name {
+    font-size: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .current-price {
+    font-size: 0.8rem;
+  }
 }

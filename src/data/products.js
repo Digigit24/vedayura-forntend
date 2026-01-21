@@ -7,7 +7,7 @@ const products = [
         description: "Shallaki (Boswellia serrata)  Helps reduce swelling and pain, Nirgundi (Vitex negundo) Provides relief from stiffness, Methi Seeds  Strengthens bones, Triphala  Cleanses the body and improves digestion, Shuddha Guggul  Supports joint repair and care, Shuddha Laksha  Promotes bone health.Chopochini Extract  Helps manage diabetes",
         ingredients: "Shallaki (Boswellia serrata)  Helps reduce swelling and pain, Nirgundi (Vitex negundo) Provides relief from stiffness, Methi Seeds  Strengthens bones, Triphala  Cleanses the body and improves digestion, Shuddha Guggul  Supports joint repair and care, Shuddha Laksha  Promotes bone health.Chopochini Extract  Helps manage diabetes",
         usage: "Apply a small amount to cleansed face and neck before bedtime.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 50,
     },
     {
@@ -18,7 +18,7 @@ const products = [
         description: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
         ingredients: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
         usage: "Massage into scalp and leave for at least an hour before washing.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 30,
     },
     {
@@ -29,18 +29,18 @@ const products = [
         description: "Triphala Powder (Emblica officinalis, Terminalia chebula, Terminalia belerica) - supports detoxification and healthy bowel regulation. Ajma (Carum copticum) - Relieves indigestion and flatulence. Jeera (Cuminum cyminum) - Improves digestion ves digestion and enhances nutrient absorption. Indrajav (Wrightia tinctoria) tinctoria) - Promotes gastrointestinal comfort. Sunthi (Zingiber officinale) - Stimulates digestion and reduces bloating. Harde (Terminalia chebula) - Helps regulate bowel movements. Kutaj (Holarrhena antidysenterica) - Supports intestinal health and balance. Kala Namak - Enhances appetite and aids digestion. Badi Saunf (Foeniculum vulgare) - Soothes the stomach and reduces gas. Together, these carefully selected herbswork synergistically to promote digestive comfort, regulate bowel activity, & support long-term gastrointestinal health naturally & safely.",
         ingredients: "Triphala Powder (Emblica officinalis, Terminalia chebula, Terminalia belerica) - supports detoxification and healthy bowel regulation. Ajma (Carum copticum) - Relieves indigestion and flatulence. Jeera (Cuminum cyminum) - Improves digestion ves digestion and enhances nutrient absorption. Indrajav (Wrightia tinctoria) tinctoria) - Promotes gastrointestinal comfort. Sunthi (Zingiber officinale) - Stimulates digestion and reduces bloating. Harde (Terminalia chebula) - Helps regulate bowel movements. Kutaj (Holarrhena antidysenterica) - Supports intestinal health and balance. Kala Namak - Enhances appetite and aids digestion. Badi Saunf (Foeniculum vulgare) - Soothes the stomach and reduces gas. Together, these carefully selected herbswork synergistically to promote digestive comfort, regulate bowel activity, & support long-term gastrointestinal health naturally & safely.",
         usage: "Take one tablet twice daily with warm water or milk.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 100,
     },
     {
         id: 4,
         name: "Garcinia Plus",
-        category: "Capsule",
+        category: "Capsules",
         price: 878.52,
         description: "Garcinia comogia (Vriksamla) Alma, Harde, Beheda, Sunthi, Miri, Pippali, Trimard, Orange Peel, Blac Salt etc. CONTAINS PERMITTED CLASS II PRESERVATIVE (INS211) CONTAINS NO COLOR, NO FLAVOUR AND NO SYNTHETIC VITAMINS & MINERALS. Ingredients are non synthetic, therefore, slight variation in colour taste, viscosity and some sediments are natural.",
         ingredients: "Garcinia comogia (Vriksamla) Alma, Harde, Beheda, Sunthi, Miri, Pippali, Trimard, Orange Peel, Blac Salt etc. CONTAINS PERMITTED CLASS II PRESERVATIVE (INS211) CONTAINS NO COLOR, NO FLAVOUR AND NO SYNTHETIC VITAMINS & MINERALS. Ingredients are non synthetic, therefore, slight variation in colour taste, viscosity and some sediments are natural.",
         usage: "Apply 23 drops on face and massage gently.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 20,
     },
     {
@@ -51,7 +51,7 @@ const products = [
         description: "Purify your skin and prevent acne with the antibacterial properties of Neem and Tulsi.",
         ingredients: "Neem, Tulsi, Honey",
         usage: "Use daily to wash face.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 80,
     },
     {
@@ -62,7 +62,7 @@ const products = [
         description: "Supports healthy digestion and detoxification.",
         ingredients: "Amla, Bibhitaki, Haritaki",
         usage: "Take 1-2 tablets at bedtime with warm water.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 60,
     },
     {
@@ -73,7 +73,7 @@ const products = [
         description: "Enhances memory, focus, and cognitive function.",
         ingredients: "Brahmi Extract",
         usage: "Take one tablet daily with breakfast.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 45,
     },
     {
@@ -84,7 +84,7 @@ const products = [
         description: "Deeply nourishing oil for a relaxing body massage.",
         ingredients: "Sesame Oil, Ashwagandha",
         usage: "Warm the oil slightly and massage onto body.",
-        image: "/src/data/image.jpeg",
+        image: "/assets/product-placeholder.jpeg",
         stock: 35,
     }
 ];

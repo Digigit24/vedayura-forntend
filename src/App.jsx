@@ -9,6 +9,8 @@ import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import About from './pages/About';
+import Catalog from './pages/Catalog';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/catalog" element={<Catalog />} />
           </Routes>
         </Layout>
       </Router>

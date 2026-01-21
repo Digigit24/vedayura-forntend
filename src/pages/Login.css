@@ -22,3 +22,8 @@
 .font-bold {
     font-weight: 700;
 }
+
+.login-btn {
+    background-color: var(--color-primary);
+    color: white;
+}
