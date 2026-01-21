@@ -47,9 +47,9 @@ const Footer = () => {
                     <div className="footer-col">
                         <h4>Contact Us</h4>
                         <ul className="contact-info">
-                            <li><MapPin size={18} /> <span>Shop No. 4, Green Valley, Ravet, Pune, Maharashtra 412101</span></li>
-                            <li><Phone size={18} /> <span>+91 99999 00000 (Demo)</span></li>
-                            <li><Mail size={18} /> <span>care@vedayura.com</span></li>
+                            <li><MapPin size={18} /> <span>305/4, Gajanan Colony, Sangli , Maharashtra-416416</span></li>
+                            <li><Phone size={18} /> <span>+80095 00992</span></li>
+                            <li><Mail size={18} /> <span>customercare@vedayura.com</span></li>
                         </ul>
                         <div className="newsletter">
                             <h5>Subscribe to our Newsletter</h5>

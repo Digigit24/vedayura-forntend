@@ -14,30 +14,35 @@ const Home = () => {
     return (
         <div className="home-page">
             {/* Premium Hero Section */}
-            <section className="hero-section-premium">
-                <div className="hero-overlay"></div>
-                <div className="container hero-content-premium">
-                    <span className="hero-tagline-premium">Pure • Potent • Authentic</span>
-                    <h1 className="hero-title-premium">
-                        Rediscover the <br />
-                        <span className="text-highlight-premium">Ancient Wisdom</span> of Vedas
-                    </h1>
-                    <p className="hero-subtitle-premium">
-                        Handcrafted Ayurvedic formulations for holistic wellness, <br />
-                        preserving tradition in every drop.
-                    </p>
-                    <div className="hero-actions-premium">
-                        <Link to="/shop" className="btn-premium">Shop Collection</Link>
-                    </div>
-                </div>
-            </section>
+         <section className="hero-section-premium">
+    <div className="hero-overlay"></div>
+    <div className="hero-content-premium">
+        <span className="hero-tagline-premium">Pure • Potent • Authentic</span>
+        <h1 className="hero-title-premium">
+            Rediscover the <br />
+            <span className="text-highlight-premium">Ancient Wisdom</span> of Vedas
+        </h1>
+        <p className="hero-subtitle-premium">
+            Handcrafted Ayurvedic formulations for holistic wellness, <br />
+            preserving tradition in every drop.
+        </p>
+        <div className="hero-actions-premium">
+            <a href="/shop" className="btn-premium">Shop Collection</a>
+        </div>
+    </div>
+    <div className="hero-image-container">
+        <img src="/public/hero-img.png" alt="Ayurvedic Product" />
+    </div>
+</section>
+
+
 
             {/* About Us Section */}
-            <section className="section about-section bg-light relative overflow-hidden">
+            <section className="section about-section relative overflow-hidden">
                 <div className="about-bg-leaf"></div>
 
                 <div className="container grid-2-col items-center gap-xl relative z-10">
-                    <div className="about-image-wrapper highlight-frame">
+                    <div className="about-image-wrapper">
                         <img
                             src="https://placehold.co/600x500/2F6F4E/FFFFFF?text=Our+Story"
                             alt="Ayurvedic herbs"
@@ -57,11 +62,11 @@ const Home = () => {
                             Ancient Wisdom, Modern Purity
                         </h2>
 
-                        <p className="text-secondary mb-md leading-relaxed">
+                        <p className="mb-md">
                             At Vedayura, we believe in the healing power of nature. Our journey began with a simple mission: to bring authentic, time-tested Ayurvedic remedies to the modern world without compromising on purity.
                         </p>
 
-                        <p className="text-secondary mb-lg leading-relaxed">
+                        <p className="mb-lg">
                             Every product is crafted with sustainably sourced herbs, following traditional formulations that have been trusted for centuries. We are committed to holistic wellness that nurtures your body, mind, and soul.
                         </p>
 
@@ -137,7 +142,6 @@ const Home = () => {
                     <p className="text-white opacity-90 mb-lg">Subscribe to receive holistic health tips, exclusive offers, and early access to new launches.</p>
                     <form className="home-newsletter-form" onSubmit={(e) => e.preventDefault()}>
                         <input type="email" placeholder="Enter your email address" className="border-none" />
-                        <button type="submit" className="btn bg-secondary text-white hover-dark">Subscribe</button>
                     </form>
                 </div>
             </section>

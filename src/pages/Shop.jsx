@@ -5,6 +5,11 @@ import ProductCard from '../components/ProductCard';
 import { Filter, ChevronDown, Search, X } from 'lucide-react';
 import './Shop.css';
 
+// Import React Slick and Slick styles
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+
 const Shop = () => {
     const { products } = useShop();
     const location = useLocation();
@@ -67,15 +72,35 @@ const Shop = () => {
         <div className="shop-page">
             {/* Shop Hero Banner */}
             <div className="shop-hero">
-  <div className="container text-center">
-    <h1 className="shop-title">Our Collection</h1>
-    <div className="shop-divider"></div>
-    <p className="text-large">
-      Pure. Potent. Authentic. Explore our range of Ayurvedic essentials.
-    </p>
-  </div>
+                {/* Smaller div */}
+                <div className="container hero-left">
+                    <h1 className="shop-title">Our Collection</h1>
+                    <div className="shop-divider"></div>
+                    <p className="text-large">
+                        Pure. Potent. Authentic. <br /> Explore our range of Ayurvedic essentials.
+                    </p>
+                </div>
+
+                {/* Bigger div with Image Slider */}
+                <div className="hero-right">
+    <Slider
+        dots={true}  // Display dots for navigation
+        infinite={true}  // Infinite scrolling
+        speed={500}  // Transition speed
+        slidesToShow={1}  // Show one slide at a time
+        slidesToScroll={1}  // Scroll one slide at a time
+        autoplay={true}  // Enable autoplay
+        autoplaySpeed={3000}  // Speed of autoplay
+    >
+        {filteredProducts.map((product) => (
+            <div key={product.id}>
+                <img src={product.image} alt={product.name} />
+            </div>
+        ))}
+    </Slider>
 </div>
 
+            </div>
 
             <div className="container section">
                 <div className="shop-layout">
@@ -125,12 +150,6 @@ const Shop = () => {
                     <main className="shop-main" data-category={selectedCategory}>
 
                         <div className="shop-controls p-20 flex justify-between items-center mb-xl">
-                            <button
-                                className="btn btn-outline hidden-desktop flex items-center gap-sm"
-                                onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
-                            >
-                                <Filter size={18} /> Filters
-                            </button>
 
                             <p className="text-secondary shop-results hidden-mobile">{filteredProducts.length} Results</p>
 
@@ -142,7 +161,7 @@ const Shop = () => {
                                         <option value="price-low">Price: Low to High</option>
                                         <option value="price-high">Price: High to Low</option>
                                     </select>
-                                     <ChevronDown size={18} className="select-icon" />
+                                    <ChevronDown size={18} className="select-icon" />
                                 </div>
                             </div>
                         </div>
@@ -162,8 +181,7 @@ const Shop = () => {
                             <>
                                 <div className="product-grid">
                                     {filteredProducts.map(product => (
-                                      <ProductCard key={product.id} product={product} activeCategory={selectedCategory}/>
-
+                                        <ProductCard key={product.id} product={product} activeCategory={selectedCategory} />
                                     ))}
                                 </div>
 

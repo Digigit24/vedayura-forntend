@@ -56,9 +56,9 @@ const Navbar = () => {
           <nav className="desktop-nav hidden-mobile">
             <Link to="/">Home</Link>
             <Link to="/shop">Shop</Link>
-            <Link to="/shop?category=Skincare">Skincare</Link>
-            <Link to="/shop?category=Haircare">Haircare</Link>
-            <Link to="/shop?category=Wellness">Wellness</Link>
+            <Link to="/shop?category=Products">Products</Link>
+            <Link to="/shop?category=Catalog">Catalog</Link>
+            <Link to="/shop?category=Categories">Categories</Link>
           </nav>
 
           {/* Actions */}
