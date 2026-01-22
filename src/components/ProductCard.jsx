@@ -4,18 +4,22 @@ import { ShoppingBag, Heart, Star } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import './ProductCard.css';
 
-const ProductCard = ({ product }) => {
-    const { addToCart, addToWishlist, wishlist } = useShop();
+const ProductCard = ({ product,activeCategory }) => {
+    const { addToCart, addToWishlist } = useShop();
+    const { wishlist = [], cart = [] } = useShop();
     const isWishlisted = wishlist.some(item => item.id === product.id);
 
+
     return (
-        <div className="product-card">
+       <div className="product-card" data-category={activeCategory}>
+
            <div className="product-image-container">
   <Link to={`/product/${product.id}`} className="product-image-link">
     <div className="product-image-wrapper">
       <img src={product.image} alt={product.name} className="product-image" />
     </div>
   </Link>
+  
 
                 {product.discount_price < product.price && (
                     <span className="discount-badge">
@@ -29,6 +33,7 @@ const ProductCard = ({ product }) => {
                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                 </button>
             </div>
+<div className="card-accent"></div>
 
             <div className="product-info">
                 <p className="product-category">{product.category}</p>
@@ -44,8 +49,7 @@ const ProductCard = ({ product }) => {
 
                 <button
                     className="btn btn-outline btn-sm add-to-cart-btn"
-                    onClick={() => addToCart(product)}
-                >
+                    onClick={() => addToCart(product)}>
                     <ShoppingBag size={16} /> Add to Cart
                 </button>
             </div>

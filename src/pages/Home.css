@@ -85,7 +85,7 @@
 }
 
 .about-image-wrapper:hover img {
-  transform: scale(1.03);
+    transform: scale(1.03);
 }
 
 .features-mini-grid {

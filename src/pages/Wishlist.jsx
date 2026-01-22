@@ -1,31 +1,54 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useShop } from '../context/ShopContext';
-import ProductCard from '../components/ProductCard';
+import React from "react";
+import { ShoppingBag, Heart, Trash2 } from "lucide-react";
+import { useShop } from "../context/ShopContext";
 
 const Wishlist = () => {
-    const { wishlist } = useShop();
+  const { wishlist = [], addToCart, toggleWishlist } = useShop();
 
-    if (wishlist.length === 0) {
-        return (
-            <div className="container section text-center py-2xl">
-                <h2 className="mb-md">Your Wishlist is Empty</h2>
-                <p className="text-secondary mb-lg">Save items you love here.</p>
-                <Link to="/shop" className="btn btn-primary btn-txt">Start Shopping</Link>
-            </div>
-        );
-    }
-
+  if (wishlist.length === 0) {
     return (
-        <div className="container section">
-            <h1 className="page-title mb-lg">My Wishlist</h1>
-            <div className="product-grid">
-                {wishlist.map(product => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
-            </div>
-        </div>
+      <div className="drawer-empty">
+        <Heart size={48} className="text-muted" strokeWidth={1.5} />
+        <h3>Your wishlist is empty</h3>
+        <p>Add products you love to your wishlist ❤️</p>
+      </div>
     );
+  }
+
+  return (
+    <div className="cart-drawer-content">
+      <div className="cart-drawer-header">
+        <h3>My Wishlist</h3>
+      </div>
+
+      <div className="cart-items">
+        {wishlist.map((item) => (
+          <div key={item.id} className="cart-item">
+            <img src={item.image} alt={item.name} />
+
+            <div className="cart-item-info">
+              <h4>{item.name}</h4>
+              <span className="price">₹{item.discount_price || item.price}</span>
+
+              <button
+                className="add-to-cart-small"
+                onClick={() => addToCart(item)}
+              >
+                <ShoppingBag size={14} /> Add to Cart
+              </button>
+            </div>
+
+            <button
+              className="remove-btn"
+              onClick={() => toggleWishlist(item)}
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Wishlist;

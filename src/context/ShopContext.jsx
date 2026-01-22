@@ -4,14 +4,12 @@ import api from '../api';
 
 const ShopContext = createContext();
 
-export const useShop = () => useContext(ShopContext);
-
 export const ShopProvider = ({ children }) => {
-    const [products, setProducts] = useState(initialProducts);
-    const [cart, setCart] = useState([]);
-    const [wishlist, setWishlist] = useState([]);
-    const [user, setUser] = useState(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [products] = useState(productsData);
+  const [cart, setCart] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [drawerType, setDrawerType] = useState(null);
+  const [user, setUser] = useState(null); // Simple user state for now
 
     // Load state from local storage on mount (optional but good for UX)
     useEffect(() => {
@@ -67,21 +65,33 @@ export const ShopProvider = ({ children }) => {
         })();
     }, [user]);
 
-    useEffect(() => {
-        localStorage.setItem('ayurveda_cart', JSON.stringify(cart));
-    }, [cart]);
+  const loadWishlist = async () => {
+    try {
+      const data = await getWishlist();
+      if (data.success && data.wishlist) {
+        // Map API wishlist items to match frontend product structure if needed
+        // API returns items: [{ id, product: { ... } }]
+        // Frontend expects array of products
+        const validItems = data.wishlist.items.map(item => ({
+          ...item.product,
+          wishlistItemId: item.id // Store the wishlist item ID for removal
+        }));
+        setWishlist(validItems);
+      }
+    } catch (error) {
+      console.error("Failed to load wishlist", error);
+    }
+  };
 
-    useEffect(() => {
-        localStorage.setItem('ayurveda_wishlist', JSON.stringify(wishlist));
-    }, [wishlist]);
+  const openCart = () => setDrawerType("cart");
+  const openWishlist = () => setDrawerType("wishlist");
+  const closeDrawer = () => setDrawerType(null);
 
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem('ayurveda_user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('ayurveda_user');
-        }
-    }, [user]);
+  const logout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    setWishlist([]);
+  };
 
     const addToCart = (product, quantity = 1) => {
         setCart(prev => {
@@ -254,12 +264,17 @@ export const ShopProvider = ({ children }) => {
     const value = {
         products,
         cart,
+        setCart,
         wishlist,
-        user,
+        setWishlist,
+        drawerType,
+        openCart,
+        openWishlist,
+        closeDrawer,
+        closeCart: closeDrawer,
         addToCart,
         removeFromCart,
         updateQuantity,
-        clearCart,
         toggleWishlist,
         addToWishlist: toggleWishlist,
         login,
@@ -278,3 +293,5 @@ export const ShopProvider = ({ children }) => {
         </ShopContext.Provider>
     );
 };
+
+export const useShop = () => useContext(ShopContext);
