@@ -61,13 +61,13 @@ const Admin = () => {
         setIsProductModalOpen(true);
     };
 
-    const handleDeleteProduct = (id) => {
+    const handleDeleteProduct = async (id) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
-            deleteProduct(id);
+            await deleteProduct(id);
         }
     };
 
-    const handleSaveProduct = (e) => {
+    const handleSaveProduct = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
         const productData = {
@@ -81,9 +81,9 @@ const Admin = () => {
         };
 
         if (editingProduct) {
-            updateProduct(productData);
+            await updateProduct(productData);
         } else {
-            addProduct(productData);
+            await addProduct(productData);
         }
         setIsProductModalOpen(false);
     };

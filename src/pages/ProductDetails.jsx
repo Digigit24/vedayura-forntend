@@ -140,6 +140,28 @@ const ProductDetails = () => {
                                 )}
                             </div>
                         </div>
+
+                        {/* Product Meta Accordions */}
+                        <div className="product-accordions border-t border-gray-200 mt-xl">
+                            <AccordionItem title="Description" isOpen={activeTab === 'description'} onClick={() => setActiveTab(activeTab === 'description' ? '' : 'description')}>
+                                <p className="text-secondary leading-relaxed">{product.description}</p>
+                                <p className="mt-4 text-secondary">Experience the purity of nature with every use.</p>
+                            </AccordionItem>
+                            
+                            <AccordionItem title="Ingredients" isOpen={activeTab === 'ingredients'} onClick={() => setActiveTab(activeTab === 'ingredients' ? '' : 'ingredients')}>
+                                <ul className="list-disc pl-5 space-y-2 text-secondary">
+                                    {product.ingredients.split(',').map((ing, i) => (
+                                        <li key={i}>{ing.trim()}</li>
+                                    ))}
+                                </ul>
+                            </AccordionItem>
+
+                            <AccordionItem title="How to Use" isOpen={activeTab === 'usage'} onClick={() => setActiveTab(activeTab === 'usage' ? '' : 'usage')}>
+                                <div className="prose text-secondary">
+                                    <p>{product.usage}</p>
+                                </div>
+                            </AccordionItem>
+                        </div>
                     </div>
                 </div>
 
@@ -156,5 +178,25 @@ const ProductDetails = () => {
         </div>
     );
 };
+
+const AccordionItem = ({ title, isOpen, onClick, children }) => (
+    <div className="border-b border-gray-200">
+        <button
+            className="w-full flex justify-between items-center py-4 text-left focus:outline-none bg-transparent hover:bg-transparent"
+            onClick={onClick}
+        >
+            <span className="text-lg font-medium text-primary">{title}</span>
+            <ChevronDown 
+                size={20} 
+                className={`transition-transform duration-300 text-secondary ${isOpen ? 'rotate-180' : ''}`} 
+            />
+        </button>
+        <div 
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'}`}
+        >
+            {children}
+        </div>
+    </div>
+);
 
 export default ProductDetails;

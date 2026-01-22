@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import './Login.css';
-import axios from 'axios';
 
 const Login = () => {
     const [isRegister, setIsRegister] = useState(false);
@@ -13,16 +12,26 @@ const Login = () => {
     const [error, setError] = useState('');
 
     const navigate = useNavigate();
+    const { login, register } = useShop();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        const res = await axios.post('http://localhost:5000/auth/login', {
-            email,
-            password
-        });
-
-        console.log(res.data);
+        if (isRegister) {
+            const res = await register(name, email, password);
+            if (res && res.success) {
+                navigate('/profile');
+            }
+        } else {
+            const res = await login(email, password);
+            if (res && res.success) {
+                const role = res.user?.role || '';
+                if (String(role).toLowerCase().includes('admin') || email === 'admin@ayurveda.com') {
+                    navigate('/admin');
+                } else {
+                    navigate('/profile');
+                }
+            }
+        }
     };
 
     return (

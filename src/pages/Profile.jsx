@@ -1,31 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, Heart, Settings, Bell, LogOut, RotateCcw } from 'lucide-react'; // Added RotateCcw for refunds
+import { Package, Heart, Settings, Bell, LogOut, RotateCcw } from 'lucide-react';
+import api from '../api';
+import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
-import { getMyRefundRequests, requestRefund } from '../api/refundService';
 
 const Profile = () => {
     const { user, logout, wishlist } = useShop();
+    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
     const [refunds, setRefunds] = useState([]);
-
-    useEffect(() => {
-        if (user) {
-            loadRefunds();
-        }
-    }, [user]);
 
     const loadRefunds = async () => {
         try {
             const data = await getMyRefundRequests();
-            if (data.success) {
-                setRefunds(data.refunds);
+            if (data && data.success) {
+                setRefunds(data.refunds || []);
             }
         } catch (error) {
             console.error("Failed to load refunds", error);
         }
     };
+
+    useEffect(() => {
+        if (user) {
+            (async () => { await loadRefunds(); })();
+        }
+    }, [user]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await api.orders.getAll();
+                if (res && res.orders) setOrders(res.orders);
+                else if (Array.isArray(res)) setOrders(res);
+            } catch (err) {
+                console.error('Failed to load orders', err);
+            }
+        })();
+    }, []);
 
     if (!user) {
         navigate('/login');
@@ -134,35 +148,56 @@ const Profile = () => {
                         </div>
 
                         <div className="space-y-lg">
-                            {/* Mock Order 1 */}
-                            <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
-                                <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
-                                    <div>
-                                        <p className="font-bold text-lg text-dark">Order #AYU1024</p>
-                                        <p className="text-sm text-secondary">Placed on 12 Jan 2026 • ₹4,500</p>
+                            {orders && orders.length > 0 ? (
+                                orders.map(order => (
+                                    <div key={order.id} className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
+                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
+                                            <div>
+                                                <p className="font-bold text-lg text-dark">Order #{String(order.id)}</p>
+                                                <p className="text-sm text-secondary">Placed on {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—'} • ₹{order.totalAmount || order.total || order.subtotalAmount || '—'}</p>
+                                            </div>
+                                            <span className="self-start sm:self-center text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide" style={{background: order.status === 'DELIVERED' ? '#ecfdf6' : '#fff7ed', color: order.status === 'DELIVERED' ? '#166534' : '#92400e'}}>{order.status || 'PROCESSING'}</span>
+                                        </div>
+                                        <div className="flex gap-md pt-sm border-t border-dashed">
+                                            <button onClick={() => handleInvoice(order.id)} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
+                                            <button onClick={() => handleTrackOrder(order.id)} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
+                                            <button onClick={() => handleRequestRefund(order.id)} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50 text-xs flex-1 sm:flex-none">Request Refund</button>
+                                        </div>
                                     </div>
-                                    <span className="self-start sm:self-center text-xs font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full uppercase tracking-wide">Delivered</span>
-                                </div>
-                                <div className="flex gap-md pt-sm border-t border-dashed">
-                                    <button onClick={() => handleInvoice('AYU1024')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                    <button onClick={() => handleTrackOrder('AYU1024')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
-                                    <button onClick={() => handleRequestRefund('AYU1024')} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50 text-xs flex-1 sm:flex-none">Request Refund</button>
-                                </div>
-                            </div>
-                            {/* Mock Order 2 */}
-                            <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
-                                <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
-                                    <div>
-                                        <p className="font-bold text-lg text-dark">Order #AYU1020</p>
-                                        <p className="text-sm text-secondary">Placed on 05 Jan 2026 • ₹1,200</p>
+                                ))
+                            ) : (
+                                <>
+                                    {/* Mock Order 1 */}
+                                    <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
+                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
+                                            <div>
+                                                <p className="font-bold text-lg text-dark">Order #AYU1024</p>
+                                                <p className="text-sm text-secondary">Placed on 12 Jan 2026 • ₹4,500</p>
+                                            </div>
+                                            <span className="self-start sm:self-center text-xs font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full uppercase tracking-wide">Delivered</span>
+                                        </div>
+                                        <div className="flex gap-md pt-sm border-t border-dashed">
+                                            <button onClick={() => handleInvoice('AYU1024')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
+                                            <button onClick={() => handleTrackOrder('AYU1024')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
+                                            <button onClick={() => handleRequestRefund('AYU1024')} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50 text-xs flex-1 sm:flex-none">Request Refund</button>
+                                        </div>
                                     </div>
-                                    <span className="self-start sm:self-center text-xs font-bold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full uppercase tracking-wide">Processing</span>
-                                </div>
-                                <div className="flex gap-md pt-sm border-t border-dashed">
-                                    <button onClick={() => handleInvoice('AYU1020')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                    <button onClick={() => handleTrackOrder('AYU1020')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
-                                </div>
-                            </div>
+                                    {/* Mock Order 2 */}
+                                    <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
+                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
+                                            <div>
+                                                <p className="font-bold text-lg text-dark">Order #AYU1020</p>
+                                                <p className="text-sm text-secondary">Placed on 05 Jan 2026 • ₹1,200</p>
+                                            </div>
+                                            <span className="self-start sm:self-center text-xs font-bold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full uppercase tracking-wide">Processing</span>
+                                        </div>
+                                        <div className="flex gap-md pt-sm border-t border-dashed">
+                                            <button onClick={() => handleInvoice('AYU1020')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
+                                            <button onClick={() => handleTrackOrder('AYU1020')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
 

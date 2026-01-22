@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { CreditCard, Truck, CheckCircle, ChevronRight, MapPin, ShieldCheck, Loader } from 'lucide-react';
@@ -15,60 +16,50 @@ const Checkout = () => {
     const [pincode, setPincode] = useState('');
 
     const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
-    // Shipping calculated via API or fallback logic
-    const total = subtotal + shippingCost;
+    const shipping = subtotal > 999 ? 0 : 99;
+    const total = subtotal + shipping;
 
-    const handlePincodeBlur = async () => {
-        if (pincode.length === 6) {
-            try {
-                const data = await calculateCartShipping(pincode);
-                if (data.success) {
-                    setShippingCost(data.shippingCost);
-                }
-            } catch (error) {
-                console.error("Failed to calculate shipping", error);
-            }
-        }
-    };
+    const [addressForm, setAddressForm] = useState({ firstName: '', lastName: '', email: '', street: '', city: '', zip: '', phone: '' });
+    const [addressId, setAddressId] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        // create address on server if possible
+        try {
+            const payload = {
+                street: addressForm.street,
+                city: addressForm.city,
+                state: '',
+                pincode: addressForm.zip,
+                country: 'India',
+                isDefault: true
+            };
+            const res = await api.addresses.add(payload);
+            if (res && (res.id || res.address)) {
+                const id = res.id || (res.address && res.address.id);
+                setAddressId(id);
+            }
+        } catch (err) {
+            console.error('Address save failed', err);
+        }
         setStep(2);
         window.scrollTo(0, 0);
     };
 
     const handlePayment = async () => {
-        setLoading(true);
+        setIsProcessing(true);
         try {
-            // 1. Create Order
-            // Note: In a real app, we would have saved the address first to get addressId
-            const orderData = {
-                addressId: "temp-address-uuid", // Mocked as we don't have Address API
-                idempotencyKey: `order_${Date.now()}`
-            };
-
-            const orderRes = await createOrderWithShipping(orderData);
-
-            if (orderRes.success && orderRes.order) {
-                // 2. Simulate Payment Verification (since we don't have real Razorpay frontend integration here)
-                const paymentData = {
-                    orderId: orderRes.order.id,
-                    razorpayPaymentId: "pay_mock_" + Date.now(),
-                    razorpayOrderId: orderRes.order.razorpayOrderId,
-                    razorpaySignature: "mock_signature"
-                };
-
-                await verifyPaymentAndCreateShipment(paymentData);
-
-                clearCart();
-                setStep(3);
-                window.scrollTo(0, 0);
-            }
-        } catch (error) {
-            console.error("Order processing failed", error);
-            alert("Failed to place order. Please try again.");
+            const payload = { addressId: addressId };
+            const res = await api.orders.checkout(payload);
+            // If checkout succeeds, clear cart and show success
+            clearCart();
+            setStep(3);
+        } catch (err) {
+            console.error('Checkout failed', err);
+            alert('Payment/checkout failed. Please try again.');
         } finally {
-            setLoading(false);
+            setIsProcessing(false);
         }
     };
 
@@ -121,42 +112,34 @@ const Checkout = () => {
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>First Name</label>
-                                        <input type="text" required className="form-input" placeholder="e.g. Rahul" />
+                                            <input type="text" required className="form-input" value={addressForm.firstName} onChange={(e) => setAddressForm(prev => ({ ...prev, firstName: e.target.value }))} />
                                     </div>
                                     <div className="form-group">
                                         <label>Last Name</label>
-                                        <input type="text" required className="form-input" placeholder="e.g. Sharma" />
+                                            <input type="text" required className="form-input" value={addressForm.lastName} onChange={(e) => setAddressForm(prev => ({ ...prev, lastName: e.target.value }))} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
-                                    <input type="email" required className="form-input" placeholder="rahul@example.com" />
+                                    <input type="email" required className="form-input" value={addressForm.email} onChange={(e) => setAddressForm(prev => ({ ...prev, email: e.target.value }))} />
                                 </div>
                                 <div className="form-group">
                                     <label>Street Address</label>
-                                    <input type="text" required className="form-input" placeholder="House no, Building name, Street" />
+                                    <input type="text" required className="form-input" value={addressForm.street} onChange={(e) => setAddressForm(prev => ({ ...prev, street: e.target.value }))} />
                                 </div>
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>City</label>
-                                        <input type="text" required className="form-input" placeholder="e.g. Mumbai" />
+                                            <input type="text" required className="form-input" value={addressForm.city} onChange={(e) => setAddressForm(prev => ({ ...prev, city: e.target.value }))} />
                                     </div>
                                     <div className="form-group">
-                                        <label>Pincode</label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="form-input"
-                                            placeholder="400001"
-                                            value={pincode}
-                                            onChange={(e) => setPincode(e.target.value)}
-                                            onBlur={handlePincodeBlur}
-                                        />
+                                        <label>Zip Code</label>
+                                            <input type="text" required className="form-input" value={addressForm.zip} onChange={(e) => setAddressForm(prev => ({ ...prev, zip: e.target.value }))} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Phone Number</label>
-                                    <input type="tel" required className="form-input" placeholder="+91 98765 43210" />
+                                    <input type="tel" required className="form-input" value={addressForm.phone} onChange={(e) => setAddressForm(prev => ({ ...prev, phone: e.target.value }))} />
                                 </div>
                                 <button type="submit" className="checkout-btn flex items-center justify-center gap-sm">
                                     Continue to Payment <ChevronRight size={20} />
