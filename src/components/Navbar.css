@@ -142,7 +142,7 @@
     position: absolute;
     top: -5px;
     right: -8px;
-    background-color: var(--color-primary);
+    background-color: #fa0808;
     color: white;
     font-size: 0.6rem;
     min-width: 18px;
@@ -209,37 +209,79 @@
         color: var(--color-primary);
     }
 }
+/* Navbar.css */
 
+/* ... existing styles ... */
+
+/* Mobile Menu Container */
 .mobile-menu {
-    position: fixed;
-    top: 5%;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background: white;
-    padding: 80px 0px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 85%; /* Menu takes 85% of width */
+  max-width: 320px;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 2000; /* Must be higher than header */
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  overflow-y: auto;
+  padding-top: 80px; /* Space for the logo/close button */
 }
 
-.mobile-menu a {
-    text-decoration: none;
-    color: var(--color-text-primary);
-    font-size: 1rem;
-    font-weight: 600;
-    padding: 10px 0px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* Backdrop (Dark overlay) */
+.mobile-menu-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  backdrop-filter: blur(2px);
+  z-index: 1999; /* Just behind the menu */
 }
 
-.mobile-menu a::after {
-    content: '→';
-    opacity: 0.3;
+/* Mobile Content Styling */
+.mobile-menu-content {
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+  padding: 0 24px 40px;
 }
 
-.mobile-menu a:last-child {
-    border-bottom: none;
+/* Links */
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mobile-nav-links a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary-dark);
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.mobile-menu-footer {
+  margin-top: auto;
+  padding-top: 30px;
+  text-align: center;
+}
+
+.mobile-menu-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #175333; /* Your brand primary color */
+  cursor: pointer;
+  z-index: 2002;
+  padding: 5px;
+  transition: transform 0.2s ease;
+}
+
+.mobile-menu-close:active {
+  transform: scale(0.9);
 }

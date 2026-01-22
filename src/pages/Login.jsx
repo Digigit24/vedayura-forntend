@@ -19,7 +19,6 @@ const Login = () => {
             }
         } else {
             if (login(email, password)) {
-                // Redirect based on role handled in ShopContext or here
                 if (email === 'admin@ayurveda.com') {
                     navigate('/admin');
                 } else {
@@ -30,58 +29,70 @@ const Login = () => {
     };
 
     return (
-        <div className="login-page container section">
+        <div className="login-page">
             <div className="auth-card">
-                <h1 className="text-center mb-lg">{isRegister ? 'Create Account' : 'Welcome Back'}</h1>
+                <h2>{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
+                <p className="auth-subtitle">
+                    {isRegister ? 'Join our community of wellness' : 'Enter your details to access your account'}
+                </p>
 
                 <form onSubmit={handleSubmit}>
                     {isRegister && (
                         <div className="form-group">
-                            <label>Full Name</label>
+                            <label className="form-label">Full Name</label>
                             <input
                                 type="text"
                                 className="form-input"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
+                                placeholder="e.g. John Doe"
                                 required
                             />
                         </div>
                     )}
                     <div className="form-group">
-                        <label>Email Address</label>
+                        <label className="form-label">Email Address</label>
                         <input
                             type="email"
                             className="form-input"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@example.com"
                             required
                         />
                     </div>
                     <div className="form-group">
-                        <label>Password</label>
+                        <label className="form-label">Password</label>
                         <input
                             type="password"
                             className="form-input"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
                             required
                         />
                     </div>
 
-                    <button type="submit" className="btn btn-premium btn-txt w-full mt-md">
-                        {isRegister ? 'Sign Up' : 'Login'}
+                    <button type="submit" className="login-btn">
+                        {isRegister ? 'Sign Up' : 'Sign In'}
                     </button>
                 </form>
 
-                <p className="text-center mt-lg text-sm">
-                    {isRegister ? 'Already have an account?' : "Don't have an account?"} <button className="text-primary font-bold" onClick={() => setIsRegister(!isRegister)}>
-                        {isRegister ? 'Login' : 'Register'}
-                    </button>
-                </p>
+                <div className="auth-footer">
+                    <p>
+                        {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
+                        <button 
+                            className="auth-link-btn" 
+                            onClick={() => setIsRegister(!isRegister)}
+                        >
+                            {isRegister ? 'Login' : 'Register'}
+                        </button>
+                    </p>
+                </div>
 
                 {!isRegister && (
-                    <div className="mt-md text-center">
-                        <p className="text-xs text-secondary">Demo Admin: admin@vedayura.com / admin</p>
+                    <div className="demo-credentials">
+                        <p>Demo Admin: admin@vedayura.com / admin</p>
                     </div>
                 )}
             </div>

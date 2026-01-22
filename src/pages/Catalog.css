@@ -90,45 +90,80 @@
     max-width: 600px;
     margin-bottom: 48px;
 }
+/* --- Search Bar Fixes --- */
 
+/* 1. The Wrapper: Controls width and positioning */
 .hero-v2-search-wrapper {
+    width: 100%;
     max-width: 500px;
+    margin-top: 24px; /* Space from description */
 }
 
+/* 2. The Input Group: The visible pill container */
 .search-input-group {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 6px 6px 6px 24px;
-    margin: 20px;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px; /* Full pill shape */
+    padding: 8px 20px;   /* Consistent internal spacing */
     display: flex;
     align-items: center;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Focus State */
 .search-input-group:focus-within {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: #1DB04C;
-    box-shadow: 0 0 30px rgba(29, 176, 76, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #1DB04C; /* Brand Green */
+    box-shadow: 0 8px 40px rgba(29, 176, 76, 0.25);
+    transform: translateY(-2px);
 }
 
+/* 3. The Icon: Fixed size so it never squashes */
 .search-input-group .search-icon {
     color: #1DB04C;
+    width: 22px;
+    height: 22px;
+    min-width: 22px; /* Critical for mobile: prevents shrinking */
+    margin-right: 12px;
 }
 
+/* 4. The Input Field: Fills space, clear text */
 .search-input-group input {
     flex: 1;
+    width: 100%;
+    background: transparent;
     border: none;
-    background: none;
-    padding: 16px;
-    font-size: 1rem;
+    margin-left: 30px;
     outline: none;
     color: white;
+    font-size: 1rem;
+    padding: 10px 0; /* Vertical padding only */
+    font-weight: 500;
 }
 
 .search-input-group input::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 400;
+}
+
+/* --- Mobile Specific Adjustments --- */
+@media (max-width: 900px) {
+    .hero-v2-search-wrapper {
+        margin: 30px auto 0; /* Center horizontally */
+        max-width: 100%;     /* Use full width available */
+        padding: 0 10px;     /* Slight safety padding from screen edges */
+    }
+
+    .search-input-group {
+        padding: 6px 16px; /* Slightly compact on mobile */
+    }
+
+    .search-input-group input {
+        font-size: 0.95rem; /* Prevent zoom on iOS input focus */
+    }
 }
 
 .hero-v2-visual {

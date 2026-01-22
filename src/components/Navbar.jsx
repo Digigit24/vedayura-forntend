@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Search, Menu, X, ArrowRight } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { ShoppingBag, Heart, User, Search, Menu, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Navbar.css';
@@ -8,11 +8,13 @@ import './Navbar.css';
 const Navbar = () => {
   const { cart = [], wishlist = [], openCart, openWishlist } = useShop();
   const navigate = useNavigate();
+  const location = useLocation(); // Hook to detect route changes
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+  // 1. Handle Scroll Effect for Header Background
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -21,13 +23,27 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // 2. KEY FIX: Lock Body Scroll when Menu is Open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden'; // Lock scroll
+    } else {
+      document.body.style.overflow = 'unset'; // Unlock scroll
+    }
+
+    // Cleanup function: Unlock scroll when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  // 3. Close menu automatically when route changes (clicking a link)
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [location]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    if (!isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
   };
 
   const handleSearch = (e) => {
@@ -35,6 +51,7 @@ const Navbar = () => {
     if (searchQuery.trim()) {
       navigate(`/shop?search=${searchQuery}`);
       setSearchQuery('');
+      setIsMenuOpen(false); // Close menu on search
     }
   };
 
@@ -56,8 +73,9 @@ const Navbar = () => {
             className="mobile-menu-btn hidden-desktop"
             onClick={toggleMenu}
             aria-label="Toggle Menu"
+            style={{ zIndex: 3000, position: 'relative' }} // Ensure button stays on top
           >
-            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            {isMenuOpen ? <X size={24} color="#175333" /> : <Menu size={24} />}
           </button>
 
           {/* Logo */}
@@ -108,29 +126,58 @@ const Navbar = () => {
       </header>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            className="mobile-menu"
-            initial={{ x: '-100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
-            transition={{ type: 'tween', duration: 0.4, ease: 'easeInOut' }}
-          >
-            <nav className="flex flex-col">
-              <Link to="/" onClick={toggleMenu}>Home</Link>
-              <Link to="/shop" onClick={toggleMenu}>Shop</Link>
-              <Link to="/about" onClick={toggleMenu}>About</Link>
-              <Link to="/catalog" onClick={toggleMenu}>Catalog</Link>
-              <Link to="/contact" onClick={toggleMenu}>Contact</Link>
-            </nav>
+<AnimatePresence>
+  {isMenuOpen && (
+    <>
+      {/* Backdrop */}
+      <motion.div 
+          className="mobile-menu-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setIsMenuOpen(false)}
+      />
+      
+      {/* Slide-in Menu */}
+      <motion.div
+        className="mobile-menu"
+        initial={{ x: '-100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '-100%' }}
+        transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+      >
+        {/* --- NEW CLOSE BUTTON --- */}
+        <button 
+          className="mobile-menu-close" 
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <X size={28} />
+        </button>
+        {/* ------------------------ */}
 
-            <div className="mt-auto pt-lg border-t text-center">
-              <p className="text-secondary text-sm">🌿 Authentic Vedic Wisdom</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div className="mobile-menu-content">
+          {/* ... existing search and links ... */}
+          <div className="mobile-search-container">
+             {/* ... search input code ... */}
+          </div>
+
+          <nav className="mobile-nav-links">
+            <Link to="/">Home</Link>
+            <Link to="/shop">Shop Collection</Link>
+            <Link to="/about">Our Story</Link>
+            <Link to="/catalog">Catalog</Link>
+            <Link to="/contact">Contact Us</Link>
+            <Link to="/login">My Account</Link>
+          </nav>
+
+          <div className="mobile-menu-footer">
+            <p className="text-secondary text-sm">🌿 Authentic Vedic Wisdom</p>
+          </div>
+        </div>
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
     </>
   );
 };
