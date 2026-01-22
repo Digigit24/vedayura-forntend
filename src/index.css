@@ -441,6 +441,7 @@ img {
   position: relative;
   padding: 120px 0;
   overflow-x: hidden;
+
 }
 
 .vedayura-hero-dark {
@@ -449,8 +450,18 @@ img {
 }
 
 .vedayura-hero-light {
-  background: linear-gradient(135deg, #fdfbf7 0%, #f4f6f3 100%);
+  background: url('/public/assets/about-hero-bg.png');
+  background-repeat: no-repeat;
+  background-position: right;
   color: var(--color-text-primary);
+}
+/* Mobile Breakpoint */
+@media (max-width: 768px) {
+  .vedayura-hero-light {
+    background-image: none !important; 
+    /* Optional: Add a fallback color if the text is hard to read on white */
+    /* background-color: #f8f8f8; */ 
+  }
 }
 
 .vedayura-tagline {
