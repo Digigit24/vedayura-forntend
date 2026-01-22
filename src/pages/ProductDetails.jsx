@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { ShoppingBag, Heart, Minus, Plus, Truck, ShieldCheck, Star } from 'lucide-react';
-import ProductCard from '../components/ProductCard'; // For related products if needed
+import { ShieldCheck } from 'lucide-react'; // Ensure this is imported
+import ProductCard from '../components/ProductCard';
 import './ProductDetails.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
-    const { products, addToCart, addToWishlist, wishlist } = useShop();
+    const { products, addToCart, wishlist } = useShop();
     const [quantity, setQuantity] = useState(1);
-    const [activeTab, setActiveTab] = useState('description');
+    
+    // Default active tab is ingredients
+    const [activeTab, setActiveTab] = useState('ingredients');
 
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [id]);
 
     const product = products.find(p => p.id === parseInt(id));
-    const isWishlisted = product ? wishlist.some(item => item.id === product.id) : false;
 
     // Mock related products
     const relatedProducts = products
@@ -24,102 +25,119 @@ const ProductDetails = () => {
         .slice(0, 4);
 
     if (!product) {
-        return <div className="container section text-center"><h2>Product not found</h2><Link to="/shop" className="btn btn-primary btn-txt mt-md">Back to Shop</Link></div>;
+        return (
+            <div className="container section text-center">
+                <h2>Product not found</h2>
+                <Link to="/shop" className="btn btn-primary btn-txt mt-md">Back to Shop</Link>
+            </div>
+        );
     }
 
+    // 1. Quantity Logic
     const handleQuantityChange = (val) => {
-        if (quantity + val >= 1) setQuantity(quantity + val);
+        // Prevent going below 1
+        if (quantity + val >= 1) {
+            setQuantity(quantity + val);
+        }
+    };
+
+    // 2. Add to Cart Logic
+    const handleAddToCart = () => {
+        addToCart(product, quantity);
+        alert(`Added ${quantity} ${product.name} to cart!`); // Optional feedback
     };
 
     return (
         <div className="product-details-page">
             <div className="container section">
-                <div className="product-layout items-start">
+                <div className="product-layout">
+                    
                     {/* Gallery Section */}
                     <div className="product-gallery-section">
-                        <div className="main-image-wrapper bg-light rounded-xl overflow-hidden relative group">
-                            <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                            <button
-                                className={`absolute top-4 right-4 p-3 rounded-full bg-white shadow-md transition-colors ${isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
-                                onClick={() => addToWishlist(product)}
-                            >
-                                <Heart fill={isWishlisted ? 'currentColor' : 'none'} size={24} />
-                            </button>
-                            {product.discount_price && (
-                                <span className="absolute top-4 left-4 bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold text-sm">
-                                    -{Math.round(((product.price - product.discount_price) / product.price) * 100)}%
-                                </span>
-                            )}
-                        </div>
-                        <div className="thumbnails-grid mt-md">
-                            {[product.image, product.image, product.image].map((img, i) => (
-                                <div key={i} className={`thumb-item rounded-lg overflow-hidden border-2 cursor-pointer ${i === 0 ? 'border-primary' : 'border-transparent'}`}>
-                                    <img src={img} alt="" className="w-full h-full object-cover" />
-                                </div>
-                            ))}
+                        <div className="product-gallery">
+                            <div className="main-image-wrapper">
+                                <img src={product.image} alt="Main Product" />
+                            </div>
+                            <div className="thumbnails-grid">
+                                {/* Static placeholders for now based on your code */}
+                                <div className="thumb-item active"><img src="/assets/product-placeholder.jpeg" alt="View 1"/></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 2"/></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 3"/></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 4"/></div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Info Section */}
-                    <div className="product-info-section pl-lg">
-                        <nav className="breadcrumbs text-sm text-secondary mb-md font-medium">
-                            <Link to="/" className="hover:text-primary">Home</Link> / <Link to="/shop" className="hover:text-primary">Shop</Link> / <span className="text-primary">{product.category}</span>
-                        </nav>
-
-                        <h1 className="product-title text-4xl font-bold mb-xs text-dark">{product.name}</h1>
-                        <div className="flex items-center gap-sm mb-md">
-                            <div className="flex text-yellow-400">
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                                <Star size={16} fill="currentColor" />
-                            </div>
-                            <span className="text-sm text-secondary">(120 Reviews)</span>
+                    <div className="product-info-section">
+                        <div className="breadcrumbs">Home / Shop / {product.category}</div>
+                        
+                        <h1 className="product-title">{product.name}</h1>
+                        
+                        <div className="product-price-block">
+                            <span className="current-price">₹ {product.price}</span>
                         </div>
 
-                        <div className="product-price-block mb-lg p-md bg-light rounded-lg inline-block w-full">
-                            <div className="flex items-baseline gap-md">
-                                <span className="text-3xl font-bold text-primary">₹{product.discount_price || product.price}</span>
-                                {product.discount_price && <span className="text-xl text-secondary line-through">₹{product.price}</span>}
+                        {/* Sticky Actions */}
+                        <div className="product-actions-sticky">
+                            <div className="quantity-wrapper">
+                                {/* Wired up decrease button */}
+                                <button onClick={() => handleQuantityChange(-1)} aria-label="Decrease quantity">-</button>
+                                
+                                {/* Display dynamic quantity */}
+                                <span>{quantity}</span>
+                                
+                                {/* Wired up increase button */}
+                                <button onClick={() => handleQuantityChange(1)} aria-label="Increase quantity">+</button>
                             </div>
-                            <p className="text-sm text-success mt-xs">Inclusive of all taxes</p>
+                            
+                            {/* Wired up Add to Cart */}
+                            <button className="btn-add-cart" onClick={handleAddToCart}>
+                                Add to Cart
+                            </button>
                         </div>
 
-                        <p className="product-description text-secondary text-lg mb-xl leading-relaxed">
-                            {product.description}
-                        </p>
-
-                        <div className="product-actions-sticky mb-xl p-md border rounded-lg bg-white shadow-sm">
-                            <div className="flex gap-md flex-wrap">
-                                <div className="quantity-wrapper flex items-center border rounded-md">
-                                    <button className="px-md py-sm hover:bg-light" onClick={() => handleQuantityChange(-1)}><Minus size={18} /></button>
-                                    <span className="px-lg font-bold text-lg">{quantity}</span>
-                                    <button className="px-md py-sm hover:bg-light" onClick={() => handleQuantityChange(1)}><Plus size={18} /></button>
-                                </div>
-                                <button
-                                    className="btn btn-primary btn-txt flex-1 py-md text-lg shadow-lg hover:shadow-xl transition-all"
-                                    onClick={() => addToCart(product, quantity)}
+                        {/* Interactive Tabs Section */}
+                        <div className="details-tabs">
+                            <div className="tab-headers">
+                                {/* Clickable Ingredients Tab */}
+                                <div 
+                                    className={`tab-link ${activeTab === 'ingredients' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('ingredients')}
                                 >
-                                    <ShoppingBag className="mr-sm" /> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="benefits-grid grid grid-cols-2 gap-md mb-xl">
-                            <div className="benefit-item flex items-center gap-sm p-sm rounded bg-light border border-transparent hover:border-primary transition-all">
-                                <Truck className="text-primary" />
-                                <div>
-                                    <p className="font-bold text-sm">Free Delivery</p>
-                                    <p className="text-xs text-secondary">Orders over ₹999</p>
+                                    Ingredients
+                                </div>
+                                
+                                {/* Clickable Benefits Tab */}
+                                <div 
+                                    className={`tab-link ${activeTab === 'benefits' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('benefits')}
+                                >
+                                    Benefits
                                 </div>
                             </div>
-                            <div className="benefit-item flex items-center gap-sm p-sm rounded bg-light border border-transparent hover:border-primary transition-all">
-                                <ShieldCheck className="text-primary" />
-                                <div>
-                                    <p className="font-bold text-sm">Authentic</p>
-                                    <p className="text-xs text-secondary">100% Original</p>
-                                </div>
+                            
+                            <div className="tab-content">
+                                {/* Conditional Rendering based on activeTab */}
+                                {activeTab === 'ingredients' ? (
+                                    <div className="animate-fade">
+                                        <p style={{ lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
+                                            {product.Ingredients}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="animate-fade">
+                                        <ul style={{ listStyle: 'none', padding: 0 }}>
+                                            {/* Map through the Benefits array */}
+                                            {product.Benefits && product.Benefits.map((benefit, index) => (
+                                                <li key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
+                                                    <ShieldCheck size={18} color="green" style={{ flexShrink: 0, marginTop: '3px' }}/>
+                                                    <span>{benefit}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
