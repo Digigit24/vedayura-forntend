@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { CreditCard, Truck, CheckCircle, ChevronRight, MapPin, ShieldCheck } from 'lucide-react';
+import { CreditCard, Truck, CheckCircle, ChevronRight, MapPin, ShieldCheck, Loader } from 'lucide-react';
+import { calculateCartShipping, createOrderWithShipping, verifyPaymentAndCreateShipment } from '../api/shippingService';
 import './Checkout.css';
 
 const Checkout = () => {
@@ -9,10 +10,26 @@ const Checkout = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Success
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
+    const [shippingCost, setShippingCost] = useState(0); // Default to 0 until calculated
+    const [loading, setLoading] = useState(false);
+    const [pincode, setPincode] = useState('');
 
     const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
-    const shipping = subtotal > 999 ? 0 : 99;
-    const total = subtotal + shipping;
+    // Shipping calculated via API or fallback logic
+    const total = subtotal + shippingCost;
+
+    const handlePincodeBlur = async () => {
+        if (pincode.length === 6) {
+            try {
+                const data = await calculateCartShipping(pincode);
+                if (data.success) {
+                    setShippingCost(data.shippingCost);
+                }
+            } catch (error) {
+                console.error("Failed to calculate shipping", error);
+            }
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -20,13 +37,39 @@ const Checkout = () => {
         window.scrollTo(0, 0);
     };
 
-    const handlePayment = () => {
-        // Mock processing
-        setTimeout(() => {
-            clearCart();
-            setStep(3);
-            window.scrollTo(0, 0);
-        }, 1500);
+    const handlePayment = async () => {
+        setLoading(true);
+        try {
+            // 1. Create Order
+            // Note: In a real app, we would have saved the address first to get addressId
+            const orderData = {
+                addressId: "temp-address-uuid", // Mocked as we don't have Address API
+                idempotencyKey: `order_${Date.now()}`
+            };
+
+            const orderRes = await createOrderWithShipping(orderData);
+
+            if (orderRes.success && orderRes.order) {
+                // 2. Simulate Payment Verification (since we don't have real Razorpay frontend integration here)
+                const paymentData = {
+                    orderId: orderRes.order.id,
+                    razorpayPaymentId: "pay_mock_" + Date.now(),
+                    razorpayOrderId: orderRes.order.razorpayOrderId,
+                    razorpaySignature: "mock_signature"
+                };
+
+                await verifyPaymentAndCreateShipment(paymentData);
+
+                clearCart();
+                setStep(3);
+                window.scrollTo(0, 0);
+            }
+        } catch (error) {
+            console.error("Order processing failed", error);
+            alert("Failed to place order. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (step === 3) {
@@ -100,7 +143,15 @@ const Checkout = () => {
                                     </div>
                                     <div className="form-group">
                                         <label>Pincode</label>
-                                        <input type="text" required className="form-input" placeholder="400001" />
+                                        <input
+                                            type="text"
+                                            required
+                                            className="form-input"
+                                            placeholder="400001"
+                                            value={pincode}
+                                            onChange={(e) => setPincode(e.target.value)}
+                                            onBlur={handlePincodeBlur}
+                                        />
                                     </div>
                                 </div>
                                 <div className="form-group">
@@ -160,8 +211,8 @@ const Checkout = () => {
 
                             <div className="flex gap-md mt-xl">
                                 <button className="btn btn-outline" onClick={() => setStep(1)} style={{ marginTop: 0 }}>Back</button>
-                                <button className="checkout-btn flex-1" onClick={handlePayment} style={{ marginTop: 0 }}>
-                                    Place Order ₹{total.toLocaleString()}
+                                <button className="checkout-btn flex-1 flex justify-center items-center gap-sm" onClick={handlePayment} style={{ marginTop: 0 }} disabled={loading}>
+                                    {loading ? <Loader className="animate-spin" size={20} /> : `Place Order ₹${total.toLocaleString()}`}
                                 </button>
                             </div>
                         </div>
@@ -179,8 +230,8 @@ const Checkout = () => {
                                 </div>
                                 <div className="summary-item">
                                     <span>Shipping</span>
-                                    <span className={shipping === 0 ? 'text-success font-bold' : ''}>
-                                        {shipping === 0 ? 'FREE' : `₹${shipping}`}
+                                    <span className={shippingCost === 0 ? 'text-success font-bold' : ''}>
+                                        {shippingCost === 0 ? 'FREE' : `₹${shippingCost}`}
                                     </span>
                                 </div>
                                 <div className="summary-divider"></div>

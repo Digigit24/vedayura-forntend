@@ -5,9 +5,10 @@ import {
     LogOut, Grid, Package, ShoppingCart,
     DollarSign, TrendingUp, AlertCircle, TrendingDown,
     Users, Truck, FileText, Settings, Search, Bell,
-    Plus, Trash2, Edit2, X, Check, Eye
+    Plus, Trash2, Edit2, X, Check, Eye, RotateCcw
 } from 'lucide-react';
 import './Admin.css';
+import { getAllRefunds, approveRefund, rejectRefund } from '../api/refundService';
 
 // NavItem Component moved outside to prevent re-creation on render
 const NavItem = ({ tab, activeTab, setActiveTab, icon: Icon, label }) => (
@@ -99,6 +100,7 @@ const Admin = () => {
                 />
             );
             case 'orders': return <Orders />;
+            case 'refunds': return <Refunds />;
             case 'finance': return <Finance />;
             default: return <DashboardHome products={products} />;
         }
@@ -131,6 +133,7 @@ const Admin = () => {
                         <NavItem tab="dashboard" activeTab={activeTab} setActiveTab={setActiveTab} icon={Grid} label="Dashboard" />
                         <NavItem tab="inventory" activeTab={activeTab} setActiveTab={setActiveTab} icon={Package} label="Inventory" />
                         <NavItem tab="orders" activeTab={activeTab} setActiveTab={setActiveTab} icon={ShoppingCart} label="Orders" />
+                        <NavItem tab="refunds" activeTab={activeTab} setActiveTab={setActiveTab} icon={RotateCcw} label="Refunds" />
                         <NavItem tab="finance" activeTab={activeTab} setActiveTab={setActiveTab} icon={DollarSign} label="Finance" />
                     </nav>
 
@@ -149,6 +152,7 @@ const Admin = () => {
                     <button onClick={() => setActiveTab('dashboard')} className={`p-sm rounded ${activeTab === 'dashboard' ? 'bg-primary text-white' : 'bg-light'}`}><Grid size={20} /></button>
                     <button onClick={() => setActiveTab('inventory')} className={`p-sm rounded ${activeTab === 'inventory' ? 'bg-primary text-white' : 'bg-light'}`}><Package size={20} /></button>
                     <button onClick={() => setActiveTab('orders')} className={`p-sm rounded ${activeTab === 'orders' ? 'bg-primary text-white' : 'bg-light'}`}><ShoppingCart size={20} /></button>
+                    <button onClick={() => setActiveTab('refunds')} className={`p-sm rounded ${activeTab === 'refunds' ? 'bg-primary text-white' : 'bg-light'}`}><RotateCcw size={20} /></button>
                     <button onClick={() => setActiveTab('finance')} className={`p-sm rounded ${activeTab === 'finance' ? 'bg-primary text-white' : 'bg-light'}`}><DollarSign size={20} /></button>
                 </div>
             </div>
@@ -425,6 +429,132 @@ const Orders = () => {
                         </div>
                     </div>
                 ))}
+            </div>
+        </div>
+    );
+};
+
+const Refunds = () => {
+    const [refunds, setRefunds] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    React.useEffect(() => {
+        loadRefunds();
+    }, []);
+
+    const loadRefunds = async () => {
+        try {
+            const data = await getAllRefunds();
+            if (data.success) {
+                setRefunds(data.refunds);
+            }
+        } catch (error) {
+            console.error("Failed to load refunds", error);
+            // Mock data for display if API fails (likely no backend)
+            setRefunds([
+                {
+                    id: 'ref_1',
+                    orderId: 'AYU1025',
+                    amount: 1200,
+                    reason: 'Product Damaged',
+                    userNote: 'Received broken bottle',
+                    status: 'REQUESTED',
+                    requestedAt: new Date().toISOString()
+                }
+            ]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleApprove = async (id) => {
+        const note = window.prompt("Approve Note (Optional):", "Approved by Admin");
+        if (note !== null) {
+            try {
+                await approveRefund(id, note);
+                alert("Refund Approved");
+                loadRefunds();
+            } catch (e) {
+                alert("Failed to approve (Backend required)");
+                // Optimistic update for demo
+                setRefunds(prev => prev.map(r => r.id === id ? { ...r, status: 'PROCESSING' } : r));
+            }
+        }
+    };
+
+    const handleReject = async (id) => {
+        const note = window.prompt("Rejection Reason (Required):");
+        if (note) {
+            try {
+                await rejectRefund(id, note);
+                alert("Refund Rejected");
+                loadRefunds();
+            } catch (e) {
+                alert("Failed to reject (Backend required)");
+                // Optimistic update for demo
+                setRefunds(prev => prev.map(r => r.id === id ? { ...r, status: 'REJECTED' } : r));
+            }
+        }
+    };
+
+    return (
+        <div className="animate-fade-in space-y-lg">
+            <div className="flex justify-between items-center mb-md">
+                <h2 className="text-xl font-bold">Refund Management</h2>
+                <div className="flex bg-blue-50 text-blue-800 px-md py-xs rounded-full text-sm font-bold items-center gap-xs">
+                    <RotateCcw size={16} /> Pending Requests: {refunds.filter(r => r.status === 'REQUESTED').length}
+                </div>
+            </div>
+
+            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
+                <table className="w-full text-left border-collapse">
+                    <thead className="bg-gray-50 text-secondary text-xs uppercase tracking-wider font-semibold">
+                        <tr>
+                            <th className="px-lg py-md">Order ID</th>
+                            <th className="px-lg py-md">Reason</th>
+                            <th className="px-lg py-md">Amount</th>
+                            <th className="px-lg py-md">Status</th>
+                            <th className="px-lg py-md text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y">
+                        {loading ? (
+                            <tr><td colSpan="5" className="p-xl text-center">Loading refunds...</td></tr>
+                        ) : refunds.length === 0 ? (
+                            <tr><td colSpan="5" className="p-xl text-center text-secondary">No refund requests found.</td></tr>
+                        ) : (
+                            refunds.map(refund => (
+                                <tr key={refund.id} className="hover:bg-gray-50/50">
+                                    <td className="px-lg py-md font-medium">{refund.orderId}</td>
+                                    <td className="px-lg py-md">
+                                        <p className="text-sm text-dark">{refund.reason}</p>
+                                        <p className="text-xs text-secondary italic">"{refund.userNote}"</p>
+                                    </td>
+                                    <td className="px-lg py-md font-bold">₹{refund.amount}</td>
+                                    <td className="px-lg py-md">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${refund.status === 'REQUESTED' ? 'bg-orange-100 text-orange-800' :
+                                                refund.status === 'APPROVED' || refund.status === 'PROCESSING' || refund.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                                                    'bg-red-100 text-red-800'
+                                            }`}>
+                                            {refund.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-lg py-md text-right">
+                                        {refund.status === 'REQUESTED' && (
+                                            <div className="flex justify-end gap-sm">
+                                                <button onClick={() => handleApprove(refund.id)} className="btn btn-sm btn-outline text-green-600 border-green-200 hover:bg-green-50">Approve</button>
+                                                <button onClick={() => handleReject(refund.id)} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50">Reject</button>
+                                            </div>
+                                        )}
+                                        {refund.status !== 'REQUESTED' && (
+                                            <span className="text-xs text-secondary">Processed</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );

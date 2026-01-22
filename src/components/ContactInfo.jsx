@@ -8,20 +8,20 @@ const ContactInfo = () => {
         {
             icon: <Phone size={24} />,
             title: "Call Us",
-            details: "+91 98765 43210",
+            details: "+91 80095 00992",
             subDetails: "Mon-Sat, 9am - 6pm"
         },
         {
             icon: <Mail size={24} />,
             title: "Email Us",
-            details: "care@vedayura.com",
+            details: "customercare@vedayura.com",
             subDetails: "We reply within 24 hours"
         },
         {
             icon: <MapPin size={24} />,
             title: "Visit Us",
-            details: "123, Ayurveda Park,",
-            subDetails: "Kerala, India - 682001"
+            details: "305/4, Gajanan Colony,",
+            subDetails: "Sangli , Maharashtra-416416"
         }
     ];
 
