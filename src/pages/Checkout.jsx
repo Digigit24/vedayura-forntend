@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { CreditCard, Truck, CheckCircle } from 'lucide-react';
@@ -13,17 +14,47 @@ const Checkout = () => {
     const shipping = subtotal > 999 ? 0 : 99;
     const total = subtotal + shipping;
 
-    const handleSubmit = (e) => {
+    const [addressForm, setAddressForm] = useState({ firstName: '', lastName: '', email: '', street: '', city: '', zip: '', phone: '' });
+    const [addressId, setAddressId] = useState(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        // create address on server if possible
+        try {
+            const payload = {
+                street: addressForm.street,
+                city: addressForm.city,
+                state: '',
+                pincode: addressForm.zip,
+                country: 'India',
+                isDefault: true
+            };
+            const res = await api.addresses.add(payload);
+            if (res && (res.id || res.address)) {
+                const id = res.id || (res.address && res.address.id);
+                setAddressId(id);
+            }
+        } catch (err) {
+            console.error('Address save failed', err);
+        }
         setStep(2);
     };
 
-    const handlePayment = () => {
-        // Mock processing
-        setTimeout(() => {
+    const handlePayment = async () => {
+        setIsProcessing(true);
+        try {
+            const payload = { addressId: addressId };
+            const res = await api.orders.checkout(payload);
+            // If checkout succeeds, clear cart and show success
             clearCart();
             setStep(3);
-        }, 1500);
+        } catch (err) {
+            console.error('Checkout failed', err);
+            alert('Payment/checkout failed. Please try again.');
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     if (step === 3) {
@@ -53,34 +84,34 @@ const Checkout = () => {
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>First Name</label>
-                                        <input type="text" required className="form-input" />
+                                            <input type="text" required className="form-input" value={addressForm.firstName} onChange={(e) => setAddressForm(prev => ({ ...prev, firstName: e.target.value }))} />
                                     </div>
                                     <div className="form-group">
                                         <label>Last Name</label>
-                                        <input type="text" required className="form-input" />
+                                            <input type="text" required className="form-input" value={addressForm.lastName} onChange={(e) => setAddressForm(prev => ({ ...prev, lastName: e.target.value }))} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Email Address</label>
-                                    <input type="email" required className="form-input" />
+                                    <input type="email" required className="form-input" value={addressForm.email} onChange={(e) => setAddressForm(prev => ({ ...prev, email: e.target.value }))} />
                                 </div>
                                 <div className="form-group">
                                     <label>Street Address</label>
-                                    <input type="text" required className="form-input" />
+                                    <input type="text" required className="form-input" value={addressForm.street} onChange={(e) => setAddressForm(prev => ({ ...prev, street: e.target.value }))} />
                                 </div>
                                 <div className="form-grid">
                                     <div className="form-group">
                                         <label>City</label>
-                                        <input type="text" required className="form-input" />
+                                            <input type="text" required className="form-input" value={addressForm.city} onChange={(e) => setAddressForm(prev => ({ ...prev, city: e.target.value }))} />
                                     </div>
                                     <div className="form-group">
                                         <label>Zip Code</label>
-                                        <input type="text" required className="form-input" />
+                                            <input type="text" required className="form-input" value={addressForm.zip} onChange={(e) => setAddressForm(prev => ({ ...prev, zip: e.target.value }))} />
                                     </div>
                                 </div>
                                 <div className="form-group">
                                     <label>Phone Number</label>
-                                    <input type="tel" required className="form-input" />
+                                    <input type="tel" required className="form-input" value={addressForm.phone} onChange={(e) => setAddressForm(prev => ({ ...prev, phone: e.target.value }))} />
                                 </div>
                                 <button type="submit" className="btn btn-primary btn-txt mt-lg">Continue to Payment</button>
                             </form>

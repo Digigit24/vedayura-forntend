@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Package, Heart, Settings, Bell, LogOut } from 'lucide-react';
+import api from '../api';
 
 const Profile = () => {
     const { user, logout, wishlist } = useShop();
+    const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await api.orders.getAll();
+                if (res && res.orders) setOrders(res.orders);
+                else if (Array.isArray(res)) setOrders(res);
+            } catch (err) {
+                console.error('Failed to load orders', err);
+            }
+        })();
+    }, []);
 
     if (!user) {
         navigate('/login');

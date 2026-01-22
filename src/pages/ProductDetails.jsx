@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { ShoppingBag, Heart, Minus, Plus, Truck, ShieldCheck, Star } from 'lucide-react';
+import { ShoppingBag, Heart, Minus, Plus, Truck, ShieldCheck, Star, ChevronDown } from 'lucide-react';
 import ProductCard from '../components/ProductCard'; // For related products if needed
 import './ProductDetails.css';
 
@@ -15,7 +15,7 @@ const ProductDetails = () => {
         window.scrollTo(0, 0);
     }, [id]);
 
-    const product = products.find(p => p.id === parseInt(id));
+    const product = products.find(p => p.id == id);
     const isWishlisted = product ? wishlist.some(item => item.id === product.id) : false;
 
     // Mock related products
@@ -86,68 +86,75 @@ const ProductDetails = () => {
                             <p className="text-sm text-success mt-xs">Inclusive of all taxes</p>
                         </div>
 
-                        <p className="product-description text-secondary text-lg mb-xl leading-relaxed">
-                            {product.description}
-                        </p>
+                        <div className="py-4 border-b border-gray-100 mb-6">
+                            <p className="text-secondary text-lg leading-relaxed mb-4">
+                                {product.description}
+                            </p>
+                            
+                            {/* Visible Highlights */}
+                            <div className="mb-4">
+                                <h3 className="text-sm font-bold uppercase tracking-wider text-secondary mb-2">Key Highlights</h3>
+                                <ul className="grid grid-cols-1 gap-2">
+                                    <li className="flex items-center text-secondary text-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></div>
+                                        100% Natural Instructions
+                                    </li>
+                                    <li className="flex items-center text-secondary text-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></div>
+                                        Contains pure {product.ingredients.split(',')[0]}
+                                    </li>
+                                    <li className="flex items-center text-secondary text-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-primary mr-2"></div>
+                                        Suitable for daily wellness
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
-                        <div className="product-actions-sticky mb-xl p-md border rounded-lg bg-white shadow-sm">
-                            <div className="flex gap-md flex-wrap">
+                        <div className="product-actions-sticky mb-xl bg-white rounded-lg">
+                            <div className="flex gap-md flex-wrap items-center">
                                 <div className="quantity-wrapper flex items-center border rounded-md">
-                                    <button className="px-md py-sm hover:bg-light" onClick={() => handleQuantityChange(-1)}><Minus size={18} /></button>
+                                    <button className="px-md py-sm hover:bg-light transition-colors" onClick={() => handleQuantityChange(-1)}><Minus size={18} /></button>
                                     <span className="px-lg font-bold text-lg">{quantity}</span>
-                                    <button className="px-md py-sm hover:bg-light" onClick={() => handleQuantityChange(1)}><Plus size={18} /></button>
+                                    <button className="px-md py-sm hover:bg-light transition-colors" onClick={() => handleQuantityChange(1)}><Plus size={18} /></button>
                                 </div>
                                 <button
-                                    className="btn btn-primary btn-txt flex-1 py-md text-lg shadow-lg hover:shadow-xl transition-all"
+                                    className="btn btn-primary btn-txt flex-1 py-md text-lg shadow-lg hover:shadow-xl transition-all btn-add-cart"
                                     onClick={() => addToCart(product, quantity)}
                                 >
-                                    <ShoppingBag className="mr-sm" /> Add to Cart
+                                    <ShoppingBag className="mr-sm" size={20} /> Add to Cart
                                 </button>
                             </div>
-                        </div>
-
-                        <div className="benefits-grid grid grid-cols-2 gap-md mb-xl">
-                            <div className="benefit-item flex items-center gap-sm p-sm rounded bg-light border border-transparent hover:border-primary transition-all">
-                                <Truck className="text-primary" />
-                                <div>
-                                    <p className="font-bold text-sm">Free Delivery</p>
-                                    <p className="text-xs text-secondary">Orders over ₹999</p>
+                            <div className="mt-4 flex items-center justify-between text-xs text-secondary px-1">
+                                <div className="flex items-center gap-1">
+                                    <Truck size={14} className="text-primary"/> Free Delivery over ₹999
                                 </div>
-                            </div>
-                            <div className="benefit-item flex items-center gap-sm p-sm rounded bg-light border border-transparent hover:border-primary transition-all">
-                                <ShieldCheck className="text-primary" />
-                                <div>
-                                    <p className="font-bold text-sm">Authentic</p>
-                                    <p className="text-xs text-secondary">100% Original</p>
+                                <div className="flex items-center gap-1">
+                                    <ShieldCheck size={14} className="text-primary"/> Genuine Product
                                 </div>
                             </div>
                         </div>
 
-                        {/* Tabs */}
-                        <div className="details-tabs mt-xl">
-                            <div className="flex border-b mb-md overflow-x-auto">
-                                {['Description', 'Ingredients', 'How to Use', 'Video'].map(tab => (
-                                    <button
-                                        key={tab}
-                                        className={`px-lg py-sm font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.toLowerCase().replace(/ /g, '') || (tab === 'How to Use' && activeTab === 'usage') ? 'border-primary text-primary' : 'border-transparent text-secondary hover:text-primary'}`}
-                                        onClick={() => setActiveTab(tab === 'How to Use' ? 'usage' : tab.toLowerCase())}
-                                    >
-                                        {tab}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="tab-content text-secondary leading-relaxed bg-light p-lg rounded-lg">
-                                {(activeTab === 'description') && <p>{product.description} Experience the purity of nature with every use.</p>}
-                                {activeTab === 'ingredients' && <ul className="list-disc pl-md space-y-xs">
-                                    {product.ingredients.split(',').map((ing, i) => <li key={i}>{ing.trim()}</li>)}
-                                </ul>}
-                                {activeTab === 'usage' && <p>{product.usage}</p>}
-                                {activeTab === 'video' && (
-                                    <div className="aspect-video bg-black rounded-lg flex items-center justify-center text-white min-h-[300px]">
-                                        <p>Video Demonstration Placeholder for {product.name}</p>
-                                    </div>
-                                )}
-                            </div>
+                        {/* Product Meta Accordions */}
+                        <div className="product-accordions border-t border-gray-200 mt-xl">
+                            <AccordionItem title="Description" isOpen={activeTab === 'description'} onClick={() => setActiveTab(activeTab === 'description' ? '' : 'description')}>
+                                <p className="text-secondary leading-relaxed">{product.description}</p>
+                                <p className="mt-4 text-secondary">Experience the purity of nature with every use.</p>
+                            </AccordionItem>
+                            
+                            <AccordionItem title="Ingredients" isOpen={activeTab === 'ingredients'} onClick={() => setActiveTab(activeTab === 'ingredients' ? '' : 'ingredients')}>
+                                <ul className="list-disc pl-5 space-y-2 text-secondary">
+                                    {product.ingredients.split(',').map((ing, i) => (
+                                        <li key={i}>{ing.trim()}</li>
+                                    ))}
+                                </ul>
+                            </AccordionItem>
+
+                            <AccordionItem title="How to Use" isOpen={activeTab === 'usage'} onClick={() => setActiveTab(activeTab === 'usage' ? '' : 'usage')}>
+                                <div className="prose text-secondary">
+                                    <p>{product.usage}</p>
+                                </div>
+                            </AccordionItem>
                         </div>
                     </div>
                 </div>
@@ -165,5 +172,25 @@ const ProductDetails = () => {
         </div>
     );
 };
+
+const AccordionItem = ({ title, isOpen, onClick, children }) => (
+    <div className="border-b border-gray-200">
+        <button
+            className="w-full flex justify-between items-center py-4 text-left focus:outline-none bg-transparent hover:bg-transparent"
+            onClick={onClick}
+        >
+            <span className="text-lg font-medium text-primary">{title}</span>
+            <ChevronDown 
+                size={20} 
+                className={`transition-transform duration-300 text-secondary ${isOpen ? 'rotate-180' : ''}`} 
+            />
+        </button>
+        <div 
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'}`}
+        >
+            {children}
+        </div>
+    </div>
+);
 
 export default ProductDetails;

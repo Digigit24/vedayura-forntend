@@ -11,16 +11,18 @@ const Login = () => {
     const { login, register } = useShop();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (isRegister) {
-            if (register(name, email, password)) {
+            const res = await register(name, email, password);
+            if (res && res.success) {
                 navigate('/profile');
             }
         } else {
-            if (login(email, password)) {
-                // Redirect based on role handled in ShopContext or here
-                if (email === 'admin@ayurveda.com') {
+            const res = await login(email, password);
+            if (res && res.success) {
+                const role = res.user?.role || '';
+                if (String(role).toLowerCase().includes('admin') || email === 'admin@ayurveda.com') {
                     navigate('/admin');
                 } else {
                     navigate('/profile');

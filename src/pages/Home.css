@@ -1,77 +1,84 @@
-.hero-section {
-    background: linear-gradient(135deg, var(--color-primary), #0F2A23);
-    /* Solid gradient background instead of image */
+.hero-slider {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  background-color: var(--color-primary);
+}
 
-    height: 600px;
-    display: flex;
-    align-items: center;
-    color: white;
-    text-align: center;
+.slider-container {
+  height: 100%;
+  display: flex;
+}
+
+.slide-item {
+  height: 100%;
+  width: 100vw;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  position: relative;
 }
 
 .hero-content {
-    max-width: 800px;
-    margin: 0 auto;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .hero-content h1 {
-    font-size: 3.5rem;
-    margin-bottom: var(--spacing-md);
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 3.5rem;
+  margin-bottom: var(--spacing-md);
+  color: white;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .hero-content p {
-    font-size: 1.25rem;
-    margin-bottom: var(--spacing-xl);
-    opacity: 0.9;
-}
-
-.text-highlight {
-    color: var(--color-accent);
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-xl);
+  opacity: 0.95;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-buttons {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
 }
 
 .section {
-    padding: var(--spacing-2xl) 0;
+  padding: var(--spacing-2xl) 0;
 }
 
 .section-title {
-    font-size: 2rem;
-    margin-bottom: var(--spacing-xl);
-    color: var(--color-primary);
-    text-align: center;
+  font-size: 2rem;
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-primary);
+  text-align: center;
 }
 
 .bg-light {
-    background-color: #F0F7F4;
+  background-color: #f0f7f4;
 }
 
 .bg-secondary-light {
-    background-color: #F8FBFA;
+  background-color: #f8fbfa;
 }
 
 .bg-primary {
-    background-color: var(--color-primary);
+  background-color: var(--color-primary);
 }
 
 .text-white {
-    color: white;
+  color: white;
 }
 
 .grid-2-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
 
 .about-image-wrapper img {
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
 }
 .about-image-wrapper img {
   transition: transform 0.6s ease;
@@ -81,22 +88,21 @@
   transform: scale(1.03);
 }
 
-
 .features-mini-grid {
-    margin: var(--spacing-lg) 0;
+  margin: var(--spacing-lg) 0;
 }
 
 .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--spacing-xl);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
 }
 .highlight-frame {
   position: relative;
 }
 
 .highlight-frame::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: -16px;
   border: 1px solid rgba(23, 83, 51, 0.25);
@@ -115,101 +121,138 @@
   border-radius: 999px;
 }
 
-
-
-
-
-
-
 .mb-0 {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .mb-lg {
-    margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
 .bg-white {
-    background-color: white;
+  background-color: white;
 }
 
 .view-all-link {
-    color: var(--color-primary);
-    font-weight: 500;
+  color: var(--color-primary);
+  font-weight: 500;
 }
 
 .testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--spacing-lg);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
 }
 
 .testimonial-card {
-    background-color: white;
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    /* Cleaner shadow */
-    text-align: left;
-    border: 1px solid #f0f0f0;
+  background-color: white;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  /* Cleaner shadow */
+  text-align: left;
+  border: 1px solid #f0f0f0;
 }
 
 .stars {
-    color: #FBBF24;
-    font-size: 1.25rem;
-    margin-bottom: var(--spacing-md);
+  color: #fbbf24;
+  font-size: 1.25rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .testimonial-card p {
-    font-style: italic;
-    margin-bottom: var(--spacing-md);
-    line-height: 1.6;
+  font-style: italic;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.6;
 }
 
 .testimonial-card h4 {
-    font-size: 1rem;
-    color: var(--color-primary);
+  font-size: 1rem;
+  color: var(--color-primary);
 }
 
 .newsletter-section h2 {
-    margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 .home-newsletter-form {
-    max-width: 500px;
-    margin: 0 auto;
-    display: flex;
-    background: white;
-    padding: 4px;
-    border-radius: var(--radius-md);
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  background: white;
+  padding: 4px;
+  border-radius: var(--radius-md);
 }
 
 .home-newsletter-form input {
-    flex: 1;
-    padding: var(--spacing-md);
-    border: none;
-    font-size: 1rem;
+  flex: 1;
+  padding: var(--spacing-md);
+  border: none;
+  font-size: 1rem;
 }
 
 .home-newsletter-form input:focus {
-    outline: none;
+  outline: none;
 }
 
 .home-newsletter-form button {
-    padding: 0 var(--spacing-lg);
-    border-radius: var(--radius-sm);
+  padding: 0 var(--spacing-lg);
+  border-radius: var(--radius-sm);
 }
 
 @media (max-width: 768px) {
-    .hero-content h1 {
-        font-size: 2.25rem;
-    }
+  .hero-content h1 {
+    font-size: 2.25rem;
+  }
 
-    .grid-2-col {
-        grid-template-columns: 1fr;
-    }
+  .grid-2-col {
+    grid-template-columns: 1fr;
+  }
 
-    .about-image-wrapper {
-        order: -1;
-    }
+  .about-image-wrapper {
+    order: -1;
+  }
+}
+
+/* Slider Enhancements */
+.hero-slider button {
+  opacity: 0;
+  transition: all var(--transition-normal);
+}
+
+.hero-slider:hover button {
+  opacity: 1;
+}
+
+.hero-slider button:hover {
+  background-color: white !important;
+  color: var(--color-primary) !important;
+}
+
+.animate-fade-in-up {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.slider-container {
+  height: 100%;
+  width: 100%;
+}
+
+.slide-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  pointer-events: none;
 }
