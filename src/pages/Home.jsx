@@ -90,67 +90,68 @@ const Home = () => {
             </section>
 
             {/* About Us Section */}
-            <section className="section about-section relative overflow-hidden">
-                <div className="about-bg-leaf"></div>
+           <section className="section about-section relative overflow-hidden">
+    <div className="about-bg-leaf"></div>
 
-                <div className="container grid-2-col items-center gap-xl relative z-10">
-                    <motion.div
-                        className="about-image-wrapper"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={imageVariants}
-                    >
-                        <img
-                            src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800"
-                            alt="Ayurvedic herbs"
-                            className="rounded-lg shadow-lg"
-                        />
-                    </motion.div>
+    <div className="container grid-2-col items-center gap-xl relative z-10">
+        <motion.div
+            className="about-image-wrapper"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={imageVariants}
+        >
+            <img
+                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800"
+                alt="Ayurvedic herbs"
+                className="rounded-lg shadow-lg"
+            />
+        </motion.div>
 
-                    <motion.div
-                        className="about-content"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: "-100px" }}
-                        variants={staggerContainer}
-                    >
-                        <motion.h4 className="text-secondary uppercase tracking-wide text-sm font-bold mb-sm" variants={fadeIn}>
-                            Our Story
-                        </motion.h4>
-                        <motion.div className="about-spine" variants={fadeIn}></motion.div>
+        <motion.div
+            className="about-content"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+        >
+            <motion.h4 className="text-secondary uppercase tracking-wide text-sm font-bold mb-sm" variants={fadeIn}>
+                Our Story
+            </motion.h4>
+            <motion.div className="about-spine" variants={fadeIn}></motion.div>
 
-                        <motion.h2 className="section-title text-left mb-md" variants={fadeIn}>
-                            Ancient Wisdom, Modern Purity
-                        </motion.h2>
+            <motion.h2 className="section-title text-left mb-md" variants={fadeIn}>
+                Ancient Wisdom, Modern Purity
+            </motion.h2>
 
-                        <motion.p className="mb-md" variants={fadeIn}>
-                            At Vedayura, we believe in the healing power of nature. Our journey began with a simple mission: to bring authentic, time-tested Ayurvedic remedies to the modern world without compromising on purity.
-                        </motion.p>
+            <motion.p className="mb-md" variants={fadeIn}>
+                At Vedayura, we believe in the healing power of nature. Our journey began with a simple mission: to bring authentic, time-tested Ayurvedic remedies to the modern world without compromising on purity.
+            </motion.p>
 
-                        <motion.p className="mb-lg" variants={fadeIn}>
-                            Every product is crafted with sustainably sourced herbs, following traditional formulations that have been trusted for centuries. We are committed to holistic wellness that nurtures your body, mind, and soul.
-                        </motion.p>
+            <motion.p className="mb-lg" variants={fadeIn}>
+                Every product is crafted with sustainably sourced herbs, following traditional formulations that have been trusted for centuries. We are committed to holistic wellness that nurtures your body, mind, and soul.
+            </motion.p>
 
-                        <motion.div className="features-mini-grid" variants={fadeIn}>
-                            <div className="flex items-center gap-sm mb-sm">
-                                <Leaf className="text-primary" size={24} />
-                                <span>100% Natural Ingredients</span>
-                            </div>
-                            <div className="flex items-center gap-sm mb-sm">
-                                <ShieldCheck className="text-primary" size={24} />
-                                <span>Certified Authentic</span>
-                            </div>
-                        </motion.div>
-
-                        <motion.div variants={fadeIn}>
-                            <Link to="/about" className="btn-vedayura btn-vedayura-outline mt-md">
-                                Read More About Us
-                            </Link>
-                        </motion.div>
-                    </motion.div>
+            <motion.div className="features-mini-grid" variants={fadeIn}>
+                <div className="flex items-center gap-sm mb-sm">
+                    <Leaf className="text-primary" size={24} />
+                    <span>100% Natural Ingredients</span>
                 </div>
-            </section>
+                <div className="flex items-center gap-sm mb-sm">
+                    <ShieldCheck className="text-primary" size={24} />
+                    <span>Certified Authentic</span>
+                </div>
+            </motion.div>
+
+            <motion.div variants={fadeIn}>
+                <Link to="/about" className="btn-vedayura btn-vedayura-outline mt-md">
+                    Read More About Us
+                </Link>
+            </motion.div>
+        </motion.div>
+    </div>
+</section>
+
 
             {/* Product Grid */}
             <section className="section">

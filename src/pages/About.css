@@ -1,6 +1,7 @@
 .about-page {
     background-color: #fff;
     color: #333;
+    padding: 10px;
 }
 
 .about-hero {
@@ -49,7 +50,7 @@
 
 .text-secondary-themed {
     color: var(--color-primary);
-    font-style: italic;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .about-hero-content p {
@@ -219,9 +220,15 @@
     }
 
     .experience-badge {
-        position: static;
-        margin-top: 20px;
-        display: inline-block;
+           position: absolute;
+    bottom: -30px;
+    right: 10px;
+    background: var(--color-primary);
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 15px 40px rgba(29, 176, 76, 0.3);
     }
 
     .values-grid {

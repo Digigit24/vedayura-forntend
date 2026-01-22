@@ -2,6 +2,7 @@
     background-color: var(--color-primary);
     color: white;
     padding: 20px;
+    padding-right: 60px;
     margin-top: auto;
 }
 
