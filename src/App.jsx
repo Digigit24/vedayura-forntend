@@ -11,6 +11,8 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Catalog from './pages/Catalog';
+
+import Contact from './pages/Contact';
 import ScrollToTop from './components/ScrollToTop';
 
 function App() {
@@ -30,7 +32,9 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/about" element={<About />} />
+
             <Route path="/catalog" element={<Catalog />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </Layout>
       </Router>
