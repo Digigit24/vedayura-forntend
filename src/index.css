@@ -449,7 +449,7 @@ img {
 }
 
 .vedayura-hero-light {
-  background: url('/public/assets/about-hero-bg.png');
+  background: url('/assets/about-hero-bg.png');
   background-repeat: no-repeat;
   background-position: right;
   color: var(--color-text-primary);
