@@ -80,7 +80,7 @@ const Catalog = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1, delay: 0.3 }}
                     >
-                        <img src="/assets/hero-img.png" alt="Ayurvedic Excellence" />
+                        <img src="/assets/catalog-bg.png" alt="Ayurvedic Excellence" />
                         <div className="floating-card">
                             <span>Pure & Organic</span>
                         </div>

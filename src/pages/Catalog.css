@@ -140,8 +140,8 @@
 
 .hero-v2-visual img {
     width: 100%;
-    max-width: 450px;
-    object-fit: contain;
+    height: 100%;
+    object-fit: cover;
     filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.1));
 }
 
