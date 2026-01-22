@@ -35,7 +35,7 @@ const About = () => {
                         className="about-hero-content"
                     >
                         <span className="vedayura-tagline">Our Heritage</span>
-                        <h1 className="title">Healing through <span className="text-secondary-themed">Authentic Ayurveda</span></h1>
+                        <h1 className="about-title">Healing through <span className="text-secondary-themed">Authentic Ayurveda</span></h1>
                         <p className="vedayura-desc">We bridge the gap between ancient Vedic wisdom and modern wellness lifestyles, ensuring purity in every drop.</p>
                     </motion.div>
                 </div>

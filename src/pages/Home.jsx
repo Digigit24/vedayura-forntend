@@ -102,7 +102,7 @@ const Home = () => {
             variants={imageVariants}
         >
             <img
-                src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800"
+                src="https://images.rawpixel.com/image_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDI0LTAxL3Jhd3BpeGVsX29mZmljZV81MV8zZF9yZW5kZXJfb2ZfYXl1cnZlZGFfaXNvbGF0ZWRfb25fd2hpdGVfYmFja19hOTc4ZTNiNC03MzBmLTQ2NDUtYWY4Yy0zMGJhMzVmNGJkYTZfMS5qcGc.jpg"
                 alt="Ayurvedic herbs"
                 className="rounded-lg shadow-lg"
             />

@@ -12,7 +12,9 @@
     position: relative;
     overflow-x: hidden;
 }
-
+.about-title {
+    font-size: 40px;
+}
 .about-hero::after {
     content: "";
     position: absolute;

@@ -27,9 +27,9 @@ const Footer = () => {
                         <ul className="footer-links">
                             <li><Link to="/">Home</Link></li>
                             <li><Link to="/shop">Shop</Link></li>
-                            <li><Link to="/about">About Us</Link></li>
+                            <li><Link to="/about">About</Link></li>
+                            <li><Link to="/Catalog">Catalog</Link></li>
                             <li><Link to="/contact">Contact</Link></li>
-                            <li><Link to="/blog">Ayurvedic Blog</Link></li>
                         </ul>
                     </div>
 
@@ -38,7 +38,6 @@ const Footer = () => {
                         <ul className="footer-links">
                             <li><Link to="/profile">My Account</Link></li>
                             <li><Link to="/cart">Track Order</Link></li>
-                            <li><Link to="/wishlist">Wishlist</Link></li>
                             <li><Link to="/faq">FAQs</Link></li>
                             <li><Link to="/shipping">Shipping Policy</Link></li>
                         </ul>
@@ -62,7 +61,7 @@ const Footer = () => {
                 </div>
 
                 <div className="footer-bottom">
-                    <p>&copy; {new Date().getFullYear()} Vedayura. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} VedAyura. All rights reserved.</p>
                 </div>
             </div>
         </footer>

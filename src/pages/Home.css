@@ -151,6 +151,10 @@
     .hero-image-container {
         display: none;
     }
+    .grid-2-col {
+         display: grid;
+    grid-template-columns:auto !important;
+    }
 }
 
 
@@ -185,7 +189,7 @@
 
 .grid-2-col {
     display: grid;
-    grid-template-columns:auto;
+    grid-template-columns:repeat(2,1fr);
 }
 
 

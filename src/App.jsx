@@ -11,11 +11,13 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Catalog from './pages/Catalog';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <ShopProvider>
       <Router>
+        <ScrollToTop />
         <CartDrawer /> {/* ✅ ALWAYS MOUNTED */}
 
         <Layout>
