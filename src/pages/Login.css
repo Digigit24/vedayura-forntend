@@ -6,7 +6,8 @@
     justify-content: center;
     align-items: center;
     min-height: 85vh;
-    background-color: var(--color-background); /* Uses your global background variable */
+    background-color: var(--color-background);
+    /* Uses your global background variable */
     padding: 20px;
 }
 
@@ -64,28 +65,7 @@
     color: var(--color-primary-dark);
 }
 
-.form-input {
-    width: 100%;
-    padding: 14px 16px;
-    font-size: 1rem;
-    color: var(--color-text-primary);
-    background-color: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    outline: none;
-}
 
-.form-input:focus {
-    background-color: #ffffff;
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(23, 83, 51, 0.1);
-}
-
-.form-input::placeholder {
-    color: #9ca3af;
-    font-size: 0.95rem;
-}
 
 /* 5. Main Button */
 .login-btn {

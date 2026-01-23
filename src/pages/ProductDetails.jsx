@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
-import { ShieldCheck } from 'lucide-react'; // Ensure this is imported
+import { ShieldCheck, ChevronDown } from 'lucide-react'; // Ensure this is imported
 import ProductCard from '../components/ProductCard';
 import './ProductDetails.css';
 
@@ -9,7 +9,7 @@ const ProductDetails = () => {
     const { id } = useParams();
     const { products, addToCart, wishlist } = useShop();
     const [quantity, setQuantity] = useState(1);
-    
+
     // Default active tab is ingredients
     const [activeTab, setActiveTab] = useState('ingredients');
 
@@ -51,7 +51,7 @@ const ProductDetails = () => {
         <div className="product-details-page">
             <div className="container section">
                 <div className="product-layout">
-                    
+
                     {/* Gallery Section */}
                     <div className="product-gallery-section">
                         <div className="product-gallery">
@@ -60,20 +60,20 @@ const ProductDetails = () => {
                             </div>
                             <div className="thumbnails-grid">
                                 {/* Static placeholders for now based on your code */}
-                                <div className="thumb-item active"><img src="/assets/product-placeholder.jpeg" alt="View 1"/></div>
-                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 2"/></div>
-                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 3"/></div>
-                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 4"/></div>
+                                <div className="thumb-item active"><img src="/assets/product-placeholder.jpeg" alt="View 1" /></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 2" /></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 3" /></div>
+                                <div className="thumb-item"><img src="/assets/product-placeholder.jpeg" alt="View 4" /></div>
                             </div>
                         </div>
                     </div>
 
                     {/* Info Section */}
                     <div className="product-info-section">
-                        <div className="breadcrumbs">Home / Shop / {product.category}</div>
-                        
+                        <div className="breadcrumbs">Home / <Link to="/shop">Shop</Link> / {product.category}</div>
+
                         <h1 className="product-title">{product.name}</h1>
-                        
+
                         <div className="product-price-block">
                             <span className="current-price">₹ {product.price}</span>
                         </div>
@@ -83,14 +83,14 @@ const ProductDetails = () => {
                             <div className="quantity-wrapper">
                                 {/* Wired up decrease button */}
                                 <button onClick={() => handleQuantityChange(-1)} aria-label="Decrease quantity">-</button>
-                                
+
                                 {/* Display dynamic quantity */}
                                 <span>{quantity}</span>
-                                
+
                                 {/* Wired up increase button */}
                                 <button onClick={() => handleQuantityChange(1)} aria-label="Increase quantity">+</button>
                             </div>
-                            
+
                             {/* Wired up Add to Cart */}
                             <button className="btn-add-cart" onClick={handleAddToCart}>
                                 Add to Cart
@@ -101,22 +101,22 @@ const ProductDetails = () => {
                         <div className="details-tabs">
                             <div className="tab-headers">
                                 {/* Clickable Ingredients Tab */}
-                                <div 
+                                <div
                                     className={`tab-link ${activeTab === 'ingredients' ? 'active' : ''}`}
                                     onClick={() => setActiveTab('ingredients')}
                                 >
                                     Ingredients
                                 </div>
-                                
+
                                 {/* Clickable Benefits Tab */}
-                                <div 
+                                <div
                                     className={`tab-link ${activeTab === 'benefits' ? 'active' : ''}`}
                                     onClick={() => setActiveTab('benefits')}
                                 >
                                     Benefits
                                 </div>
                             </div>
-                            
+
                             <div className="tab-content">
                                 {/* Conditional Rendering based on activeTab */}
                                 {activeTab === 'ingredients' ? (
@@ -131,7 +131,7 @@ const ProductDetails = () => {
                                             {/* Map through the Benefits array */}
                                             {product.Benefits && product.Benefits.map((benefit, index) => (
                                                 <li key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px', alignItems: 'flex-start' }}>
-                                                    <ShieldCheck size={18} color="green" style={{ flexShrink: 0, marginTop: '3px' }}/>
+                                                    <ShieldCheck size={18} color="green" style={{ flexShrink: 0, marginTop: '3px' }} />
                                                     <span>{benefit}</span>
                                                 </li>
                                             ))}
@@ -139,28 +139,6 @@ const ProductDetails = () => {
                                     </div>
                                 )}
                             </div>
-                        </div>
-
-                        {/* Product Meta Accordions */}
-                        <div className="product-accordions border-t border-gray-200 mt-xl">
-                            <AccordionItem title="Description" isOpen={activeTab === 'description'} onClick={() => setActiveTab(activeTab === 'description' ? '' : 'description')}>
-                                <p className="text-secondary leading-relaxed">{product.description}</p>
-                                <p className="mt-4 text-secondary">Experience the purity of nature with every use.</p>
-                            </AccordionItem>
-                            
-                            <AccordionItem title="Ingredients" isOpen={activeTab === 'ingredients'} onClick={() => setActiveTab(activeTab === 'ingredients' ? '' : 'ingredients')}>
-                                <ul className="list-disc pl-5 space-y-2 text-secondary">
-                                    {product.ingredients.split(',').map((ing, i) => (
-                                        <li key={i}>{ing.trim()}</li>
-                                    ))}
-                                </ul>
-                            </AccordionItem>
-
-                            <AccordionItem title="How to Use" isOpen={activeTab === 'usage'} onClick={() => setActiveTab(activeTab === 'usage' ? '' : 'usage')}>
-                                <div className="prose text-secondary">
-                                    <p>{product.usage}</p>
-                                </div>
-                            </AccordionItem>
                         </div>
                     </div>
                 </div>
@@ -186,12 +164,12 @@ const AccordionItem = ({ title, isOpen, onClick, children }) => (
             onClick={onClick}
         >
             <span className="text-lg font-medium text-primary">{title}</span>
-            <ChevronDown 
-                size={20} 
-                className={`transition-transform duration-300 text-secondary ${isOpen ? 'rotate-180' : ''}`} 
+            <ChevronDown
+                size={20}
+                className={`transition-transform duration-300 text-secondary ${isOpen ? 'rotate-180' : ''}`}
             />
         </button>
-        <div 
+        <div
             className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px] opacity-100 pb-4' : 'max-h-0 opacity-0'}`}
         >
             {children}

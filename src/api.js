@@ -24,6 +24,7 @@ async function request(
   try {
     data = text ? JSON.parse(text) : null;
   } catch (e) {
+    // If response is not JSON, keep it as text
     data = text;
   }
   if (!res.ok) {

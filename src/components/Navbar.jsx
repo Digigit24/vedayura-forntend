@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingBag, Heart, User, Search, Menu, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -85,11 +85,11 @@ const Navbar = () => {
 
           {/* Desktop Nav */}
           <nav className="desktop-nav hidden-mobile">
-            <Link to="/">Home</Link>
-            <Link to="/shop">Shop</Link>
-            <Link to="/about">About Us</Link>
-            <Link to="/catalog">Catalog</Link>
-            <Link to="/contact">Contact</Link>
+            <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
+            <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""}>Shop</NavLink>
+            <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About Us</NavLink>
+            <NavLink to="/catalog" className={({ isActive }) => isActive ? "active" : ""}>Catalog</NavLink>
+            <NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""}>Contact</NavLink>
           </nav>
 
           {/* Actions */}
@@ -126,58 +126,58 @@ const Navbar = () => {
       </header>
 
       {/* Mobile Menu Overlay */}
-<AnimatePresence>
-  {isMenuOpen && (
-    <>
-      {/* Backdrop */}
-      <motion.div 
-          className="mobile-menu-backdrop"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={() => setIsMenuOpen(false)}
-      />
-      
-      {/* Slide-in Menu */}
-      <motion.div
-        className="mobile-menu"
-        initial={{ x: '-100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '-100%' }}
-        transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
-      >
-        {/* --- NEW CLOSE BUTTON --- */}
-        <button 
-          className="mobile-menu-close" 
-          onClick={() => setIsMenuOpen(false)}
-        >
-          <X size={28} />
-        </button>
-        {/* ------------------------ */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              className="mobile-menu-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+            />
 
-        <div className="mobile-menu-content">
-          {/* ... existing search and links ... */}
-          <div className="mobile-search-container">
-             {/* ... search input code ... */}
-          </div>
+            {/* Slide-in Menu */}
+            <motion.div
+              className="mobile-menu"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+            >
+              {/* --- NEW CLOSE BUTTON --- */}
+              <button
+                className="mobile-menu-close"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <X size={28} />
+              </button>
+              {/* ------------------------ */}
 
-          <nav className="mobile-nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/shop">Shop Collection</Link>
-            <Link to="/about">Our Story</Link>
-            <Link to="/catalog">Catalog</Link>
-            <Link to="/contact">Contact Us</Link>
-            <Link to="/login">My Account</Link>
-          </nav>
+              <div className="mobile-menu-content">
+                {/* ... existing search and links ... */}
+                <div className="mobile-search-container">
+                  {/* ... search input code ... */}
+                </div>
 
-          <div className="mobile-menu-footer">
-            <p className="text-secondary text-sm">🌿 Authentic Vedic Wisdom</p>
-          </div>
-        </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+                <nav className="mobile-nav-links">
+                  <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Home</NavLink>
+                  <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Shop Collection</NavLink>
+                  <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Our Story</NavLink>
+                  <NavLink to="/catalog" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Catalog</NavLink>
+                  <NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Contact Us</NavLink>
+                  <NavLink to="/login" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>My Account</NavLink>
+                </nav>
+
+                <div className="mobile-menu-footer">
+                  <p className="text-secondary text-sm">🌿 Authentic Vedic Wisdom</p>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

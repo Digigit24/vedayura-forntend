@@ -7,61 +7,62 @@ const Footer = () => {
     return (
         <footer className="footer">
             <div className="container">
+
                 <div className="footer-grid">
-                    <div className="footer-col">
-                        <Link to="/" className="footer-logo-link block mb-4">
-                            <img src="/logo-03.png" alt="Vedayura" className="h-16 w-auto brightness-0 invert opacity-90" style={{ maxHeight: '70px', filter: 'brightness(0) invert(1)' }} />
+                    {/* Brand Info */}
+                    <div className="footer-col brand-col">
+                        <Link to="/" className="footer-logo">
+                            <img src="/logo-03.png" alt="Vedayura" />
                         </Link>
                         <p className="footer-desc">
-                            Your trusted source for authentic Ayurvedic products. Experience the ancient wisdom of natural healing with our premium collection of skincare, haircare, and wellness essentials.
+                            Authentic Ayurvedic formulations. Pure, potent, and sustainably sourced.
                         </p>
-                        <div className="social-icons">
-                            <a href="#"><Instagram size={20} /></a>
-                            <a href="#"><Facebook size={20} /></a>
-                            <a href="#"><Twitter size={20} /></a>
+                        <div className="social-icons-row">
+                            <a href="#"><Instagram size={18} /></a>
+                            <a href="#"><Facebook size={18} /></a>
+                            <a href="#"><Twitter size={18} /></a>
                         </div>
                     </div>
 
+                    {/* Shop Links */}
                     <div className="footer-col">
-                        <h4>Quick Links</h4>
+                        <h4>Shop</h4>
                         <ul className="footer-links">
-                            <li><Link to="/">Home</Link></li>
-                            <li><Link to="/shop">Shop</Link></li>
-                            <li><Link to="/about">About</Link></li>
-                            <li><Link to="/Catalog">Catalog</Link></li>
-                            <li><Link to="/contact">Contact</Link></li>
+                            <li><Link to="/shop?category=Liquid">Liquid</Link></li>
+                            <li><Link to="/shop?category=Powder">Powder</Link></li>
+                            <li><Link to="/shop?category=Capsules">Capsules</Link></li>
                         </ul>
                     </div>
 
+                    {/* Support Links */}
                     <div className="footer-col">
-                        <h4>Customer Care</h4>
+                        <h4>Support</h4>
                         <ul className="footer-links">
-                            <li><Link to="/profile">My Account</Link></li>
-                            <li><Link to="/cart">Track Order</Link></li>
-                            <li><Link to="/faq">FAQs</Link></li>
+                            <li><Link to="/track-order">Track Order</Link></li>
                             <li><Link to="/shipping">Shipping Policy</Link></li>
+                            <li><Link to="/returns">Returns & Refunds</Link></li>
+                            <li><Link to="/faq">FAQs</Link></li>
                         </ul>
                     </div>
 
+                    {/* Contact Info */}
                     <div className="footer-col">
                         <h4>Contact Us</h4>
-                        <ul className="contact-info">
-                            <li><MapPin size={18} /> <span>305/4, Gajanan Colony, Sangli , Maharashtra-416416</span></li>
-                            <li><Phone size={18} /> <span>+80095 00992</span></li>
-                            <li><Mail size={18} /> <span>customercare@vedayura.com</span></li>
-                        </ul>
-                        <div className="newsletter">
-                            <h5>Subscribe to our Newsletter</h5>
-                            <form onSubmit={(e) => e.preventDefault()}>
-                                <input type="email" placeholder="Your email address" />
-                                <button type="submit">Subscribe</button>
-                            </form>
+                        <div className="contact-info">
+                            <div className="contact-item"><MapPin size={20} /> <span>305/4, Gajanan Colony, Sangli</span></div>
+                            <div className="contact-item"><Phone size={20} /> <span>+91 80095 00992</span></div>
+                            <div className="contact-item"><Mail size={20} /> <span>care@vedayura.com</span></div>
                         </div>
                     </div>
                 </div>
 
+                {/* 3. Bottom Bar */}
                 <div className="footer-bottom">
-                    <p>&copy; {new Date().getFullYear()} VedAyura. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} VedAyura Wellness Pvt Ltd. All rights reserved.</p>
+                    <div className="payment-methods">
+                        {/* Placeholder for payment icons */}
+                        <span className="text-xs text-secondary">100% Secure Payments</span>
+                    </div>
                 </div>
             </div>
         </footer>

@@ -22,13 +22,13 @@ const products = [
         price: 878.52,
         Ingredients: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
         Benefits: [
-            "Enhanced immunity", 
+            "Enhanced immunity",
             "Better blood purification",
-             "Liver Protective, Improved digestion", 
-             "Reduced oxidative stress", 
-             "Maintain Wellness",
-             "Good for Homeostasis ",
-             "Helps Controlled Sugar Levels"
+            "Liver Protective, Improved digestion",
+            "Reduced oxidative stress",
+            "Maintain Wellness",
+            "Good for Homeostasis ",
+            "Helps Controlled Sugar Levels"
         ],
         image: "/assets/product-placeholder.jpeg",
         stock: 30,
@@ -58,11 +58,11 @@ const products = [
         price: 878.52,
         Ingredients: "Garcinia comogia (Vriksamla) Alma, Harde, Beheda, Sunthi, Miri, Pippali, Trimard, Orange Peel, Blac Salt etc.  **CONTAINS PERMITTED CLASS II PRESERVATIVE (INS211) CONTAINS NO COLOR, NO FLAVOUR AND NO SYNTHETIC VITAMINS & MINERALS. Benefits are non synthetic, therefore, slight variation in colour taste, viscosity and some sediments are natural.**",
         Benefits: [
-           "Weight Loss: Prevents fat storage", 
-           "Appetite Control: Reduces cravings",
-           "Metabolism Boost: Enhances fat burning",
-           "Cholesterol Support: Improves cholesterol levels",
-           "Blood Sugar Regulation Controls sugar levels"
+            "Weight Loss: Prevents fat storage",
+            "Appetite Control: Reduces cravings",
+            "Metabolism Boost: Enhances fat burning",
+            "Cholesterol Support: Improves cholesterol levels",
+            "Blood Sugar Regulation Controls sugar levels"
         ],
         image: "/assets/product-placeholder.jpeg",
         stock: 20,
@@ -88,23 +88,29 @@ const products = [
         name: "LivoFit",
         category: "Liquid",
         price: 623.52,
-        Ingredients: "Supports healthy digestion and detoxification.",
+        Ingredients: "Kutki (Picrorhiza curroa), Pippali (Piper longum) Kalmegh(Andrographis panniculanta) ,Triphala(Emblica officinalia, Terminalia chebula, Terminalia belerica), Punarnava (Boerhavia diffusa)Sharpunkha(Teprolosia purpura) Other ingredients: Sodium Benzoate IP, Citric Acid IP",
         Benefits: [
-            "Amla",
-            "Bibhitaki",
-            "Haritaki"
+            "Supports Liver Health: Helps correct liver dysfunction and damage.",
+            "Protects Against Toxins: Shields liver from harmful substances.",
+            "Promotes Digestion: Stimulates appetite for better digestion.",
+            "Boosts Growth: Supports healthy bodily growth.",
+            "Natural Detox: Aids in natural detoxification of the liver"
         ],
         image: "/assets/product-placeholder.jpeg",
         stock: 60,
     },
     {
         id: 7,
-        name: "Pliotox",
+        name: "Pilotox",
         category: "Capsules",
         price: 878.52,
-        Ingredients: "Enhances memory, focus, and cognitive function.",
+        Ingredients: "Patha Extract, Mustha Extract, Bilva Extract, Pipalimool & Nagkeshar Extracts, Jamikand & Khunkharaba Extracts, DesiKapoor, Kakmachi Extract.",
         Benefits: [
-            "Brahmi Extract"
+            "Helps Reduce Foin, Swelling & Inflammation to Piles.",
+            "Aids in Shrinking Plies Moss Controlling Bleeding.",
+            "Relieves itching Burning & Discomfort.",
+            "Supports Smooth Bowel Movements & Digestive Heath.",
+            "Promotes Natural Healing Without Side Effects."
         ],
         image: "/assets/product-placeholder.jpeg",
         stock: 45,
@@ -114,10 +120,47 @@ const products = [
         name: "Pilotox",
         category: "Liquid",
         price: 623.52,
-        Ingredients: "Deeply nourishing oil for a relaxing body massage.",
+        Ingredients: "Patha Extract, Dhamasa Extract, Mustha Extract, Bilva Extract, Pipalimool & Nagkeshar Extracts, Jamikand & Khunkharaba Extracts, Desi Kapoor, Kakmachi Extract.",
         Benefits: [
-            "Sesame Oil",
-            "Ashwagandha"
+            "Helps Reduce Foin, Swelling & Inflammation to Piles.",
+            "Aids in Shrinking Plies Moss Controlling Bleeding.",
+            "Relieves itching Burning & Discomfort.",
+            "Supports Smooth Bowel Movements & Digestive Heath.",
+            "Promotes Natural Healing Without Side Effects."
+        ],
+        image: "/assets/product-placeholder.jpeg",
+        stock: 35,
+    },
+    {
+        id: 9,
+        name: "ArthoFit",
+        category: "Liquid",
+        price: 623.52,
+        Ingredients: "Shallaki (Boswellia serrata), Nirgundi (Vitex negundo) ,Methi Seeds, Triphala, Shuddha Guggul, Shuddha Laksha, Chopochini Extract.",
+        Benefits: [
+            "Promotes Joint Flexibility and Comfort",
+            "Reduces Inflammation and Relieves Joint Pain",
+            "Strengthens Bones and Connective Tissues",
+            "Enhances Mobility and Physical Well-Being",
+            "Safe, Natural, and Gentle Ayurvedic Formulation"
+        ],
+        image: "/assets/product-placeholder.jpeg",
+        stock: 35,
+    },
+    {
+        id: 10,
+        name: "DiaboFit",
+        category: "Liquid",
+        price: 623.52,
+        Ingredients: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
+        Benefits: [
+            "Enhanced immunity",
+            "Better blood purification",
+            "Liver Protective, Improved digestion",
+            "Reduced oxidative stress",
+            "Maintain Wellness",
+            "Good for Homeostasis ",
+            "Helps Controlled Sugar Levels"
         ],
         image: "/assets/product-placeholder.jpeg",
         stock: 35,

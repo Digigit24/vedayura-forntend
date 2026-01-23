@@ -2,10 +2,12 @@
    1. SHOP HERO (RESTORED TO ORIGINAL STYLE)
    ========================================= */
 .container {
-    padding: 0; /* Reset based on your original preference */
+    padding: 10px;
+    /* Reset based on your original preference */
     max-width: 1280px;
     margin: 0 auto;
 }
+
 .shop-hero {
     display: flex;
     margin-top: 20px;
@@ -13,7 +15,8 @@
     color: #fff;
     align-items: stretch;
     background: var(--color-primary);
-    border-radius: 0; /* Or var(--radius-lg) if you want corners */
+    border-radius: 0;
+    /* Or var(--radius-lg) if you want corners */
 }
 
 .shop-hero-inner {
@@ -23,7 +26,7 @@
 
 /* Original Ratios */
 .hero-left {
-    flex: 0.3; 
+    flex: 0.3;
     display: flex;
     padding: 30px;
     flex-direction: column;
@@ -109,14 +112,14 @@
     border-radius: 50px;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
     color: var(--color-text-secondary);
 }
 
 .category-pill:hover {
     transform: translateY(-2px);
     border-color: var(--color-primary);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 .category-pill.active {
@@ -141,7 +144,7 @@
 }
 
 .category-pill.active .pill-count {
-    background: rgba(255,255,255,0.25);
+    background: rgba(255, 255, 255, 0.25);
     color: white;
 }
 
@@ -150,10 +153,13 @@
    3. LAYOUT (CENTERED - NO SIDEBAR)
    ========================================= */
 .shop-layout {
-    display: block; /* Removes grid/flex columns */
+    display: block;
+    /* Removes grid/flex columns */
     width: 100%;
-    max-width: 1200px; /* Limits width for readability */
-    margin: 0 auto;    /* Centers the layout */
+    max-width: 1200px;
+    /* Limits width for readability */
+    margin: 0 auto;
+    /* Centers the layout */
     padding: 0 20px;
 }
 
@@ -285,33 +291,40 @@
     .shop-hero-inner {
         flex-direction: column;
     }
+
     .hero-left {
         flex: 1;
         width: 100%;
         padding: 40px 20px;
     }
+
     .hero-right {
         width: 100%;
     }
+
     .toolbar-top {
         flex-direction: column;
         align-items: stretch;
     }
+
     .shop-search-centered {
         max-width: 100%;
         order: -1;
     }
+
     .controls-right {
         justify-content: space-between;
         flex-wrap: wrap;
     }
+
     .product-grid {
-    display: grid;
-    grid-template-columns: repeat(2,1fr);
-    gap: 30px;
-    justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        justify-content: center;
+    }
 }
-}
+
 /* ... (Your existing CSS stays the same) ... */
 
 /* =========================================
@@ -329,11 +342,16 @@
 
 /* Override standard button styles for Pagination to make them circles */
 .pagination .btn-shop {
-    margin: 0; /* Remove default button margin */
-    padding: 0; /* Remove pill padding */
-    width: 45px; /* Fixed width */
-    height: 45px; /* Fixed height */
-    border-radius: 50%; /* Make it a perfect circle */
+    margin: 0;
+    /* Remove default button margin */
+    padding: 0;
+    /* Remove pill padding */
+    width: 45px;
+    /* Fixed width */
+    height: 45px;
+    /* Fixed height */
+    border-radius: 50%;
+    /* Make it a perfect circle */
     display: flex;
     align-items: center;
     justify-content: center;

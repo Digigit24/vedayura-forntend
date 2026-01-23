@@ -34,7 +34,7 @@ const Admin = () => {
         return <div className="p-xl text-center">Loading Admin Panel...</div>;
     }
 
-    if (!user || user.role !== 'admin') {
+    if (!user || (user.role && user.role.toLowerCase() !== 'admin')) {
         return (
             <div className="flex items-center justify-center min-h-[60vh]">
                 <div className="text-center p-xl border rounded-lg shadow-sm bg-white">
@@ -533,8 +533,8 @@ const Refunds = () => {
                                     <td className="px-lg py-md font-bold">₹{refund.amount}</td>
                                     <td className="px-lg py-md">
                                         <span className={`px-2 py-1 rounded-full text-xs font-bold ${refund.status === 'REQUESTED' ? 'bg-orange-100 text-orange-800' :
-                                                refund.status === 'APPROVED' || refund.status === 'PROCESSING' || refund.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                                                    'bg-red-100 text-red-800'
+                                            refund.status === 'APPROVED' || refund.status === 'PROCESSING' || refund.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                                                'bg-red-100 text-red-800'
                                             }`}>
                                             {refund.status}
                                         </span>

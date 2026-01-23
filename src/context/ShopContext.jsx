@@ -1,15 +1,17 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { products as initialProducts } from '../data/products';
+import productsData from '../data/products';
 import api from '../api';
 
 const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
-  const [products] = useState(productsData);
-  const [cart, setCart] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
-  const [drawerType, setDrawerType] = useState(null);
-  const [user, setUser] = useState(null); // Simple user state for now
+    const [products] = useState(productsData);
+    const [cart, setCart] = useState([]);
+    const [wishlist, setWishlist] = useState([]);
+    const [drawerType, setDrawerType] = useState(null);
+    const [user, setUser] = useState(null); // Simple user state for now
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+
 
     // Load state from local storage on mount (optional but good for UX)
     useEffect(() => {
@@ -24,16 +26,22 @@ export const ShopProvider = ({ children }) => {
             // try fetch current user
             api.auth.me().then(res => {
                 if (res && res.user) setUser(res.user);
-            }).catch(() => {});
+            }).catch(() => { });
         }
 
         // Fetch products from API (fallback to local data)
         (async () => {
             try {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
-                if (res && res.products) setProducts(res.products);
+                if (res && Array.isArray(res.products)) {
+                    setProducts(res.products);
+                } else {
+                    // Fallback to local data if API returns structure we don't expect
+                    console.warn('API returned unexpected format, using local data');
+                }
             } catch (err) {
-                console.error('Failed to load products', err);
+                console.warn('Failed to load products from API, using local data', err);
+                // No need to do anything else, initial state is already productsData
             }
         })();
     }, []);
@@ -65,33 +73,33 @@ export const ShopProvider = ({ children }) => {
         })();
     }, [user]);
 
-  const loadWishlist = async () => {
-    try {
-      const data = await getWishlist();
-      if (data.success && data.wishlist) {
-        // Map API wishlist items to match frontend product structure if needed
-        // API returns items: [{ id, product: { ... } }]
-        // Frontend expects array of products
-        const validItems = data.wishlist.items.map(item => ({
-          ...item.product,
-          wishlistItemId: item.id // Store the wishlist item ID for removal
-        }));
-        setWishlist(validItems);
-      }
-    } catch (error) {
-      console.error("Failed to load wishlist", error);
-    }
-  };
+    const loadWishlist = async () => {
+        try {
+            const data = await getWishlist();
+            if (data.success && data.wishlist) {
+                // Map API wishlist items to match frontend product structure if needed
+                // API returns items: [{ id, product: { ... } }]
+                // Frontend expects array of products
+                const validItems = data.wishlist.items.map(item => ({
+                    ...item.product,
+                    wishlistItemId: item.id // Store the wishlist item ID for removal
+                }));
+                setWishlist(validItems);
+            }
+        } catch (error) {
+            console.error("Failed to load wishlist", error);
+        }
+    };
 
-  const openCart = () => setDrawerType("cart");
-  const openWishlist = () => setDrawerType("wishlist");
-  const closeDrawer = () => setDrawerType(null);
+    const openCart = () => setDrawerType("cart");
+    const openWishlist = () => setDrawerType("wishlist");
+    const closeDrawer = () => setDrawerType(null);
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setWishlist([]);
-  };
+    const logout = () => {
+        localStorage.removeItem('token');
+        setUser(null);
+        setWishlist([]);
+    };
 
     const addToCart = (product, quantity = 1) => {
         setCart(prev => {
@@ -161,29 +169,21 @@ export const ShopProvider = ({ children }) => {
                 }
                 return { success: true, user: res.user };
             }
-            } catch (err) {
+        } catch (err) {
             // fallback to mock simple login for dev convenience
-                console.error('Login failed', err);
-                if (email.includes('admin')) {
-                    const mock = { name: 'Admin User', email, role: 'admin' };
-                    setUser(mock);
-                    localStorage.setItem('ayurveda_user', JSON.stringify(mock));
-                    return { success: true, user: mock };
-                }
-                const mock = { name: 'Demo User', email, role: 'user' };
+            console.error('Login failed', err);
+            if (email.includes('admin')) {
+                const mock = { name: 'Admin User', email, role: 'admin' };
                 setUser(mock);
                 localStorage.setItem('ayurveda_user', JSON.stringify(mock));
                 return { success: true, user: mock };
+            }
+            const mock = { name: 'Demo User', email, role: 'user' };
+            setUser(mock);
+            localStorage.setItem('ayurveda_user', JSON.stringify(mock));
+            return { success: true, user: mock };
         }
         return { success: false };
-    };
-
-    const logout = () => {
-        setUser(null);
-        setCart([]);
-        setWishlist([]);
-        localStorage.removeItem('ayurveda_token');
-        localStorage.removeItem('ayurveda_user');
     };
 
     const register = async (name, email, password, phone) => {

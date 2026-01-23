@@ -21,6 +21,26 @@ const Shop = () => {
     const [sortBy, setSortBy] = useState('featured');
     const [activeSearch, setActiveSearch] = useState(searchQuery || '');
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = useState(1);
+    const [productsPerPage] = useState(8); // Show 8 products per page
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedCategory, activeSearch, priceRange, sortBy]);
+
+    // Calculate Pagination
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     const categories = ['All', 'Liquid', 'Powder', 'Capsules'];
 
     useEffect(() => {
@@ -32,7 +52,8 @@ const Shop = () => {
             const q = activeSearch.toLowerCase();
             result = result.filter(p =>
                 p.name.toLowerCase().includes(q) ||
-                p.description.toLowerCase().includes(q)
+                (p.description && p.description.toLowerCase().includes(q)) ||
+                (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
             );
         }
         result = result.filter(p => (p.discount_price || p.price) <= priceRange);
@@ -60,15 +81,15 @@ const Shop = () => {
     return (
         <div className="shop-page">
             {/* Hero Section (Unchanged) */}
-            <div className="container" style={{padding: 0}}>
+            <div className="container" style={{ padding: 0 }}>
                 <div className="shop-hero">
                     <div className="shop-hero-inner">
                         <div className="hero-left">
                             <h1 className="vedayura-title">Our Collection</h1>
                             <div className="shop-divider"></div>
                             <p className="text-large">
-                                Pure. Potent. Authentic. <br /> 
-                                Explore our range of Ayurvedic essentials designed for holistic healing.
+                                Natural. Powerful. Timeless. <br />
+                                Discover our collection of Ayurvedic products crafted to restore balance and support your well-being.
                             </p>
                         </div>
                         <div className="hero-right">
@@ -157,29 +178,46 @@ const Shop = () => {
                             <>
                                 <div className="product-grid-wrapper animate-fade-in">
                                     <div className="product-grid">
-                                        {filteredProducts.map(product => (
-                                            <ProductCard 
-                                                key={product.id} 
-                                                product={product} 
-                                                activeCategory={selectedCategory} 
+                                        {currentProducts.map(product => (
+                                            <ProductCard
+                                                key={product.id}
+                                                product={product}
+                                                activeCategory={selectedCategory}
                                             />
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* 2. UPDATED PAGINATION WITH ARROWS */}
-                                <div className="pagination">
-                                    <button className="btn-shop btn-shop-outline disabled">
-                                        <ChevronLeft />
-                                    </button>
-                                    
-                                    <button className="btn-shop btn-shop-primary">1</button>
-                                    <button className="btn-shop btn-shop-outline">2</button>
-                                    
-                                    <button className="btn-shop btn-shop-outline">
-                                        <ChevronRight />
-                                    </button>
-                                </div>
+                                {/* Dynamic Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="pagination">
+                                        <button
+                                            className={`btn-shop btn-shop-outline ${currentPage === 1 ? 'disabled' : ''}`}
+                                            onClick={() => paginate(currentPage - 1)}
+                                            disabled={currentPage === 1}
+                                        >
+                                            <ChevronLeft />
+                                        </button>
+
+                                        {[...Array(totalPages)].map((_, i) => (
+                                            <button
+                                                key={i + 1}
+                                                className={`btn-shop ${currentPage === i + 1 ? 'btn-shop-primary' : 'btn-shop-outline'}`}
+                                                onClick={() => paginate(i + 1)}
+                                            >
+                                                {i + 1}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            className={`btn-shop btn-shop-outline ${currentPage === totalPages ? 'disabled' : ''}`}
+                                            onClick={() => paginate(currentPage + 1)}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            <ChevronRight />
+                                        </button>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <div className="no-products-premium">

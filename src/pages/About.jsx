@@ -36,7 +36,9 @@ const About = () => {
                     >
                         <span className="vedayura-tagline">Our Heritage</span>
                         <h1 className="about-title">Healing through <span className="text-secondary-themed">Authentic Ayurveda</span></h1>
-                        <p className="vedayura-desc">We bridge the gap between ancient Vedic wisdom and modern wellness lifestyles, ensuring purity in every drop.</p>
+                        <p className="vedayura-desc">
+                            At VedAyura, we honor the sacred tradition of Ayurvedic healing. We seamlessly blend ancient wisdom with modern practices to deliver products that offer true purity and profound health benefits.
+                        </p>
                     </motion.div>
                 </div>
             </section>
@@ -51,7 +53,10 @@ const About = () => {
                         variants={fadeIn}
                         className="about-img-box"
                     >
-                        <img src="https://wallpapersok.com/images/hd/ayurveda-hd-herbal-medicine-ota5ofqs76loufud.jpg" alt="Ayurvedic preparation" />
+                        <img
+                            src="https://wallpapersok.com/images/hd/ayurveda-hd-herbal-medicine-ota5ofqs76loufud.jpg"
+                            alt="Ayurvedic preparation"
+                        />
                         <div className="experience-badge">
                             <span className="number">25+</span>
                             <span className="text">Years of <br />Legacy</span>
@@ -67,10 +72,10 @@ const About = () => {
                     >
                         <motion.h2 variants={fadeIn}>Rooted in Tradition,<br />Perfected by Science</motion.h2>
                         <motion.p variants={fadeIn}>
-                            Founded in the heart of traditional healing hubs, Vedayura started as a small family-led initiative to preserve the dying art of authentic Ayurvedic formulation.
+                            Founded in the heart of traditional healing hubs, VedAyura began as a small family-led initiative dedicated to preserving the time-honored art of authentic Ayurvedic formulations.
                         </motion.p>
                         <motion.p variants={fadeIn}>
-                            Today, we combine centuries-old manuscripts with state-of-the-art extraction technology. Our mission is simple: to provide products that are not just "natural," but "Ayurvedic" in the truest sense—following the strict protocols of Charaka Samhita.
+                            Today, we unite ancient Ayurvedic texts with the latest scientific innovations. Our goal is clear: to offer products that are not just "natural" but truly "Ayurvedic"—crafted with the utmost respect for the ancient Charaka Samhita.
                         </motion.p>
                     </motion.div>
                 </div>
@@ -86,8 +91,8 @@ const About = () => {
                         variants={fadeIn}
                         className="text-center mb-2xl"
                     >
-                        <h2 className="section-title">The Vedayura Promise</h2>
-                        <p className="section-subtitle">What makes us stand apart in the world of wellness</p>
+                        <h2 className="section-title">The VedAyura Promise</h2>
+                        <p className="section-subtitle">What sets us apart in the world of wellness</p>
                     </motion.div>
 
                     <motion.div
@@ -98,10 +103,10 @@ const About = () => {
                         variants={staggerContainer}
                     >
                         {[
-                            { icon: <Leaf size={32} />, title: "Ethical Sourcing", desc: "We source our herbs directly from farmers at fair prices, ensuring sustainability." },
-                            { icon: <Award size={32} />, title: "Certified Purity", desc: "Every batch undergoes rigorous quality checks and heavy metal testing." },
-                            { icon: <ShieldCheck size={32} />, title: "Zero Synthetic", desc: "No artificial colors, fragrances, or parabens. Just pure herbs." },
-                            { icon: <Zap size={32} />, title: "High Bio-Availability", desc: "Formulated for maximum absorption by the human body." }
+                            { icon: <Leaf size={32} />, title: "Ethical Sourcing", desc: "We partner with local farmers who uphold sustainable practices, ensuring our herbs are ethically sourced." },
+                            { icon: <Award size={32} />, title: "Certified Purity", desc: "Each product is tested rigorously to meet the highest standards of purity, free from harmful chemicals." },
+                            { icon: <ShieldCheck size={32} />, title: "Zero Synthetic", desc: "We do not use artificial colors, fragrances, or preservatives. Just pure, natural ingredients." },
+                            { icon: <Zap size={32} />, title: "High Bio-Availability", desc: "Our products are formulated to ensure maximum absorption, delivering the most effective results." }
                         ].map((v, i) => (
                             <motion.div key={i} className="value-card" variants={fadeIn}>
                                 <div className="value-icon">{v.icon}</div>
@@ -113,6 +118,7 @@ const About = () => {
                 </div>
             </section>
         </div>
+
     );
 };
 
