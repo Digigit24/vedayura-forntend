@@ -1,21 +1,19 @@
 .top-bar {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     background: var(--color-primary);
-    position: relative;
-    z-index: 1001;
+    position: sticky;
     color: #e6ece5;
     overflow: hidden;
 }
 
 .main-header {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255, 255, 255);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     padding: 15px 0;
     position: sticky;
     top: 0;
-    z-index: 1000;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -46,7 +44,7 @@
     color: var(--color-text-secondary);
     font-weight: 500;
     font-size: 0.95rem;
-    position: relative;
+    position: sticky;
     padding: 4px 0;
     transition: color 0.3s ease;
 }

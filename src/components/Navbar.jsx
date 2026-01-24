@@ -73,7 +73,7 @@ const Navbar = () => {
             className="mobile-menu-btn hidden-desktop"
             onClick={toggleMenu}
             aria-label="Toggle Menu"
-            style={{ zIndex: 3000, position: 'relative' }} // Ensure button stays on top
+            style={{ zIndex: 3000, position: 'sticky' }} // Ensure button stays on top
           >
             {isMenuOpen ? <X size={24} color="#175333" /> : <Menu size={24} />}
           </button>

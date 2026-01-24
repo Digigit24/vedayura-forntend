@@ -118,45 +118,48 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="section bg-secondary-light">
-        <div className="container">
-          <h2 className="section-title text-center mb-xl">
-            Stories of Healing
-          </h2>
-          <div className="testimonials-grid">
-            {/* Testimonial 1 */}
-            <div className="testimonial-card">
-              <div className="stars">★★★★★</div>
-              <p className="mb-md">
-                "I've tried many natural brands, but nothing comes close to the authenticity of Vedayura. The <strong>Arthofit</strong> capsules are a game-changer! My joints feel more flexible, and the pain has significantly reduced."
-              </p>
-              <h4 className="font-bold">- Anjali Sharma</h4>
-              <span className="text-xs text-secondary">Verified Buyer</span>
-            </div>
+   
+<section class="section bg-testimonials">
+  <div class="container">
+    <h2 class="section-title text-center">Stories of Healing</h2>
+    <p class="text-secondary text-center mb-xl">Hear from our satisfied customers who experienced the power of Ayurveda with VedAyura.</p>
 
-            {/* Testimonial 2 */}
-            <div className="testimonial-card">
-              <div className="stars">★★★★★</div>
-              <p className="mb-md">
-                "Finally found <strong>Diabofit</strong> liquid that is pure and effective. My sugar levels are better controlled, and I feel more energized throughout the day."
-              </p>
-              <h4 className="font-bold">- Rahul Khanna</h4>
-              <span className="text-xs text-secondary">Verified Buyer</span>
-            </div>
-
-            {/* Testimonial 3 */}
-            <div className="testimonial-card">
-              <div className="stars">★★★★★</div>
-              <p className="mb-md">
-                "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
-              </p>
-              <h4 className="font-bold">- Priya Menon</h4>
-              <span className="text-xs text-secondary">Verified Buyer</span>
-            </div>
-          </div>
+    <div class="testimonials-grid">
+   
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div class="stars">★★★★★</div>
+          <h4 class="testimonial-name">Anjali Sharma</h4>
         </div>
-      </section>
+        <p class="testimonial-text">
+          "I've tried many natural brands, but nothing comes close to the authenticity of Vedayura. The <strong>Arthofit</strong> capsules are a game-changer! My joints feel more flexible, and the pain has significantly reduced."
+        </p>
+      </div>
+
+   
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div class="stars">★★★★★</div>
+          <h4 class="testimonial-name">Rahul Khanna</h4>
+        </div>
+        <p class="testimonial-text">
+          "Finally found <strong>Diabofit</strong> liquid that is pure and effective. My sugar levels are better controlled, and I feel more energized throughout the day."
+        </p>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="testimonial-header">
+          <div class="stars">★★★★★</div>
+          <h4 class="testimonial-name">Priya Menon</h4>
+        </div>
+        <p class="testimonial-text">
+          "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 
 
       {/* Newsletter Section */}

@@ -246,7 +246,6 @@
 .hero-content p {
   font-size: 1.25rem;
   color: var(--color-text-secondary);
-  opacity: 0.9;
   max-width: 600px;
 }
 
@@ -484,38 +483,6 @@
   font-weight: 500;
 }
 
-.testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-}
-
-.testimonial-card {
-  background-color: white;
-  padding: var(--spacing-xl);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  /* Cleaner shadow */
-  text-align: left;
-  border: 1px solid #f0f0f0;
-}
-
-.stars {
-  color: #fbbf24;
-  font-size: 1.25rem;
-  margin-bottom: var(--spacing-md);
-}
-
-.testimonial-card p {
-  font-style: italic;
-  margin-bottom: var(--spacing-md);
-  line-height: 1.6;
-}
-
-.testimonial-card h4 {
-  font-size: 1rem;
-  color: var(--color-primary);
-}
 
 .newsletter-section h2 {
   margin-bottom: var(--spacing-sm);
@@ -586,18 +553,180 @@
 .delay-200 {
   animation-delay: 0.2s;
 }
-
-.slider-container {
-  height: 100%;
-  width: 100%;
+/* Product Grid Section */
+.test-section {
+  padding: var(--spacing-2xl) 0; /* Adjust spacing around the section */
+  background-color: #f5f4f4; /* Light background color (use any color or gradient) */
+  background-image: url('/assets/product-bg.png'); /* Optional: background image */
+  background-size: cover; /* Ensures the background image covers the entire section */
+  background-position: center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents repeating the background image */
 }
 
-.slide-item::after {
-  content: "";
+.container {
+  max-width: 1200px; /* Adjust to fit your design */
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: var(--color-primary); /* Set section title color */
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.text-secondary {
+  font-size: 1.15rem;
+  color: var(--color-text-secondary);
+  opacity: 0.9;
+  margin-bottom: var(--spacing-md);
+}
+
+/* Product Grid Styles */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive grid */
+  gap: var(--spacing-xl); /* Space between grid items */
+  margin-bottom: var(--spacing-xl); /* Add space below the grid */
+}
+
+
+
+.mt-2xl {
+  margin-top: var(--spacing-2xl); /* Large margin-top */
+}
+
+.pt-lg {
+  padding-top: var(--spacing-lg); /* Large padding on top */
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl); /* Large bottom margin */
+}
+
+/* Add specific styles for the product cards if needed */
+.product-card {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Testimonials Section */
+.bg-testimonials {
+  position: relative;
+  background-image: url('https://png.pngtree.com/background/20250215/original/pngtree-endless-texture-of-adaptogenic-herbal-plants-a-seamless-ayurveda-pattern-on-picture-image_15267883.jpg');
+  background-size:cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Keeps the background fixed for sharper appearance */
+  padding: var(--spacing-2xl) 0;
+}
+.bg-testimonials::before {
+  content: ''; /* Empty content for the overlay */
   position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center,
-      transparent 0%,
-      rgba(0, 0, 0, 0.3) 100%);
-  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(247, 245, 245, 0.5); /* Darker overlay for contrast */
+  z-index: 0; /* Ensure it's below the content but above the background */
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  gap: var(--spacing-xl);
+  z-index: 2; /* Ensure grid is above the overlay */
+}
+
+.testimonial-card {
+  background-color: rgba(255, 255, 255, 0.781); /* Semi-transparent white background to contrast the image */
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 2; /* Ensure cards are above the overlay */
+}
+
+.testimonial-card:hover {
+  transform: translateY(-10px); /* Subtle hover effect */
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: var(--spacing-md);
+}
+
+.stars {
+  color: #fbbf24;
+  font-size: 1.25rem;
+  margin-right: 8px;
+}
+
+.testimonial-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-primary);
+}
+
+.testimonial-role {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.testimonial-text {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.testimonial-card {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.testimonial-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.testimonial-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.testimonial-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .testimonials-grid {
+    grid-template-columns: 1fr; /* Stack testimonials on small screens */
+  }
+
+  .testimonial-card {
+    padding: var(--spacing-lg); /* Slightly reduced padding on mobile */
+  }
 }

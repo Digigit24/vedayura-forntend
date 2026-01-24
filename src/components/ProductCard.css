@@ -187,7 +187,6 @@
 
 .add-to-cart-btn {
   margin-top: auto;
-  width: 70%;
   padding: 12px;
   border-radius: var(--radius-full);
   border: 2px solid var(--color-primary);
