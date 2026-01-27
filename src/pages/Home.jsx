@@ -1,13 +1,46 @@
 import React from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
 import { Leaf, ShieldCheck } from "lucide-react";
 import "./Home.css";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
   const { products } = useShop();
   const featuredProducts = products.slice(0, 4); // Display only first 4 products
+   const floatRef = useRef(null);
+    useEffect(() => {
+    const el = floatRef.current;
+
+    // Idle breathing motion
+    gsap.to(el, {
+      y: -8,
+      duration: 5,
+      ease: "sine.inOut",
+      repeat: -1,
+      yoyo: true,
+    });
+
+    // Scroll-synced motion
+    gsap.to(el, {
+      y: -20,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero-section",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1,
+      },
+    });
+  return () => {
+      ScrollTrigger.getAll().forEach(st => st.kill());
+      gsap.killTweensOf(el);
+    };
+  }, []);
 
   return (
     <div className="home-page">
@@ -17,7 +50,7 @@ const Home = () => {
           {/* Text Section */}
           <div className="hero-content">
             <h1 className="animate-fade-in-up">
-              Pure Ayurveda for Modern Wellness
+             <span> Pure Ayurveda</span> for Modern <span className="span-hero">Wellness</span>
             </h1>
             <p className="animate-fade-in-up delay-100">
               At VedAyura, we bring the timeless wisdom of Ayurveda to you with our range of natural capsules, liquids, and powders. Crafted from the finest herbs, our products support your overall health, vitality, and well-being.
@@ -32,8 +65,10 @@ const Home = () => {
           {/* Image Section (Desktop) */}
           <div className="hero-image animate-float">
             <img
+            ref={floatRef}
               src="/assets/hero-img.png"
               alt="Ayurvedic Products"
+              className="animate-float"
             />
           </div>
         </div>

@@ -36,14 +36,14 @@
 
 .desktop-nav {
     display: flex;
-    gap: 32px;
+    gap: 30px;
 }
 
 .desktop-nav a {
     text-decoration: none;
-    color: var(--color-text-secondary);
-    font-weight: 500;
-    font-size: 0.95rem;
+    color:#654c19;
+    font-weight: 700;
+    font-size: 1rem;
     position: sticky;
     padding: 4px 0;
     transition: color 0.3s ease;

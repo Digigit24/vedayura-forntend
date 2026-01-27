@@ -216,6 +216,11 @@
     width: 100%;
     border-radius: 12px;
   }
+  .hero-content span {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 700 !important;
+  color: #ececec !important;
+}
 }
 
 /* Existing Hero Section */
@@ -236,9 +241,9 @@
 
 .hero-content h1 {
   font-size: clamp(2.5rem, 5vw, 4.5rem);
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: var(--spacing-md);
-  color: #207d18;
+  color: #614f20;
   line-height: 1.1;
   letter-spacing: -1px;
 }
@@ -249,6 +254,37 @@
   max-width: 600px;
 }
 
+.hero-content span {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 600;
+  color: #207d18;
+}
+
+.hero-content span,
+.hero-content h1 {
+  opacity: 0;
+  animation: fadeUp 0.7s ease-out forwards;
+}
+
+.hero-content h1 {
+  animation-delay: 0.15s;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero-content span {
+  text-shadow: 0 2px 2px rgba(134, 121, 78, 0.884);
+}
+
+
 /* Desktop Image Float Animation */
 @keyframes float {
   0% {
@@ -256,7 +292,7 @@
   }
 
   50% {
-    transform: translateY(-15px);
+    transform: translateY(-20px);
   }
 
   100% {
