@@ -12,7 +12,13 @@ const products = [
             "Enhances Mobility and Physical Well-Being",
             "Safe, Natural, and Gentle Ayurvedic Formulation"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Herbal Joint Support",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 50,
     },
     {
@@ -30,7 +36,13 @@ const products = [
             "Good for Homeostasis ",
             "Helps Controlled Sugar Levels"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Blood Sugar Support",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 30,
     },
     {
@@ -41,14 +53,20 @@ const products = [
         Ingredients: "Triphala Powder (Emblica officinalis, Terminalia chebula, Terminalia belerica) , Ajma (Carum copticum) , Jeera (Cuminum cyminum) , Indrajav (Wrightia tinctoria) tinctoria), Sunthi (Zingiber officinale), Harde (Terminalia chebula), Kutaj (Holarrhena antidysenterica) , Kala Namak, Badi Saunf (Foeniculum vulgare).",
         Benefits: [
             "Improves Digestion & Appetite",
-            "Relieves Gas, Bloating, & Acidity",
+            "Relieves Gas,  Bloating, & Acidity",
             "Aids in Smooth Bowel Movement",
             "Reduces Indigestion & Discomfort",
             "100% Natural & Safe Herbal Formula",
             "Stimulates Digestion and Reduces Bloating",
             "Supports Intestinal Health and Balance"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Digestive Health Formula",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 100,
     },
     {
@@ -64,7 +82,13 @@ const products = [
             "Cholesterol Support: Improves cholesterol levels",
             "Blood Sugar Regulation Controls sugar levels"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "FOR WEIGHT LOSS",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 20,
     },
     {
@@ -80,7 +104,13 @@ const products = [
             "Cholesterol Support: Improves cholesterol levels",
             "Blood Sugar Regulation: Controls sugar levels"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "FOR WEIGHT LOSS",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 80,
     },
     {
@@ -96,7 +126,13 @@ const products = [
             "Boosts Growth: Supports healthy bodily growth.",
             "Natural Detox: Aids in natural detoxification of the liver"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Liver Support Juice",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 60,
     },
     {
@@ -112,7 +148,13 @@ const products = [
             "Supports Smooth Bowel Movements & Digestive Heath.",
             "Promotes Natural Healing Without Side Effects."
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Natural Piles Solution",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 45,
     },
     {
@@ -128,7 +170,13 @@ const products = [
             "Supports Smooth Bowel Movements & Digestive Heath.",
             "Promotes Natural Healing Without Side Effects."
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Natural Piles Solution",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 35,
     },
     {
@@ -144,7 +192,13 @@ const products = [
             "Enhances Mobility and Physical Well-Being",
             "Safe, Natural, and Gentle Ayurvedic Formulation"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Herbal Joint Support",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 35,
     },
     {
@@ -162,7 +216,13 @@ const products = [
             "Good for Homeostasis ",
             "Helps Controlled Sugar Levels"
         ],
-        image: "/assets/product-placeholder.jpeg",
+        productType: "Blood Sugar Support",
+        images: [
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder.jpeg"
+        ],
         stock: 35,
     }
 ];

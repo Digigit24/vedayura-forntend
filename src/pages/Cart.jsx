@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import './Cart.css';
 
@@ -47,13 +47,16 @@ const Cart = () => {
       {/* Header */}
       <div className="cart-drawer-header">
         <h3>My Cart</h3>
+        <button className="drawer-close" onClick={closeDrawer}>
+    <X size={22} />
+  </button>
       </div>
 
       {/* Items */}
       <div className="cart-items">
         {cart.map(item => (
           <div key={item.id} className="cart-item">
-            <img src={item.image} alt={item.name} />
+            <img src={item.images[0]} alt={item.name} />
 
             <div className="cart-item-info">
               <h4>{item.name}</h4>

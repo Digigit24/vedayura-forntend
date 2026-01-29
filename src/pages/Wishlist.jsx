@@ -1,9 +1,10 @@
 import React from "react";
-import { ShoppingBag, Heart, Trash2 } from "lucide-react";
+import { ShoppingBag, Heart, Trash2, X} from "lucide-react";
 import { useShop } from "../context/ShopContext";
 
 const Wishlist = () => {
-  const { wishlist = [], addToCart, toggleWishlist } = useShop();
+  const { wishlist = [], addToCart, toggleWishlist, closeDrawer } = useShop();
+
 
   if (wishlist.length === 0) {
     return (
@@ -19,12 +20,15 @@ const Wishlist = () => {
     <div className="cart-drawer-content">
       <div className="cart-drawer-header">
         <h3>My Wishlist</h3>
+        <button className="drawer-close" onClick={closeDrawer}>
+    <X size={22} />
+  </button>
       </div>
 
       <div className="cart-items">
         {wishlist.map((item) => (
           <div key={item.id} className="cart-item">
-            <img src={item.image} alt={item.name} />
+            <img src={item.images[0]} alt={item.name} />
 
             <div className="cart-item-info">
               <h4>{item.name}</h4>

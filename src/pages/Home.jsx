@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
@@ -10,8 +10,24 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
+  const heroImages = [
+  "/assets/banner.png",
+  "/assets/banner-2.png",
+  "/assets/banner-3.png",
+];
+
+const [heroIndex, setHeroIndex] = useState(0);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setHeroIndex((prev) => (prev + 1) % heroImages.length);
+  }, 4000); // 4 sec
+
+  return () => clearInterval(interval);
+}, []);
+
   const { products } = useShop();
-  const featuredProducts = products.slice(0, 4); // Display only first 4 products
+  const featuredProducts = products.slice(0, 5); // Display only first 4 products
    const floatRef = useRef(null);
     useEffect(() => {
     const el = floatRef.current;
@@ -47,39 +63,19 @@ const Home = () => {
       {/* Hero Section (Text on the Left, Image on the Right) */}
       <section className="hero-section">
         <div className="container">
-          {/* Text Section */}
-          <div className="hero-content">
-            <h1 className="animate-fade-in-up">
-             <span> Pure Ayurveda</span> for Modern <span className="span-hero">Wellness</span>
-            </h1>
-            <p className="animate-fade-in-up delay-100">
-              At VedAyura, we bring the timeless wisdom of Ayurveda to you with our range of natural capsules, liquids, and powders. Crafted from the finest herbs, our products support your overall health, vitality, and well-being.
-            </p>
-            <div className="animate-fade-in-up delay-200">
-              <Link to="/shop" className="btn btn-outline">
-                Shop Collection
-              </Link>
-            </div>
-          </div>
-
-          {/* Image Section (Desktop) */}
-          <div className="hero-image animate-float">
-            <img
-            ref={floatRef}
-              src="/assets/hero-img.png"
-              alt="Ayurvedic Products"
-              className="animate-float"
-            />
-          </div>
-        </div>
-        {/* Mobile Background Image with Overlay */}
-        <div className="hero-mobile-bg">
-          <div className="hero-overlay"></div>
-          <img
-            src="/assets/hero-img.png"
-            alt="Background"
-          />
-        </div>
+          <div className="hero-image-slider">
+  <div
+    className="hero-slider-track"
+    style={{ transform: `translateX(-${heroIndex * 100}%)` }}
+  >
+    {heroImages.map((img, index) => (
+      <div className="hero-slide" key={index}>
+        <img src={img} alt={`Hero ${index + 1}`} />
+      </div>
+    ))}
+  </div>
+</div>
+</div>
       </section>
 
 

@@ -4,7 +4,6 @@
 .container {
     padding: 10px;
     /* Reset based on your original preference */
-    max-width: 1280px;
     margin: 0 auto;
 }
 
@@ -281,7 +280,7 @@
 /* Product Grid */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(5,1fr);
     gap: 30px;
     justify-content: center;
 }
@@ -375,4 +374,294 @@
     color: #9ca3af;
     box-shadow: none;
     transform: none !important;
+}
+/* =========================================
+   TOOLBAR & FILTER BUTTON
+   ========================================= */
+.shop-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+    border: 1px solid #eee;
+}
+
+/* Search Wrapper takes remaining space */
+.search-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+/* Filter Trigger Button */
+.btn-filter-trigger {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px; /* Match input height */
+    padding: 0 24px;
+    background: #175333; /* Primary Color */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    position: relative;
+}
+
+.btn-filter-trigger:hover {
+    background: #0f3d24;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(23, 83, 51, 0.2);
+}
+
+.filter-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: #fbbf24; /* Yellow/Gold warning color */
+    border-radius: 50%;
+    border: 1px solid #175333;
+}
+
+/* =========================================
+   BOTTOM DRAWER STYLES
+   ========================================= */
+
+/* Backdrop Overlay */
+.drawer-backdrop {
+    position: fixed;
+    inset: 0; /* top/left/right/bottom: 0 */
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.drawer-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* The Drawer */
+.bottom-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 85vh;
+    background: white;
+    z-index: 999;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 30px rgba(0,0,0,0.15);
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-drawer.open {
+    transform: translateY(0);
+}
+
+/* Responsive: Center drawer on large screens */
+@media (min-width: 768px) {
+    .bottom-drawer {
+        width: 480px;
+        left: 50%;
+        margin-left: -240px; /* Half of width */
+        bottom: 20px;
+        border-radius: 20px;
+    }
+}
+
+/* Drawer Header */
+.drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.drawer-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #111;
+}
+
+.btn-close-drawer {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+/* Drawer Body (Scrollable) */
+.drawer-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.drawer-section {
+    margin-bottom: 28px;
+}
+
+.drawer-section h4 {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #444;
+}
+
+/* Chips/Pills in Drawer */
+.drawer-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.chip {
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b5563;
+    transition: all 0.2s;
+}
+
+.chip:hover {
+    background: #f3f4f6;
+}
+
+.chip.active {
+    background: #175333;
+    color: white;
+    border-color: #175333;
+}
+
+.chip-count {
+    background: #e5e7eb;
+    color: #374151;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.chip.active .chip-count {
+    background: rgba(255,255,255,0.25);
+    color: white;
+}
+
+/* Price Section */
+.drawer-row-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.price-tag {
+    font-weight: 700;
+    color: #175333;
+    background: #e6f0eb;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.styled-range {
+    width: 100%;
+    accent-color: #175333;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Select Box */
+.drawer-select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.95rem;
+    background-color: white;
+    appearance: none;
+    cursor: pointer;
+    color: #333;
+}
+
+/* Drawer Footer */
+.drawer-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    gap: 12px;
+    background: white;
+}
+
+.btn-drawer-reset {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-drawer-reset:hover {
+    background: #f9fafb;
+}
+
+.btn-drawer-apply {
+    flex: 2;
+    padding: 14px;
+    background: #175333;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-drawer-apply:hover {
+    background: #0f3d24;
+}
+
+/* Mobile Tweak */
+@media (max-width: 480px) {
+    .btn-filter-trigger span {
+        display: none; /* Hide 'Filters' text on very small screens */
+    }
+    .btn-filter-trigger {
+        padding: 0 16px;
+    }
 }

@@ -2,35 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-// 1. IMPORT CHEVRONS HERE
-import { ChevronDown, Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+// Added SlidersHorizontal for the filter button icon
+import { ChevronDown, Search, X, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import './Shop.css';
 import Marquee from 'react-fast-marquee';
 
 const Shop = () => {
-    // ... (All your existing state and logic remains exactly the same) ...
     const { products } = useShop();
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const initialCategory = searchParams.get('category');
     const searchQuery = searchParams.get('search');
 
+    // Filter States
     const [filteredProducts, setFilteredProducts] = useState(products);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
     const [priceRange, setPriceRange] = useState(2000);
     const [sortBy, setSortBy] = useState('featured');
     const [activeSearch, setActiveSearch] = useState(searchQuery || '');
+    
+    // UI State: Drawer
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     // Pagination State
     const [currentPage, setCurrentPage] = useState(1);
-    const [productsPerPage] = useState(8); // Show 8 products per page
+    const [productsPerPage] = useState(8);
 
-    // Reset to page 1 when filters change
+    // Reset page on filter change
     useEffect(() => {
         setCurrentPage(1);
     }, [selectedCategory, activeSearch, priceRange, sortBy]);
 
-    // Calculate Pagination
+    // Pagination Logic
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
     const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
@@ -43,11 +46,16 @@ const Shop = () => {
 
     const categories = ['All', 'Liquid', 'Powder', 'Capsules'];
 
+    // Filter Logic
     useEffect(() => {
         let result = products;
+        
+        // 1. Category
         if (selectedCategory !== 'All') {
             result = result.filter(p => p.category === selectedCategory);
         }
+        
+        // 2. Search
         if (activeSearch) {
             const q = activeSearch.toLowerCase();
             result = result.filter(p =>
@@ -56,13 +64,17 @@ const Shop = () => {
                 (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
             );
         }
+        
+        // 3. Price
         result = result.filter(p => (p.discount_price || p.price) <= priceRange);
 
+        // 4. Sort
         if (sortBy === 'price-low') {
             result.sort((a, b) => (a.discount_price || a.price) - (b.discount_price || b.price));
         } else if (sortBy === 'price-high') {
             result.sort((a, b) => (b.discount_price || b.price) - (a.discount_price || a.price));
         }
+        
         setFilteredProducts(result);
     }, [selectedCategory, activeSearch, priceRange, sortBy, products]);
 
@@ -75,8 +87,16 @@ const Shop = () => {
         setSelectedCategory('All');
         setPriceRange(2000);
         setSortBy('featured');
-        setActiveSearch('');
     };
+
+    // Prevent body scroll when drawer is open
+    useEffect(() => {
+        if (isDrawerOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+    }, [isDrawerOpen]);
 
     return (
         <div className="shop-page">
@@ -89,14 +109,14 @@ const Shop = () => {
                             <div className="shop-divider"></div>
                             <p className="text-large">
                                 Natural. Powerful. Timeless. <br />
-                                Discover our collection of Ayurvedic products crafted to restore balance and support your well-being.
+                                Discover our collection of Ayurvedic products crafted to restore balance.
                             </p>
                         </div>
                         <div className="hero-right">
                             <Marquee speed={40} pauseOnHover={true} gradient={false}>
-                                {['/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg'].map((img, i) => (
+                                {['/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg'].map((img, i) => (
                                     <div key={`hero-img-${i}`} className="slider-item">
-                                        <img src={img} alt={`Ayurvedic Product ${i}`} />
+                                        <img src={img} alt={`Product ${i}`} />
                                     </div>
                                 ))}
                             </Marquee>
@@ -106,70 +126,36 @@ const Shop = () => {
             </div>
 
             <div className="container section">
-                {/* Category Pills */}
-                <div className="shop-category-nav">
-                    <div className="category-scroll-wrapper">
-                        {categories.map(cat => {
-                            const count = cat === 'All' ? products.length : products.filter(p => p.category === cat).length;
-                            return (
-                                <button
-                                    key={cat}
-                                    className={`category-pill ${selectedCategory === cat ? 'active' : ''}`}
-                                    onClick={() => setSelectedCategory(cat)}
-                                >
-                                    <span className="pill-text">{cat}</span>
-                                    <span className="pill-count">{count}</span>
-                                </button>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* Main Layout */}
+                
                 <div className="shop-layout">
-                    {/* Toolbar */}
-                    <div className="shop-toolbar">
-                        <div className="toolbar-top">
-                            <div className="shop-search-centered">
-                                <div className="search-input-wrapper">
-                                    <Search className="search-icon" size={18} />
-                                    <input
-                                        type="text"
-                                        placeholder="Search for herbs..."
-                                        value={activeSearch}
-                                        onChange={(e) => setActiveSearch(e.target.value)}
-                                    />
-                                    {activeSearch && (
-                                        <button className="clear-search" onClick={() => setActiveSearch('')}>
-                                            <X size={16} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="controls-right">
-                                <div className="price-filter-compact">
-                                    <span>Max Price: <strong>₹{priceRange}</strong></span>
-                                    <input
-                                        type="range"
-                                        min="0"
-                                        max="2000"
-                                        step="100"
-                                        value={priceRange}
-                                        onChange={(e) => setPriceRange(Number(e.target.value))}
-                                    />
-                                </div>
-                                <div className="sort-wrapper">
-                                    <div className="select-wrapper">
-                                        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} className="sort-select">
-                                            <option value="featured">Featured</option>
-                                            <option value="price-low">Price: Low to High</option>
-                                            <option value="price-high">Price: High to Low</option>
-                                        </select>
-                                        <ChevronDown size={16} className="select-icon" />
-                                    </div>
-                                </div>
-                            </div>
+                    {/* UPDATED TOOLBAR: Search + Filter Button */}
+                    <div className="shop-toolbar sticky-toolbar">
+                        <div className="search-input-wrapper">
+                            <Search className="search-icon" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search...."
+                                value={activeSearch}
+                                onChange={(e) => setActiveSearch(e.target.value)}
+                            />
+                            {activeSearch && (
+                                <button className="clear-search" onClick={() => setActiveSearch('')}>
+                                    <X size={16} />
+                                </button>
+                            )}
                         </div>
+                        
+                        <button 
+                            className={`btn-filter-trigger ${isDrawerOpen ? 'active' : ''}`}
+                            onClick={() => setIsDrawerOpen(true)}
+                        >
+                            <SlidersHorizontal size={18} />
+                            <span>Filters</span>
+                            {/* Dot indicator if filters are active */}
+                            {(selectedCategory !== 'All' || priceRange < 2000 || sortBy !== 'featured') && 
+                                <span className="filter-badge"></span>
+                            }
+                        </button>
                     </div>
 
                     {/* Product Grid */}
@@ -188,7 +174,7 @@ const Shop = () => {
                                     </div>
                                 </div>
 
-                                {/* Dynamic Pagination */}
+                                {/* Pagination */}
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button
@@ -198,7 +184,6 @@ const Shop = () => {
                                         >
                                             <ChevronLeft />
                                         </button>
-
                                         {[...Array(totalPages)].map((_, i) => (
                                             <button
                                                 key={i + 1}
@@ -208,7 +193,6 @@ const Shop = () => {
                                                 {i + 1}
                                             </button>
                                         ))}
-
                                         <button
                                             className={`btn-shop btn-shop-outline ${currentPage === totalPages ? 'disabled' : ''}`}
                                             onClick={() => paginate(currentPage + 1)}
@@ -226,14 +210,93 @@ const Shop = () => {
                                 </div>
                                 <h3>No matching products found</h3>
                                 <p>Try adjusting your search or filters.</p>
-                                <div className="no-products-actions">
-                                    <button className="btn-shop btn-shop-primary" onClick={resetFilters}>
-                                        Reset All Filters
-                                    </button>
-                                </div>
+                                <button className="btn-shop btn-shop-primary" onClick={resetFilters}>
+                                    Reset All Filters
+                                </button>
                             </div>
                         )}
                     </main>
+                </div>
+            </div>
+
+            {/* =========================================
+               BOTTOM DRAWER (Hidden until clicked)
+               ========================================= */}
+            <div 
+                className={`drawer-backdrop ${isDrawerOpen ? 'open' : ''}`} 
+                onClick={() => setIsDrawerOpen(false)}
+            ></div>
+            
+            <div className={`bottom-drawer ${isDrawerOpen ? 'open' : ''}`}>
+                <div className="drawer-header">
+                    <h3>Filter & Sort</h3>
+                    <button className="btn-close-drawer" onClick={() => setIsDrawerOpen(false)}>
+                        <X size={24} />
+                    </button>
+                </div>
+                
+                <div className="drawer-body">
+                    {/* Categories */}
+                    <div className="drawer-section">
+                        <h4>Categories</h4>
+                        <div className="drawer-chips">
+                            {categories.map(cat => {
+                                const count = cat === 'All' ? products.length : products.filter(p => p.category === cat).length;
+                                return (
+                                    <button
+                                        key={cat}
+                                        className={`chip ${selectedCategory === cat ? 'active' : ''}`}
+                                        onClick={() => setSelectedCategory(cat)}
+                                    >
+                                        {cat} <span className="chip-count">{count}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* Price Range */}
+                    <div className="drawer-section">
+                        <div className="drawer-row-between">
+                            <h4>Max Price</h4>
+                            <span className="price-tag">₹{priceRange}</span>
+                        </div>
+                        <input
+                            type="range"
+                            className="styled-range"
+                            min="0"
+                            max="2000"
+                            step="100"
+                            value={priceRange}
+                            onChange={(e) => setPriceRange(Number(e.target.value))}
+                        />
+                    </div>
+
+                    {/* Sort By */}
+                    <div className="drawer-section">
+                        <h4>Sort By</h4>
+                        <div className="select-wrapper">
+                            <select 
+                                value={sortBy} 
+                                onChange={(e) => setSortBy(e.target.value)} 
+                                className="drawer-select"
+                            >
+                                <option value="featured">Featured</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                            </select>
+                            <ChevronDown size={16} className="select-icon" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="drawer-footer">
+                    <button className="btn-drawer-reset" onClick={resetFilters}>
+                        Reset
+                    </button>
+                    <button className="btn-drawer-apply" onClick={() => setIsDrawerOpen(false)}>
+                        Show {filteredProducts.length} Results
+                    </button>
                 </div>
             </div>
         </div>
