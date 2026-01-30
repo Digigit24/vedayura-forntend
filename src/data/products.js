@@ -17,7 +17,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 50,
     },
@@ -41,7 +42,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+             "/assets/product-placeholder-2.png"
         ],
         stock: 30,
     },
@@ -65,7 +67,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 100,
     },
@@ -87,7 +90,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 20,
     },
@@ -109,7 +113,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 80,
     },
@@ -131,7 +136,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 60,
     },
@@ -153,7 +159,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 45,
     },
@@ -175,7 +182,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 35,
     },
@@ -197,7 +205,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 35,
     },
@@ -221,7 +230,8 @@ const products = [
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
             "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg"
+            "/assets/product-placeholder.jpeg",
+            "/assets/product-placeholder-2.png"
         ],
         stock: 35,
     }

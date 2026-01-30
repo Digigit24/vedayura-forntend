@@ -6,6 +6,9 @@ import './ProductCard.css';
 
 const ProductCard = ({ product, activeCategory }) => {
   const { addToCart, addToWishlist, wishlist = [] } = useShop();
+  const [isHovered, setIsHovered] = React.useState(false);
+
+
 
   const isWishlisted = wishlist.some(item => item.id === product.id);
   const [isAdded, setIsAdded] = React.useState(false);
@@ -22,10 +25,12 @@ const ProductCard = ({ product, activeCategory }) => {
         <Link to={`/product/${product.id}`} className="product-image-link">
           <div className="product-image-wrapper">
             <img
-              src={product.images[0]}
-              alt={product.name}
-              className="product-image"
-            />
+  src={isHovered ? product.images[4] : product.images[0]}
+  alt={product.name}
+  className="product-image"
+  onMouseEnter={() => setIsHovered(true)}
+  onMouseLeave={() => setIsHovered(false)}
+/>
           </div>
         </Link>
 
@@ -58,6 +63,23 @@ const ProductCard = ({ product, activeCategory }) => {
             )}%
           </span>
         )}
+      <p
+  className="product-category-diagonal"
+  style={{
+    backgroundColor:
+      product.category === 'Liquid'
+        ? '#28a745'
+        : product.category === 'Powder'
+        ? '#a0522d'
+        : '#8633c1',
+         padding: '4px 3rem',
+    left: '30px',                // position in the middle
+    transform: 'translateX(-50%) rotate(-45deg)', // center + rotate
+  }}
+>
+  {product.category}
+</p>
+
 
         <button
           className={`wishlist-btn ${isWishlisted ? 'active' : ''}`}
@@ -70,7 +92,6 @@ const ProductCard = ({ product, activeCategory }) => {
       <div className="card-accent"></div>
 
       <div className="product-info">
-        <p className="product-category">{product.category}</p>
 
         <Link to={`/product/${product.id}`} className="product-name">
           {product.name}

@@ -114,7 +114,7 @@ const Shop = () => {
                         </div>
                         <div className="hero-right">
                             <Marquee speed={40} pauseOnHover={true} gradient={false}>
-                                {['/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg', '/assets/product-placeholder.jpeg'].map((img, i) => (
+                                {['/assets/product-placeholder.jpeg', '/assets/placeholder-powder.png', '/assets/placeholder-capsules.png', '/assets/placeholder-capsules-2.png'].map((img, i) => (
                                     <div key={`hero-img-${i}`} className="slider-item">
                                         <img src={img} alt={`Product ${i}`} />
                                     </div>

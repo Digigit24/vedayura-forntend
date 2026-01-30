@@ -26,12 +26,13 @@ const Footer = () => {
 
                     {/* Shop Links */}
                     <div className="footer-col">
-                        <h4>Shop</h4>
-                        <ul className="footer-links">
-                            <li><Link to="/shop?category=Liquid">Liquid</Link></li>
-                            <li><Link to="/shop?category=Powder">Powder</Link></li>
-                            <li><Link to="/shop?category=Capsules">Capsules</Link></li>
+                        <h4>Quick Links</h4>
+                       <ul className="footer-links">
+                        <li><Link to="/about">About Us</Link></li>
+                        <li><Link to="/catalog">Catalog</Link></li>
+                        <li><Link to="/contact">Contact</Link></li>
                         </ul>
+
                     </div>
 
                     {/* Support Links */}

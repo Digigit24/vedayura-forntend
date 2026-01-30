@@ -138,7 +138,20 @@ const ProductDetails = () => {
                                 {product.stock < 50 && (
                                     <span className="badge-low-stock">Low Stock</span>
                                 )}
-                                <span className="badge-type">{product.category}</span>
+                               <span
+  className="badge-type"
+  style={{
+    backgroundColor:
+      product.category === 'Liquid'
+        ? '#22c1478f'      // soft teal
+        : product.category === 'Powder'
+        ? '#a0512d89'       // soft earthy red
+        : '#9604fe70'     // capsules blue
+  }}
+>
+  {product.category}
+</span>
+
                             </div>
 
                             <button className="slider-arrow arrow-left" onClick={prevSlide}>
