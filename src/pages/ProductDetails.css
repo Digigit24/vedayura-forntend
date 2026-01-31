@@ -215,12 +215,13 @@
 /* =========================================
    THUMBNAILS (RESTORED ACTIVE INDICATOR)
    ========================================= */
-
 .pd-thumbnails-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    display: flex;
+    justify-content: space-around; /* or space-evenly */
+    gap: 10px;
 }
+
+
 
 .pd-thumb-btn {
     aspect-ratio: 1;

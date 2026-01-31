@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import TopMarquee from "../components/TopMarquee";
+import toast from 'react-hot-toast';
 import {
     ShieldCheck,
     CheckCircle,
@@ -109,7 +110,14 @@ const ProductDetails = () => {
 
     const handleAddToCart = () => {
         addToCart(product, quantity);
-        alert(`Added ${quantity} ${product.name} to cart!`);
+        toast.success(`${product.name} added to cart`, {
+    style: {
+        borderRadius: '12px',
+        background: '#22371f',
+        color: '#fff',
+    },
+});
+
     };
 
     return (

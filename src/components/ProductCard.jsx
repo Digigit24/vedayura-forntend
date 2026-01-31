@@ -25,7 +25,7 @@ const ProductCard = ({ product, activeCategory }) => {
         <Link to={`/product/${product.id}`} className="product-image-link">
           <div className="product-image-wrapper">
             <img
-  src={isHovered ? product.images[4] : product.images[0]}
+  src={isHovered ? product.images[1] : product.images[0]}
   alt={product.name}
   className="product-image"
   onMouseEnter={() => setIsHovered(true)}
@@ -66,12 +66,7 @@ const ProductCard = ({ product, activeCategory }) => {
       <p
   className="product-category-diagonal"
   style={{
-    backgroundColor:
-      product.category === 'Liquid'
-        ? '#28a745'
-        : product.category === 'Powder'
-        ? '#a0522d'
-        : '#8633c1',
+    backgroundColor:'#5b3d20',
          padding: '4px 3rem',
     left: '30px',                // position in the middle
     transform: 'translateX(-50%) rotate(-45deg)', // center + rotate

@@ -11,7 +11,7 @@ import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 import About from './pages/About';
 import Catalog from './pages/Catalog';
-
+import { Toaster } from 'react-hot-toast';
 import Contact from './pages/Contact';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -20,6 +20,7 @@ function App() {
     <ShopProvider>
       <Router>
         <ScrollToTop />
+          <Toaster position="top-left" />
         <CartDrawer /> {/* ✅ ALWAYS MOUNTED */}
 
         <Layout>

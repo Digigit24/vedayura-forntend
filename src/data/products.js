@@ -14,11 +14,9 @@ const products = [
         ],
         productType: "Herbal Joint Support",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/arthofit-capsules-box.png",
+            "/assets/arthofit-capsules-front.png",
+            "/assets/arthofit-capsules-back.png"
         ],
         stock: 50,
     },
@@ -39,11 +37,9 @@ const products = [
         ],
         productType: "Blood Sugar Support",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-             "/assets/product-placeholder-2.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png"
         ],
         stock: 30,
     },
@@ -64,11 +60,9 @@ const products = [
         ],
         productType: "Digestive Health Formula",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png"
         ],
         stock: 100,
     },
@@ -87,11 +81,9 @@ const products = [
         ],
         productType: "FOR WEIGHT LOSS",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/garcinia-plus-capsules-box.png",
+            "/assets/garcinia-plus-capsules-box.png",
+            "/assets/garcinia-plus-capsules-box.png"
         ],
         stock: 20,
     },
@@ -110,11 +102,9 @@ const products = [
         ],
         productType: "FOR WEIGHT LOSS",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/garcinia-plus-liquid.png",
+            "/assets/garcinia-plus-liquid.png",
+            "/assets/garcinia-plus-liquid-back.png"
         ],
         stock: 80,
     },
@@ -133,11 +123,9 @@ const products = [
         ],
         productType: "Liver Support Juice",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/livofit-liquid.png",
+            "/assets/livofit-liquid-back.png",
+            "/assets/livofit-liquid.png"
         ],
         stock: 60,
     },
@@ -156,11 +144,9 @@ const products = [
         ],
         productType: "Natural Piles Solution",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/pilotox-capsules-front.png",
+            "/assets/pilotox-capsules-back.png",
+            "/assets/pilotox-capsules-box.png"
         ],
         stock: 45,
     },
@@ -179,11 +165,9 @@ const products = [
         ],
         productType: "Natural Piles Solution",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/pilotox-liquid-bottle.png",
+            "/assets/pilotox-liquid-back.png",
+            "/assets/pilotox-liquid-bottle.png"
         ],
         stock: 35,
     },
@@ -202,11 +186,9 @@ const products = [
         ],
         productType: "Herbal Joint Support",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder.png"
         ],
         stock: 35,
     },
@@ -227,11 +209,106 @@ const products = [
         ],
         productType: "Blood Sugar Support",
         images: [
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder.jpeg",
-            "/assets/product-placeholder-2.png"
+            "/assets/diabofit-juice.jpeg",
+            "/assets/diabofit-juice.jpeg",
+            "/assets/diabofit-juice.jpeg"
+        ],
+        stock: 35,
+    },
+    {
+        id: 11,
+        name: "Skin Care",
+        category: "Capsules",
+        price: 878.52,
+        Ingredients: ".",
+        Benefits: [
+        ],
+        productType: "For Skin Problems",
+        images: [
+            "/assets/skin-care-capsule-front.png",
+            "/assets/skin-care-capsules-box.png",
+            "/assets/skin-care-capsules-front.png"
+        ],
+        stock: 35,
+    },
+    {
+        id: 12,
+        name: "immuntity Booster",
+        category: "Capsules",
+        price: 878.52,
+        Ingredients: ".",
+        Benefits: [
+            "Strengthens daily immunity",
+            "Boosts energy without jitters",
+            "Supports respiratory health",
+            "Rich in natural antioxidants",
+            "Helps manage stress and fatigue",
+            "Reduces inflammation naturally",
+        ],
+        productType: "For Energy",
+        images: [
+            "/assets/immunity-booster-capsules-front.png",
+            "/assets/immunity-booster-capsules-box.png",
+            "/assets/immunity-booster-capsules-back.png"
+        ],
+        stock: 35,
+    },
+     {
+        id: 12,
+        name: "immuntity Booster",
+        category: "Liquid",
+        price: 623.52,
+        Ingredients: ".",
+        Benefits: [
+            "Strengthens daily immunity",
+            "Boosts energy without jitters",
+            "Supports respiratory health",
+            "Rich in natural antioxidants",
+            "Helps manage stress and fatigue",
+            "Reduces inflammation naturally",
+        ],
+        productType: "For Energy",
+        images: [
+            "/assets/immunity-booster-liquid.png",
+            "/assets/immunity-booster-liquid-back.png",
+            "/assets/immunity-booster-liquid.png"
+        ],
+        stock: 35,
+    },
+     {
+        id: 13,
+        name: "Heart Care",
+        category: "Capsules",
+        price: 878.52,
+        Ingredients: ".",
+        Benefits: [
+            "Supports healthy heart function",
+            "Helps maintain normal blood circulation",
+            "Aids in balancing cholestrol levels",
+            "Supports healthy blood pressure",
+            "Helps reduce stress on heart"
+        ],
+        productType: "For Healthy Blood Circulation",
+        images: [
+            "/assets/heart-care-capsules-front.png",
+            "/assets/heart-care-capsules-box.png",
+            "/assets/heart-care-capsules-back.png"
+        ],
+        stock: 35,
+    },
+     {
+        id: 14,
+        name: "Coffee",
+        category: "Other",
+        price: 0.0,
+        Ingredients: "Arjun bark (100 gm), green cardamom (50 gm), desi garlic (50 gm), roasted soybean (200 gm), desi mint (50 gm), dry ginger (sonth) (50 gm), carom seeds (ajwain) (50 gm), fennel seeds (badisop) (50 gm), holy basil (tulsi) (50 gm), ashwagandha (50 gm), cinnamon (50 gm), dried lemon (50 gm).",
+        Benefits: [
+        ],
+        productType: "Energy",
+        images: [
+            "/assets/coffee-pouch-front.png",
+            "/assets/coffee-pouch-back.png",
+            "/assets/coffee-pouch-front.png"
         ],
         stock: 35,
     }
