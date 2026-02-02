@@ -151,10 +151,10 @@ const ProductDetails = () => {
   style={{
     backgroundColor:
       product.category === 'Liquid'
-        ? '#22c1478f'      // soft teal
+        ? '#02f83be9'      // soft teal
         : product.category === 'Powder'
-        ? '#a0512d89'       // soft earthy red
-        : '#9604fe70'     // capsules blue
+        ? '#ff5100fb'       // soft earthy red
+        : '#9500ff70'     // capsules blue
   }}
 >
   {product.category}

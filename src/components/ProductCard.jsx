@@ -25,7 +25,7 @@ const ProductCard = ({ product, activeCategory }) => {
         <Link to={`/product/${product.id}`} className="product-image-link">
           <div className="product-image-wrapper">
             <img
-  src={isHovered ? product.images[1] : product.images[0]}
+  src={isHovered ? product.images[3] : product.images[0]}
   alt={product.name}
   className="product-image"
   onMouseEnter={() => setIsHovered(true)}
@@ -54,8 +54,6 @@ const ProductCard = ({ product, activeCategory }) => {
 </button>
 
 </div>
-
-
         {product.discount_price < product.price && (
           <span className="discount-badge">
             -{Math.round(

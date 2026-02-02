@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
 // Added SlidersHorizontal for the filter button icon
@@ -112,15 +112,21 @@ const Shop = () => {
                                 Discover our collection of Ayurvedic products crafted to restore balance.
                             </p>
                         </div>
-                        <div className="hero-right">
-                            <Marquee speed={40} pauseOnHover={true} gradient={false}>
-                                {['/assets/product-placeholder.jpeg', '/assets/placeholder-powder.png', '/assets/placeholder-capsules.png', '/assets/placeholder-capsules-2.png'].map((img, i) => (
-                                    <div key={`hero-img-${i}`} className="slider-item">
-                                        <img src={img} alt={`Product ${i}`} />
-                                    </div>
-                                ))}
-                            </Marquee>
-                        </div>
+                   <div className="hero-right">
+  <Marquee speed={40} pauseOnHover gradient={false}>
+    {products.map((product) => (
+      <div key={product.id} className="slider-item">
+  <Link to={`/product/${product.id}`}>
+    <img
+      src={product.images[3] || product.images[0]}
+      alt={`${product.name} ${product.category}`}
+    />
+  </Link>
+</div>
+    ))}
+  </Marquee>
+</div>
+
                     </div>
                 </div>
             </div>

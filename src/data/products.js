@@ -16,7 +16,8 @@ const products = [
         images: [
             "/assets/arthofit-capsules-box.png",
             "/assets/arthofit-capsules-front.png",
-            "/assets/arthofit-capsules-back.png"
+            "/assets/arthofit-capsules-back.png",
+            "/assets/arthofit-capsules-front-tr.png"
         ],
         stock: 50,
     },
@@ -39,7 +40,8 @@ const products = [
         images: [
             "/assets/product-placeholder.png",
             "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder-tr.png"
         ],
         stock: 30,
     },
@@ -62,7 +64,8 @@ const products = [
         images: [
             "/assets/product-placeholder.png",
             "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder-tr.png"
         ],
         stock: 100,
     },
@@ -83,7 +86,8 @@ const products = [
         images: [
             "/assets/garcinia-plus-capsules-box.png",
             "/assets/garcinia-plus-capsules-box.png",
-            "/assets/garcinia-plus-capsules-box.png"
+            "/assets/garcinia-plus-capsules-box.png",
+            "/assets/garcinia-plus-capsules-box-tr.png"
         ],
         stock: 20,
     },
@@ -104,7 +108,8 @@ const products = [
         images: [
             "/assets/garcinia-plus-liquid.png",
             "/assets/garcinia-plus-liquid.png",
-            "/assets/garcinia-plus-liquid-back.png"
+            "/assets/garcinia-plus-liquid-back.png",
+            "/assets/garcinia-plus-liquid-tr.png"
         ],
         stock: 80,
     },
@@ -125,7 +130,8 @@ const products = [
         images: [
             "/assets/livofit-liquid.png",
             "/assets/livofit-liquid-back.png",
-            "/assets/livofit-liquid.png"
+            "/assets/livofit-liquid.png",
+            "/assets/livofit-liquid-tr.png"
         ],
         stock: 60,
     },
@@ -146,7 +152,8 @@ const products = [
         images: [
             "/assets/pilotox-capsules-front.png",
             "/assets/pilotox-capsules-back.png",
-            "/assets/pilotox-capsules-box.png"
+            "/assets/pilotox-capsules-box.png",
+            "/assets/pilotox-capsules-front-tr.png"
         ],
         stock: 45,
     },
@@ -167,7 +174,8 @@ const products = [
         images: [
             "/assets/pilotox-liquid-bottle.png",
             "/assets/pilotox-liquid-back.png",
-            "/assets/pilotox-liquid-bottle.png"
+            "/assets/pilotox-liquid-bottle.png",
+            "/assets/pilotox-liquid-bottle-tr.png"
         ],
         stock: 35,
     },
@@ -188,7 +196,8 @@ const products = [
         images: [
             "/assets/product-placeholder.png",
             "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png"
+            "/assets/product-placeholder.png",
+            "/assets/product-placeholder-tr.png"
         ],
         stock: 35,
     },
@@ -211,6 +220,7 @@ const products = [
         images: [
             "/assets/diabofit-juice.jpeg",
             "/assets/diabofit-juice.jpeg",
+            "/assets/diabofit-juice.jpeg",
             "/assets/diabofit-juice.jpeg"
         ],
         stock: 35,
@@ -227,7 +237,8 @@ const products = [
         images: [
             "/assets/skin-care-capsule-front.png",
             "/assets/skin-care-capsules-box.png",
-            "/assets/skin-care-capsules-front.png"
+            "/assets/skin-care-capsules-front.png",
+            "/assets/skin-care-capsule-front-tr.png"
         ],
         stock: 35,
     },
@@ -249,12 +260,13 @@ const products = [
         images: [
             "/assets/immunity-booster-capsules-front.png",
             "/assets/immunity-booster-capsules-box.png",
-            "/assets/immunity-booster-capsules-back.png"
+            "/assets/immunity-booster-capsules-back.png",
+            "/assets/immunity-booster-capsules-front-tr.png"
         ],
         stock: 35,
     },
      {
-        id: 12,
+        id: 13,
         name: "immuntity Booster",
         category: "Liquid",
         price: 623.52,
@@ -271,12 +283,13 @@ const products = [
         images: [
             "/assets/immunity-booster-liquid.png",
             "/assets/immunity-booster-liquid-back.png",
-            "/assets/immunity-booster-liquid.png"
+            "/assets/immunity-booster-liquid.png",
+            "/assets/immunity-booster-liquid-tr.png"
         ],
         stock: 35,
     },
      {
-        id: 13,
+        id: 14,
         name: "Heart Care",
         category: "Capsules",
         price: 878.52,
@@ -292,12 +305,13 @@ const products = [
         images: [
             "/assets/heart-care-capsules-front.png",
             "/assets/heart-care-capsules-box.png",
-            "/assets/heart-care-capsules-back.png"
+            "/assets/heart-care-capsules-back.png",
+            "/assets/heart-care-capsules-front-tr.png"
         ],
         stock: 35,
     },
      {
-        id: 14,
+        id: 15,
         name: "Coffee",
         category: "Other",
         price: 0.0,
@@ -308,7 +322,8 @@ const products = [
         images: [
             "/assets/coffee-pouch-front.png",
             "/assets/coffee-pouch-back.png",
-            "/assets/coffee-pouch-front.png"
+            "/assets/coffee-pouch-front.png",
+            "/assets/coffee-pouch-front-tr.png"
         ],
         stock: 35,
     }
