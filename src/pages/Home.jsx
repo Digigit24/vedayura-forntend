@@ -5,9 +5,6 @@ import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
 import { Leaf, ShieldCheck } from "lucide-react";
 import "./Home.css";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
   const heroImages = [
@@ -31,32 +28,8 @@ useEffect(() => {
    const floatRef = useRef(null);
     useEffect(() => {
     const el = floatRef.current;
-
-    // Idle breathing motion
-    gsap.to(el, {
-      y: -8,
-      duration: 5,
-      ease: "sine.inOut",
-      repeat: -1,
-      yoyo: true,
     });
-
-    // Scroll-synced motion
-    gsap.to(el, {
-      y: -20,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".hero-section",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: 1,
-      },
-    });
-  return () => {
-      ScrollTrigger.getAll().forEach(st => st.kill());
-      gsap.killTweensOf(el);
-    };
-  }, []);
+ 
 
   return (
     <div className="home-page">
@@ -150,40 +123,40 @@ useEffect(() => {
       </section>
 
    
-<section class="section bg-testimonials">
-  <div class="container">
-    <h2 class="section-title text-center">Stories of Healing</h2>
-    <p class="text-secondary text-center mb-xl">Hear from our satisfied customers who experienced the power of Ayurveda with VedAyura.</p>
+<section className="section bg-testimonials">
+  <div className="container">
+    <h2 className="section-title text-center">Stories of Healing</h2>
+    <p className="text-secondary text-center mb-xl">Hear from our satisfied customers who experienced the power of Ayurveda with VedAyura.</p>
 
-    <div class="testimonials-grid">
+    <div className="testimonials-grid">
    
-      <div class="testimonial-card">
-        <div class="testimonial-header">
-          <div class="stars">★★★★★</div>
-          <h4 class="testimonial-name">Anjali Sharma</h4>
+      <div className="testimonial-card">
+        <div className="testimonial-header">
+          <div className="stars">★★★★★</div>
+          <h4 className="testimonial-name">Anjali Sharma</h4>
         </div>
-        <p class="testimonial-text">
+        <p className="testimonial-text">
           "I've tried many natural brands, but nothing comes close to the authenticity of Vedayura. The <strong>Arthofit</strong> capsules are a game-changer! My joints feel more flexible, and the pain has significantly reduced."
         </p>
       </div>
 
    
-      <div class="testimonial-card">
-        <div class="testimonial-header">
-          <div class="stars">★★★★★</div>
-          <h4 class="testimonial-name">Rahul Khanna</h4>
+      <div className="testimonial-card">
+        <div className="testimonial-header">
+          <div className="stars">★★★★★</div>
+          <h4 className="testimonial-name">Rahul Khanna</h4>
         </div>
-        <p class="testimonial-text">
+        <p className="testimonial-text">
           "Finally found <strong>Diabofit</strong> liquid that is pure and effective. My sugar levels are better controlled, and I feel more energized throughout the day."
         </p>
       </div>
 
-      <div class="testimonial-card">
-        <div class="testimonial-header">
-          <div class="stars">★★★★★</div>
-          <h4 class="testimonial-name">Priya Menon</h4>
+      <div className="testimonial-card">
+        <div className="testimonial-header">
+          <div className="stars">★★★★★</div>
+          <h4 className="testimonial-name">Priya Menon</h4>
         </div>
-        <p class="testimonial-text">
+        <p className="testimonial-text">
           "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
         </p>
       </div>
