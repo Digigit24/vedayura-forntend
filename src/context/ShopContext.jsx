@@ -5,25 +5,24 @@ import api from '../api';
 const ShopContext = createContext();
 
 export const ShopProvider = ({ children }) => {
-    const [products] = useState(productsData);
+    const [products, setProducts] = useState(productsData);
     const [cart, setCart] = useState([]);
     const [wishlist, setWishlist] = useState([]);
     const [drawerType, setDrawerType] = useState(null);
-    const [user, setUser] = useState(null); // Simple user state for now
+    const [user, setUser] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-
-    // Load state from local storage on mount (optional but good for UX)
+    // Load state from local storage on mount
     useEffect(() => {
         const savedCart = localStorage.getItem('ayurveda_cart');
         const savedWishlist = localStorage.getItem('ayurveda_wishlist');
         const savedUser = localStorage.getItem('ayurveda_user');
         const savedToken = localStorage.getItem('ayurveda_token');
+        
         if (savedCart) setCart(JSON.parse(savedCart));
         if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
         if (savedUser) setUser(JSON.parse(savedUser));
         if (savedToken && !savedUser) {
-            // try fetch current user
             api.auth.me().then(res => {
                 if (res && res.user) setUser(res.user);
             }).catch(() => { });
@@ -34,14 +33,28 @@ export const ShopProvider = ({ children }) => {
             try {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
                 if (res && Array.isArray(res.products)) {
-                    setProducts(res.products);
+                    // Map backend fields to frontend fields
+                    const mappedProducts = res.products.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        description: p.description,
+                        image: p.imageUrls?.[0] || '/assets/product-placeholder.png',
+                        images: p.imageUrls || ['/assets/product-placeholder.png'],
+                        category: p.category?.name || 'Uncategorized',
+                        price: p.discountedPrice || p.realPrice,
+                        realPrice: p.realPrice,
+                        discount_price: p.discountedPrice,
+                        stock: p.stockQuantity,
+                        rating: p.averageRating || 0,
+                        Ingredients: p.description || '',
+                        Benefits: []
+                    }));
+                    setProducts(mappedProducts);
                 } else {
-                    // Fallback to local data if API returns structure we don't expect
                     console.warn('API returned unexpected format, using local data');
                 }
             } catch (err) {
                 console.warn('Failed to load products from API, using local data', err);
-                // No need to do anything else, initial state is already productsData
             }
         })();
     }, []);
@@ -73,30 +86,13 @@ export const ShopProvider = ({ children }) => {
         })();
     }, [user]);
 
-    const loadWishlist = async () => {
-        try {
-            const data = await getWishlist();
-            if (data.success && data.wishlist) {
-                // Map API wishlist items to match frontend product structure if needed
-                // API returns items: [{ id, product: { ... } }]
-                // Frontend expects array of products
-                const validItems = data.wishlist.items.map(item => ({
-                    ...item.product,
-                    wishlistItemId: item.id // Store the wishlist item ID for removal
-                }));
-                setWishlist(validItems);
-            }
-        } catch (error) {
-            console.error("Failed to load wishlist", error);
-        }
-    };
-
     const openCart = () => setDrawerType("cart");
     const openWishlist = () => setDrawerType("wishlist");
     const closeDrawer = () => setDrawerType(null);
 
     const logout = () => {
-        localStorage.removeItem('token');
+        localStorage.removeItem('ayurveda_token');
+        localStorage.removeItem('ayurveda_user');
         setUser(null);
         setWishlist([]);
     };
@@ -108,16 +104,15 @@ export const ShopProvider = ({ children }) => {
                 const updated = prev.map(item =>
                     item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
                 );
-                // sync to server
                 if (user) {
                     const item = updated.find(i => i.id === product.id);
-                    try { api.cart.add(product.id, item.quantity); } catch (err) { console.error(err); }
+                    api.cart.add(product.id, item.quantity).catch(err => console.error(err));
                 }
                 return updated;
             }
             const newItem = { ...product, quantity };
             if (user) {
-                try { api.cart.add(product.id, quantity); } catch (err) { console.error(err); }
+                api.cart.add(product.id, quantity).catch(err => console.error(err));
             }
             return [...prev, newItem];
         });
@@ -127,7 +122,7 @@ export const ShopProvider = ({ children }) => {
         setCart(prev => {
             const next = prev.filter(item => item.id !== productId);
             if (user) {
-                try { api.cart.remove(productId); } catch (err) { console.error(err); }
+                api.cart.remove(productId).catch(err => console.error(err));
             }
             return next;
         });
@@ -138,7 +133,7 @@ export const ShopProvider = ({ children }) => {
         setCart(prev => {
             const updated = prev.map(item => item.id === productId ? { ...item, quantity } : item);
             if (user) {
-                try { api.cart.update(productId, quantity); } catch (err) { console.error(err); }
+                api.cart.update(productId, quantity).catch(err => console.error(err));
             }
             return updated;
         });
@@ -150,10 +145,14 @@ export const ShopProvider = ({ children }) => {
         setWishlist(prev => {
             const exists = prev.find(item => item.id === product.id);
             if (exists) {
-                if (user) { try { api.wishlist.remove(product.id); } catch (err) { console.error(err); } }
+                if (user) {
+                    api.wishlist.remove(product.id).catch(err => console.error(err));
+                }
                 return prev.filter(item => item.id !== product.id);
             }
-            if (user) { try { api.wishlist.add(product.id); } catch (err) { console.error(err); } }
+            if (user) {
+                api.wishlist.add(product.id).catch(err => console.error(err));
+            }
             return [...prev, product];
         });
     };
@@ -169,21 +168,17 @@ export const ShopProvider = ({ children }) => {
                 }
                 return { success: true, user: res.user };
             }
+            // API returned but no token - invalid credentials
+            return { success: false, message: res?.message || 'Invalid email or password' };
         } catch (err) {
-            // fallback to mock simple login for dev convenience
             console.error('Login failed', err);
-            if (email.includes('admin')) {
-                const mock = { name: 'Admin User', email, role: 'admin' };
-                setUser(mock);
-                localStorage.setItem('ayurveda_user', JSON.stringify(mock));
-                return { success: true, user: mock };
+            // Check if it's an API error response (wrong credentials)
+            if (err.response?.status === 401 || err.response?.status === 400) {
+                return { success: false, message: err.response?.data?.message || 'Invalid email or password' };
             }
-            const mock = { name: 'Demo User', email, role: 'user' };
-            setUser(mock);
-            localStorage.setItem('ayurveda_user', JSON.stringify(mock));
-            return { success: true, user: mock };
+            // Network error or server down
+            return { success: false, message: 'Unable to connect to server. Please try again.' };
         }
-        return { success: false };
     };
 
     const register = async (name, email, password, phone) => {
@@ -197,15 +192,17 @@ export const ShopProvider = ({ children }) => {
                 }
                 return { success: true, user: res.user };
             }
+            // API returned but no token
+            return { success: false, message: res?.message || res?.error || 'Registration failed' };
         } catch (err) {
             console.error('Register failed', err);
-            // fallback
-            const mock = { name, email, role: 'user' };
-            setUser(mock);
-            localStorage.setItem('ayurveda_user', JSON.stringify(mock));
-            return { success: true, user: mock };
+            // Extract error message from various possible locations
+            const errorMsg = err.response?.data?.message 
+                || err.response?.data?.error 
+                || err.message 
+                || 'Registration failed. Please try again.';
+            return { success: false, message: errorMsg };
         }
-        return { success: false };
     };
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -215,16 +212,35 @@ export const ShopProvider = ({ children }) => {
         const isAdmin = user && String(user.role).toLowerCase().includes('admin');
         if (isAdmin) {
             try {
-                const res = await api.products.create(newProduct);
+                // Map frontend fields to backend fields
+                const backendPayload = {
+                    name: newProduct.name,
+                    description: newProduct.description || '',
+                    categoryId: newProduct.categoryId,
+                    realPrice: newProduct.price,
+                    discountedPrice: newProduct.price,
+                    stockQuantity: newProduct.stock,
+                    imageUrls: [newProduct.image || 'https://picsum.photos/400']
+                };
+                const res = await api.products.create(backendPayload);
                 if (res && res.product) {
-                    setProducts(prev => [...prev, res.product]);
-                    return res.product;
+                    const mapped = {
+                        id: res.product.id,
+                        name: res.product.name,
+                        image: res.product.imageUrls?.[0],
+                        category: res.product.category?.name || 'Uncategorized',
+                        price: res.product.discountedPrice || res.product.realPrice,
+                        stock: res.product.stockQuantity
+                    };
+                    setProducts(prev => [...prev, mapped]);
+                    return mapped;
                 }
             } catch (err) {
                 console.error('Create product failed', err);
             }
         }
-        const productWithId = { ...newProduct, id: products.length + 1 };
+        // Fallback for local-only
+        const productWithId = { ...newProduct, id: Date.now() };
         setProducts(prev => [...prev, productWithId]);
         return productWithId;
     };
@@ -233,10 +249,27 @@ export const ShopProvider = ({ children }) => {
         const isAdmin = user && String(user.role).toLowerCase().includes('admin');
         if (isAdmin) {
             try {
-                const res = await api.products.update(updatedProduct.id, updatedProduct);
+                // Map frontend fields to backend fields
+                const backendPayload = {
+                    name: updatedProduct.name,
+                    description: updatedProduct.description || '',
+                    realPrice: updatedProduct.price,
+                    discountedPrice: updatedProduct.price,
+                    stockQuantity: updatedProduct.stock,
+                    imageUrls: [updatedProduct.image || 'https://picsum.photos/400']
+                };
+                const res = await api.products.update(updatedProduct.id, backendPayload);
                 if (res && res.product) {
-                    setProducts(prev => prev.map(p => p.id === res.product.id ? res.product : p));
-                    return res.product;
+                    const mapped = {
+                        id: res.product.id,
+                        name: res.product.name,
+                        image: res.product.imageUrls?.[0],
+                        category: res.product.category?.name || 'Uncategorized',
+                        price: res.product.discountedPrice || res.product.realPrice,
+                        stock: res.product.stockQuantity
+                    };
+                    setProducts(prev => prev.map(p => p.id === mapped.id ? mapped : p));
+                    return mapped;
                 }
             } catch (err) {
                 console.error('Update product failed', err);
@@ -262,6 +295,8 @@ export const ShopProvider = ({ children }) => {
     };
 
     const value = {
+        user,
+        setUser,
         products,
         cart,
         setCart,

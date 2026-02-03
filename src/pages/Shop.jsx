@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-// Added SlidersHorizontal for the filter button icon
 import { ChevronDown, Search, X, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import './Shop.css';
 import Marquee from 'react-fast-marquee';
@@ -34,10 +33,8 @@ const Shop = () => {
     }, [selectedCategory, activeSearch, priceRange, sortBy]);
 
     useEffect(() => {
-    document.documentElement.style.scrollBehavior =
-        isDrawerOpen ? 'auto' : 'smooth';
-}, [isDrawerOpen]);
-
+        document.documentElement.style.scrollBehavior = isDrawerOpen ? 'auto' : 'smooth';
+    }, [isDrawerOpen]);
 
     // Pagination Logic
     const indexOfLastProduct = currentPage * productsPerPage;
@@ -52,9 +49,27 @@ const Shop = () => {
 
     const categories = ['All', 'Liquid', 'Powder', 'Capsules', 'Other'];
 
+    // Helper function to get product image safely
+    const getProductImage = (product, index = 0) => {
+        // Try images array first (local data format)
+        if (product.images && product.images[index]) {
+            return product.images[index];
+        }
+        // Try single image property (API format)
+        if (product.image) {
+            return product.image;
+        }
+        // Try imageUrls array (raw API format)
+        if (product.imageUrls && product.imageUrls[index]) {
+            return product.imageUrls[index];
+        }
+        // Fallback
+        return '/assets/product-placeholder.png';
+    };
+
     // Filter Logic
     useEffect(() => {
-        let result = products;
+        let result = [...products];
         
         // 1. Category
         if (selectedCategory !== 'All') {
@@ -65,20 +80,23 @@ const Shop = () => {
         if (activeSearch) {
             const q = activeSearch.toLowerCase();
             result = result.filter(p =>
-                p.name.toLowerCase().includes(q) ||
+                p.name?.toLowerCase().includes(q) ||
                 (p.description && p.description.toLowerCase().includes(q)) ||
                 (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
             );
         }
         
         // 3. Price
-        result = result.filter(p => (p.discount_price || p.price) <= priceRange);
+        result = result.filter(p => {
+            const price = p.discount_price || p.price || 0;
+            return price <= priceRange;
+        });
 
         // 4. Sort
         if (sortBy === 'price-low') {
-            result.sort((a, b) => (a.discount_price || a.price) - (b.discount_price || b.price));
+            result.sort((a, b) => (a.discount_price || a.price || 0) - (b.discount_price || b.price || 0));
         } else if (sortBy === 'price-high') {
-            result.sort((a, b) => (b.discount_price || b.price) - (a.discount_price || a.price));
+            result.sort((a, b) => (b.discount_price || b.price || 0) - (a.discount_price || a.price || 0));
         }
         
         setFilteredProducts(result);
@@ -106,7 +124,7 @@ const Shop = () => {
 
     return (
         <div className="shop-page">
-            {/* Hero Section (Unchanged) */}
+            {/* Hero Section */}
             <div className="container" style={{ padding: 0 }}>
                 <div className="shop-hero">
                     <div className="shop-hero-inner">
@@ -118,29 +136,36 @@ const Shop = () => {
                                 Discover our collection of Ayurvedic products crafted to restore balance.
                             </p>
                         </div>
-                   <div className="hero-right">
-  <Marquee speed={40} pauseOnHover gradient={false}>
-    {products.map((product) => (
-      <div key={product.id} className="slider-item">
-  <Link to={`/product/${product.id}`}>
-    <img
-      src={product.images[3] || product.images[0]}
-      alt={`${product.name} ${product.category}`}
-    />
-  </Link>
-</div>
-    ))}
-  </Marquee>
-</div>
-
+                        <div className="hero-right">
+                            {products.length > 0 ? (
+                                <Marquee speed={40} pauseOnHover gradient={false}>
+                                    {products.map((product) => (
+                                        <div key={product.id} className="slider-item">
+                                            <Link to={`/product/${product.id}`}>
+                                                <img
+                                                    src={getProductImage(product, 3) || getProductImage(product, 0)}
+                                                    alt={`${product.name} ${product.category}`}
+                                                    onError={(e) => {
+                                                        e.target.src = '/assets/product-placeholder.png';
+                                                    }}
+                                                />
+                                            </Link>
+                                        </div>
+                                    ))}
+                                </Marquee>
+                            ) : (
+                                <div className="marquee-placeholder">
+                                    <p>Loading products...</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div className="container section">
-                
                 <div className="shop-layout">
-                    {/* UPDATED TOOLBAR: Search + Filter Button */}
+                    {/* TOOLBAR: Search + Filter Button */}
                     <div className="shop-toolbar sticky-toolbar">
                         <div className="search-input-wrapper">
                             <Search className="search-icon" size={18} />
@@ -163,7 +188,6 @@ const Shop = () => {
                         >
                             <SlidersHorizontal size={18} />
                             <span>Filters</span>
-                            {/* Dot indicator if filters are active */}
                             {(selectedCategory !== 'All' || priceRange < 2000 || sortBy !== 'featured') && 
                                 <span className="filter-badge"></span>
                             }
@@ -231,9 +255,7 @@ const Shop = () => {
                 </div>
             </div>
 
-            {/* =========================================
-               BOTTOM DRAWER (Hidden until clicked)
-               ========================================= */}
+            {/* Bottom Drawer */}
             <div 
                 className={`drawer-backdrop ${isDrawerOpen ? 'open' : ''}`} 
                 onClick={() => setIsDrawerOpen(false)}
@@ -253,7 +275,9 @@ const Shop = () => {
                         <h4>Categories</h4>
                         <div className="drawer-chips">
                             {categories.map(cat => {
-                                const count = cat === 'All' ? products.length : products.filter(p => p.category === cat).length;
+                                const count = cat === 'All' 
+                                    ? products.length 
+                                    : products.filter(p => p.category === cat).length;
                                 return (
                                     <button
                                         key={cat}

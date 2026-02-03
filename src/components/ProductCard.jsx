@@ -94,10 +94,6 @@ const ProductCard = ({ product, activeCategory }) => {
           <span className="current-price">
             ₹{product.discount_price || product.price}
           </span>
-
-          {product.discount_price && (
-            <span className="original-price">₹{product.price}</span>
-          )}
         </div>
       </div>
     </div>

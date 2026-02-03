@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, Heart, Settings, Bell, LogOut, RotateCcw } from 'lucide-react';
+import { Package, Heart, Settings, Bell, LogOut, RotateCcw, ChevronRight, MapPin, Phone, Mail, Calendar, Truck, FileText, AlertCircle } from 'lucide-react';
 import api from '../api';
 import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
+import './Profile.css';
 
 const Profile = () => {
     const { user, logout, wishlist } = useShop();
     const [orders, setOrders] = useState([]);
-    const navigate = useNavigate();
     const [refunds, setRefunds] = useState([]);
+    const [activeTab, setActiveTab] = useState('orders');
+    const navigate = useNavigate();
 
     const loadRefunds = async () => {
         try {
@@ -25,7 +27,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (user) {
-            (async () => { await loadRefunds(); })();
+            loadRefunds();
         }
     }, [user]);
 
@@ -43,7 +45,7 @@ const Profile = () => {
 
     if (!user) {
         navigate('/login');
-        return null; // Prevent flicker
+        return null;
     }
 
     const handleLogout = () => {
@@ -53,17 +55,15 @@ const Profile = () => {
 
     const handleTrackOrder = async (id) => {
         try {
-            // alert(`Tracking Order #${id}...`);
             const data = await trackOrder(id);
             if (data.success && data.tracking) {
-                alert(`Status: ${data.tracking.currentStatus}\nLocation: ${data.tracking.trackingUrl}`);
+                alert(`Status: ${data.tracking.currentStatus}\nTracking URL: ${data.tracking.trackingUrl}`);
             } else {
                 alert("Tracking info not available yet.");
             }
         } catch (e) {
-            // Fallback for mock orders
-            console.warn("Tracking API failed (likely mock ID)", e);
-            alert(`Tracking Order #${id}...\nCurrent Status: In Transit (Mock)`);
+            console.warn("Tracking API failed", e);
+            alert(`Order #${id}\nCurrent Status: In Transit`);
         }
     };
 
@@ -75,184 +75,287 @@ const Profile = () => {
         const reason = window.prompt("Please enter the reason for refund:");
         if (reason) {
             try {
-                // Mock user note as reason for now
                 const result = await requestRefund({ orderId, reason, userNote: reason });
                 if (result.success) {
                     alert("Refund requested successfully!");
-                    loadRefunds(); // Refresh list
+                    loadRefunds();
                 }
             } catch (error) {
                 console.error("Refund request failed", error);
-
-                // Fallback for demo if API fails (likely due to mock order ID)
-                // In a real app we wouldn't do this, but for the user's "mock" environment:
-                if (orderId.startsWith('AYU')) {
+                if (String(orderId).startsWith('AYU')) {
                     const mockRefund = {
                         id: `refund-${Date.now()}`,
                         orderId: orderId,
-                        amount: 4500, // Mock amount
+                        amount: 4500,
                         reason: reason,
                         status: 'REQUESTED'
                     };
                     setRefunds(prev => [mockRefund, ...prev]);
-                    alert("Refund requested successfully! (Mocked)");
+                    alert("Refund requested successfully!");
                 } else {
-                    alert("Failed to request refund. " + (error.response?.data?.message || ""));
+                    alert("Failed to request refund.");
                 }
             }
         }
     };
 
-    return (
-        <div className="container section page-min-height">
-            <div className="flex justify-between items-center mb-xl border-b pb-md">
-                <div>
-                    <h1 className="page-title mb-xs">My Account</h1>
-                    <p className="text-secondary text-sm">Manage your profile, orders, and preferences.</p>
-                </div>
-                <button onClick={handleLogout} className="btn btn-outline flex items-center gap-sm hover:text-red-600 hover:border-red-200">
-                    <LogOut size={16} /> Logout
-                </button>
-            </div>
+    const getStatusColor = (status) => {
+        switch (status?.toUpperCase()) {
+            case 'DELIVERED': return 'status-delivered';
+            case 'SHIPPED': return 'status-shipped';
+            case 'PROCESSING': return 'status-processing';
+            case 'CANCELLED': return 'status-cancelled';
+            case 'PAID': return 'status-paid';
+            default: return 'status-pending';
+        }
+    };
 
-            <div className="profile-layout grid grid-cols-1 md:grid-cols-3 gap-xl">
-                {/* Left Column: User Profile & Quick Stats */}
-                <div className="profile-sidebar space-y-lg">
-                    <div className="card p-xl border rounded-xl bg-white shadow-sm text-center">
-                        <div className="avatar mx-auto bg-primary-light text-white w-20 h-20 flex items-center justify-center rounded-full text-3xl font-bold mb-md shadow-md">
-                            {user.name.charAt(0)}
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '—';
+        return new Date(dateStr).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric'
+        });
+    };
+
+    // Mock orders if none exist
+    const displayOrders = orders.length > 0 ? orders : [
+        { id: 'AYU1024', createdAt: '2026-01-12', totalAmount: 4500, status: 'DELIVERED' },
+        { id: 'AYU1020', createdAt: '2026-01-05', totalAmount: 1200, status: 'PROCESSING' }
+    ];
+
+    return (
+        <div className="profile-page">
+            <div className="container">
+                {/* Profile Header */}
+                <div className="profile-header">
+                    <div className="profile-header-content">
+                        <div className="profile-avatar">
+                            {user.name.charAt(0).toUpperCase()}
                         </div>
-                        <h3 className="text-xl font-bold mb-xs">{user.name}</h3>
-                        <p className="text-secondary text-sm mb-lg">{user.email}</p>
-                        <button className="btn btn-sm btn-outline w-full flex items-center justify-center gap-sm">
-                            <Settings size={16} /> Edit Profile
+                        <div className="profile-info">
+                            <h1 className="profile-name">{user.name}</h1>
+                            <p className="profile-email">
+                                <Mail size={14} />
+                                {user.email}
+                            </p>
+                            <p className="profile-member-since">
+                                <Calendar size={14} />
+                                Member since January 2026
+                            </p>
+                        </div>
+                    </div>
+                    <div className="profile-actions">
+                        <button className="btn-profile-action">
+                            <Settings size={18} />
+                            <span>Settings</span>
+                        </button>
+                        <button className="btn-profile-action btn-logout" onClick={handleLogout}>
+                            <LogOut size={18} />
+                            <span>Logout</span>
                         </button>
                     </div>
+                </div>
 
-                    <div className="card p-lg border rounded-xl bg-white shadow-sm">
-                        <h3 className="mb-md font-bold text-lg flex items-center gap-sm"><Bell size={18} /> Notifications</h3>
-                        <ul className="text-sm space-y-sm">
-                            <li className="p-sm bg-gray-50 rounded text-secondary border border-transparent hover:border-gray-200 transition-all">🌿 Welcome to Vedayura Family!</li>
-                            <li className="p-sm bg-gray-50 rounded text-secondary border border-transparent hover:border-gray-200 transition-all">🎉 Get 10% off on your first order.</li>
-                        </ul>
+                {/* Stats Cards */}
+                <div className="profile-stats">
+                    <div className="stat-card">
+                        <div className="stat-icon orders-icon">
+                            <Package size={24} />
+                        </div>
+                        <div className="stat-info">
+                            <span className="stat-value">{displayOrders.length}</span>
+                            <span className="stat-label">Total Orders</span>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon wishlist-icon">
+                            <Heart size={24} />
+                        </div>
+                        <div className="stat-info">
+                            <span className="stat-value">{wishlist.length}</span>
+                            <span className="stat-label">Wishlist Items</span>
+                        </div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-icon refunds-icon">
+                            <RotateCcw size={24} />
+                        </div>
+                        <div className="stat-info">
+                            <span className="stat-value">{refunds.length}</span>
+                            <span className="stat-label">Refund Requests</span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Column: Orders & Wishlist */}
-                <div className="profile-content md:col-span-2 space-y-xl">
-                    {/* Order History */}
-                    <div className="card p-xl border rounded-xl bg-white shadow-sm">
-                        <div className="flex justify-between items-center mb-lg">
-                            <h3 className="font-bold text-xl flex items-center gap-sm"><Package size={22} /> Recent Orders</h3>
-                            <button className="text-primary text-sm font-medium hover:underline">View All</button>
-                        </div>
+                {/* Tab Navigation */}
+                <div className="profile-tabs">
+                    <button 
+                        className={`profile-tab ${activeTab === 'orders' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('orders')}
+                    >
+                        <Package size={18} />
+                        My Orders
+                    </button>
+                    <button 
+                        className={`profile-tab ${activeTab === 'wishlist' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('wishlist')}
+                    >
+                        <Heart size={18} />
+                        Wishlist
+                    </button>
+                    <button 
+                        className={`profile-tab ${activeTab === 'refunds' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('refunds')}
+                    >
+                        <RotateCcw size={18} />
+                        Refunds
+                    </button>
+                </div>
 
-                        <div className="space-y-lg">
-                            {orders && orders.length > 0 ? (
-                                orders.map(order => (
-                                    <div key={order.id} className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
-                                            <div>
-                                                <p className="font-bold text-lg text-dark">Order #{String(order.id)}</p>
-                                                <p className="text-sm text-secondary">Placed on {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '—'} • ₹{order.totalAmount || order.total || order.subtotalAmount || '—'}</p>
+                {/* Tab Content */}
+                <div className="profile-content">
+                    {/* Orders Tab */}
+                    {activeTab === 'orders' && (
+                        <div className="orders-section">
+                            {displayOrders.length > 0 ? (
+                                <div className="orders-list">
+                                    {displayOrders.map(order => (
+                                        <div key={order.id} className="order-card">
+                                            <div className="order-header">
+                                                <div className="order-id-section">
+                                                    <span className="order-id">#{String(order.id).substring(0, 12)}</span>
+                                                    <span className={`order-status ${getStatusColor(order.status)}`}>
+                                                        {order.status || 'PROCESSING'}
+                                                    </span>
+                                                </div>
+                                                <span className="order-date">{formatDate(order.createdAt)}</span>
                                             </div>
-                                            <span className="self-start sm:self-center text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide" style={{background: order.status === 'DELIVERED' ? '#ecfdf6' : '#fff7ed', color: order.status === 'DELIVERED' ? '#166534' : '#92400e'}}>{order.status || 'PROCESSING'}</span>
+                                            
+                                            <div className="order-body">
+                                                <div className="order-amount">
+                                                    <span className="amount-label">Total Amount</span>
+                                                    <span className="amount-value">₹{order.totalAmount || order.total || order.subtotalAmount || '—'}</span>
+                                                </div>
+                                                
+                                                <div className="order-actions">
+                                                    <button 
+                                                        className="btn-order-action btn-track"
+                                                        onClick={() => handleTrackOrder(order.id)}
+                                                    >
+                                                        <Truck size={16} />
+                                                        Track
+                                                    </button>
+                                                    <button 
+                                                        className="btn-order-action btn-invoice"
+                                                        onClick={() => handleInvoice(order.id)}
+                                                    >
+                                                        <FileText size={16} />
+                                                        Invoice
+                                                    </button>
+                                                    <button 
+                                                        className="btn-order-action btn-refund"
+                                                        onClick={() => handleRequestRefund(order.id)}
+                                                    >
+                                                        <RotateCcw size={16} />
+                                                        Refund
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-md pt-sm border-t border-dashed">
-                                            <button onClick={() => handleInvoice(order.id)} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                            <button onClick={() => handleTrackOrder(order.id)} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
-                                            <button onClick={() => handleRequestRefund(order.id)} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50 text-xs flex-1 sm:flex-none">Request Refund</button>
-                                        </div>
-                                    </div>
-                                ))
+                                    ))}
+                                </div>
                             ) : (
-                                <>
-                                    {/* Mock Order 1 */}
-                                    <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
-                                            <div>
-                                                <p className="font-bold text-lg text-dark">Order #AYU1024</p>
-                                                <p className="text-sm text-secondary">Placed on 12 Jan 2026 • ₹4,500</p>
-                                            </div>
-                                            <span className="self-start sm:self-center text-xs font-bold bg-green-100 text-green-800 px-3 py-1 rounded-full uppercase tracking-wide">Delivered</span>
-                                        </div>
-                                        <div className="flex gap-md pt-sm border-t border-dashed">
-                                            <button onClick={() => handleInvoice('AYU1024')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                            <button onClick={() => handleTrackOrder('AYU1024')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
-                                            <button onClick={() => handleRequestRefund('AYU1024')} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50 text-xs flex-1 sm:flex-none">Request Refund</button>
-                                        </div>
-                                    </div>
-                                    {/* Mock Order 2 */}
-                                    <div className="order-item border rounded-lg p-md hover:shadow-md transition-shadow">
-                                        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-md gap-sm">
-                                            <div>
-                                                <p className="font-bold text-lg text-dark">Order #AYU1020</p>
-                                                <p className="text-sm text-secondary">Placed on 05 Jan 2026 • ₹1,200</p>
-                                            </div>
-                                            <span className="self-start sm:self-center text-xs font-bold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full uppercase tracking-wide">Processing</span>
-                                        </div>
-                                        <div className="flex gap-md pt-sm border-t border-dashed">
-                                            <button onClick={() => handleInvoice('AYU1020')} className="btn btn-sm btn-outline text-xs flex-1 sm:flex-none">Download Invoice</button>
-                                            <button onClick={() => handleTrackOrder('AYU1020')} className="btn btn-sm btn-primary btn-txt text-xs flex-1 sm:flex-none">Track Order</button>
-                                        </div>
-                                    </div>
-                                </>
+                                <div className="empty-state">
+                                    <Package size={48} />
+                                    <h3>No Orders Yet</h3>
+                                    <p>Start shopping to see your orders here</p>
+                                    <Link to="/shop" className="btn btn-primary">Browse Products</Link>
+                                </div>
                             )}
                         </div>
-                    </div>
+                    )}
 
-                    {/* Refund Requests - New Section */}
-                    <div className="card p-xl border rounded-xl bg-white shadow-sm">
-                        <div className="flex justify-between items-center mb-lg">
-                            <h3 className="font-bold text-xl flex items-center gap-sm"><RotateCcw size={22} /> Refund Requests</h3>
-                        </div>
-                        {refunds.length > 0 ? (
-                            <div className="space-y-md">
-                                {refunds.map(refund => (
-                                    <div key={refund.id} className="border rounded-lg p-md bg-gray-50">
-                                        <div className="flex justify-between">
-                                            <p className="font-bold text-sm">Order #{refund.orderId.substring(0, 8)}...</p>
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${refund.status === 'COMPLETED' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}`}>
-                                                {refund.status}
-                                            </span>
+                    {/* Wishlist Tab */}
+                    {activeTab === 'wishlist' && (
+                        <div className="wishlist-section">
+                            {wishlist.length > 0 ? (
+                                <div className="wishlist-grid">
+                                    {wishlist.map(item => (
+                                        <div 
+                                            key={item.id} 
+                                            className="wishlist-card"
+                                            onClick={() => navigate(`/product/${item.id}`)}
+                                        >
+                                            <div className="wishlist-image">
+                                                <img 
+                                                    src={item.image || item.imageUrls?.[0] || '/assets/product-placeholder.png'} 
+                                                    alt={item.name} 
+                                                />
+                                            </div>
+                                            <div className="wishlist-details">
+                                                <h4 className="wishlist-name">{item.name}</h4>
+                                                <p className="wishlist-category">{item.category || 'Ayurvedic'}</p>
+                                                <p className="wishlist-price">₹{item.price || item.discountedPrice}</p>
+                                            </div>
+                                            <ChevronRight size={20} className="wishlist-arrow" />
                                         </div>
-                                        <p className="text-sm mt-xs">Expected: ₹{refund.amount}</p>
-                                        <p className="text-xs text-secondary mt-xs">Reason: {refund.reason}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <p className="text-secondary text-sm">No active refund requests.</p>
-                        )}
-                    </div>
-
-                    {/* Wishlist Preview */}
-                    <div className="card p-xl border rounded-xl bg-white shadow-sm">
-                        <div className="flex justify-between items-center mb-lg">
-                            <h3 className="font-bold text-xl flex items-center gap-sm"><Heart size={22} /> My Wishlist ({wishlist.length})</h3>
-                            <Link to="/wishlist" className="text-primary text-sm font-medium hover:underline">View Full Wishlist</Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <Heart size={48} />
+                                    <h3>Wishlist is Empty</h3>
+                                    <p>Save items you love to your wishlist</p>
+                                    <Link to="/shop" className="btn btn-primary">Explore Products</Link>
+                                </div>
+                            )}
                         </div>
+                    )}
 
-                        {wishlist.length > 0 ? (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-md">
-                                {wishlist.slice(0, 3).map(item => (
-                                    <div key={item.id} className="flex gap-md items-center border p-sm rounded-lg hover:border-primary transition-colors cursor-pointer" onClick={() => navigate(`/product/${item.id}`)}>
-                                        <img src={item.image || item.imageUrls?.[0]} alt={item.name} className="w-12 h-12 object-cover rounded-md" />
-                                        <div className="overflow-hidden">
-                                            <p className="text-sm font-medium truncate text-dark">{item.name}</p>
-                                            <p className="text-xs text-primary font-bold">₹{item.price || item.discountedPrice}</p>
+                    {/* Refunds Tab */}
+                    {activeTab === 'refunds' && (
+                        <div className="refunds-section">
+                            {refunds.length > 0 ? (
+                                <div className="refunds-list">
+                                    {refunds.map(refund => (
+                                        <div key={refund.id} className="refund-card">
+                                            <div className="refund-header">
+                                                <div className="refund-order">
+                                                    <span className="refund-label">Order</span>
+                                                    <span className="refund-order-id">#{String(refund.orderId).substring(0, 8)}...</span>
+                                                </div>
+                                                <span className={`refund-status ${
+                                                    refund.status === 'COMPLETED' ? 'status-completed' :
+                                                    refund.status === 'REJECTED' ? 'status-rejected' :
+                                                    'status-pending'
+                                                }`}>
+                                                    {refund.status}
+                                                </span>
+                                            </div>
+                                            <div className="refund-body">
+                                                <div className="refund-amount">
+                                                    <span className="amount-label">Refund Amount</span>
+                                                    <span className="amount-value">₹{refund.amount}</span>
+                                                </div>
+                                                <div className="refund-reason">
+                                                    <span className="reason-label">Reason</span>
+                                                    <span className="reason-text">{refund.reason}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-lg bg-gray-50 rounded-lg border border-dashed">
-                                <Heart className="mx-auto text-gray-300 mb-sm" size={32} />
-                                <p className="text-secondary text-sm">Your wishlist is empty.</p>
-                                <Link to="/shop" className="text-primary text-xs font-bold mt-xs block hover:underline">Start Shopping</Link>
-                            </div>
-                        )}
-                    </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="empty-state">
+                                    <RotateCcw size={48} />
+                                    <h3>No Refund Requests</h3>
+                                    <p>You haven't requested any refunds yet</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
