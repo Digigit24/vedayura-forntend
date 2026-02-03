@@ -1,21 +1,28 @@
+/* =====================================
+   LIGHT MOTION SYSTEM
+===================================== */
+:root {
+    --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    --motion-fast: 120ms;
+    --motion-base: 220ms;
+}
+
 /* =========================================
-   1. SHOP HERO (RESTORED TO ORIGINAL STYLE)
-   ========================================= */
+   GLOBAL / CONTAINER
+========================================= */
 .container {
     padding: 10px;
-    /* Reset based on your original preference */
     margin: 0 auto;
 }
 
+/* =========================================
+   SHOP HERO
+========================================= */
 .shop-hero {
     display: flex;
-    margin-top: 20px;
-    margin-bottom: 40px;
     color: #fff;
     align-items: stretch;
     background: var(--color-primary);
-    border-radius: 0;
-    /* Or var(--radius-lg) if you want corners */
 }
 
 .shop-hero-inner {
@@ -23,25 +30,23 @@
     width: 100%;
 }
 
-/* Original Ratios */
 .hero-left {
     flex: 0.3;
-    display: flex;
     padding: 30px;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
     position: relative;
-    z-index: 5;
+    z-index: 1;
 }
 
 .hero-right {
     flex: 1;
     background: #ffffff;
-    position: relative;
-    overflow: hidden;
     display: flex;
     align-items: center;
+    overflow-x: hidden;
 }
 
 .slider-item {
@@ -53,18 +58,20 @@
 
 .slider-item img {
     height: 300px;
-    width: auto;
     max-width: 200px;
+    width: auto;
     object-fit: cover;
-    background: transparent;
     border-radius: 8px;
-    transition: all 0.5s var(--transition-normal);
+    background: transparent;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .slider-item img:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-6px) scale(1.02);
     box-shadow: 0 20px 50px rgba(23, 83, 51, 0.1);
-    border-color: var(--color-primary-light);
 }
 
 .vedayura-title {
@@ -79,14 +86,13 @@
 }
 
 /* =========================================
-   2. CATEGORY PILLS (TOP NAVIGATION)
-   ========================================= */
+   CATEGORY PILLS
+========================================= */
 .shop-category-nav {
     display: flex;
     justify-content: center;
-    margin-bottom: 2rem;
+    margin: 20px 0 32px;
     width: 100%;
-    margin-top: 20px;
 }
 
 .category-scroll-wrapper {
@@ -94,7 +100,6 @@
     gap: 16px;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 5px;
 }
 
 .category-pill {
@@ -105,15 +110,18 @@
     background: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: 50px;
-    transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
     color: var(--color-text-secondary);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .category-pill:hover {
     transform: translateY(-2px);
-    border-color: var(--color-primary);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
@@ -143,52 +151,35 @@
     color: white;
 }
 
-
 /* =========================================
-   3. LAYOUT (CENTERED - NO SIDEBAR)
-   ========================================= */
+   LAYOUT
+========================================= */
 .shop-layout {
-    display: block;
-    /* Removes grid/flex columns */
     width: 100%;
-    max-width: 1200px;
-    /* Limits width for readability */
     margin: 0 auto;
-    /* Centers the layout */
     padding: 0 20px;
 }
 
-/* Toolbar Styling */
+/* =========================================
+   TOOLBAR (SINGLE SOURCE OF TRUTH)
+========================================= */
 .shop-toolbar {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 2.5rem;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
-    border: 1px solid var(--color-border);
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.toolbar-top {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-/* Search Bar Centered */
-.shop-search-centered {
-    flex: 1;
-    max-width: 500px;
+    gap: 12px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 2rem;
     position: relative;
+    z-index: 10;
 }
 
 .search-input-wrapper {
+    flex: 1;
     position: relative;
-    width: 100%;
 }
 
 .search-input-wrapper input {
@@ -198,7 +189,11 @@
     border: 1px solid var(--color-border);
     border-radius: 50px;
     font-size: 0.95rem;
-    transition: all 0.3s;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
 }
 
 .search-input-wrapper input:focus {
@@ -223,194 +218,32 @@
     transform: translateY(-50%);
     background: none;
     border: none;
+    cursor: pointer;
     color: #999;
-    cursor: pointer;
 }
-
-/* Right Controls (Price + Sort) */
-.controls-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.price-filter-compact {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    color: var(--color-text-secondary);
-}
-
-.price-filter-compact input {
-    width: 100px;
-    accent-color: var(--color-primary);
-    cursor: pointer;
-}
-
-.select-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.sort-select {
-    appearance: none;
-    padding: 10px 36px 10px 16px;
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    background: #ffffff;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--color-text-primary);
-}
-
-.select-icon {
-    position: absolute;
-    right: 12px;
-    pointer-events: none;
-    color: var(--color-text-secondary);
-}
-
-/* Product Grid */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(5,1fr);
-    gap: 30px;
-    justify-content: center;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 900px) {
-    .shop-hero-inner {
-        flex-direction: column;
-    }
-
-    .hero-left {
-        flex: 1;
-        width: 100%;
-        padding: 40px 20px;
-    }
-
-    .hero-right {
-        width: 100%;
-    }
-
-    .toolbar-top {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .shop-search-centered {
-        max-width: 100%;
-        order: -1;
-    }
-
-    .controls-right {
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 30px;
-        justify-content: center;
-    }
-}
-
-/* ... (Your existing CSS stays the same) ... */
 
 /* =========================================
-   4. PAGINATION (ARROWS & CIRCLES)
-   ========================================= */
-
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 50px;
-    margin-bottom: 20px;
-}
-
-/* Override standard button styles for Pagination to make them circles */
-.pagination .btn-shop {
-    margin: 0;
-    /* Remove default button margin */
-    padding: 0;
-    /* Remove pill padding */
-    width: 45px;
-    /* Fixed width */
-    height: 45px;
-    /* Fixed height */
-    border-radius: 50%;
-    /* Make it a perfect circle */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    line-height: 1;
-}
-
-/* Adjust icon size inside buttons */
-.pagination .btn-shop svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 2.5px;
-}
-
-/* Disabled state */
-.btn-shop.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    background-color: #f3f4f6;
-    border-color: #e5e7eb;
-    color: #9ca3af;
-    box-shadow: none;
-    transform: none !important;
-}
-/* =========================================
-   TOOLBAR & FILTER BUTTON
-   ========================================= */
-.shop-toolbar {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    background: white;
-    padding: 16px;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 10;
-    border: 1px solid #eee;
-}
-
-/* Search Wrapper takes remaining space */
-.search-input-wrapper {
-    flex: 1;
-    position: relative;
-}
-
-/* Filter Trigger Button */
+   FILTER BUTTON
+========================================= */
 .btn-filter-trigger {
     display: flex;
     align-items: center;
     gap: 8px;
-    height: 48px; /* Match input height */
+    height: 48px;
     padding: 0 24px;
-    background: #175333; /* Primary Color */
+    background: #175333;
     color: white;
     border: none;
     border-radius: 50px;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    white-space: nowrap;
     position: relative;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .btn-filter-trigger:hover {
@@ -425,24 +258,87 @@
     right: 8px;
     width: 8px;
     height: 8px;
-    background-color: #fbbf24; /* Yellow/Gold warning color */
+    background-color: #fbbf24;
     border-radius: 50%;
     border: 1px solid #175333;
 }
 
 /* =========================================
-   BOTTOM DRAWER STYLES
-   ========================================= */
+   PRODUCT GRID
+========================================= */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px;
+    justify-content: center;
+}
+
+/* =========================================
+   PAGINATION
+========================================= */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 50px 0 20px;
+}
+
+.pagination .btn-shop {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.pagination .btn-shop:hover {
+    transform: translateY(-1px);
+}
+
+.btn-shop.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+@media (max-width: 900px) {
+    .shop-hero-inner {
+        flex-direction: column;
+    }
+
+    .hero-left {
+        width: 100%;
+        padding: 40px 20px;
+    }
+
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* =========================================
+   BOTTOM DRAWER (UNCHANGED BEHAVIOR)
+========================================= */
 
 /* Backdrop Overlay */
 .drawer-backdrop {
     position: fixed;
-    inset: 0; /* top/left/right/bottom: 0 */
+    inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 998;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
     backdrop-filter: blur(2px);
 }
 
@@ -451,7 +347,7 @@
     visibility: visible;
 }
 
-/* The Drawer */
+/* Drawer */
 .bottom-drawer {
     position: fixed;
     bottom: 0;
@@ -466,27 +362,97 @@
     transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
     display: flex;
     flex-direction: column;
+    will-change: transform;
 }
 
 .bottom-drawer.open {
     transform: translateY(0);
 }
 
-/* Responsive: Center drawer on large screens */
+/* Center drawer on large screens */
 @media (min-width: 768px) {
     .bottom-drawer {
         width: 480px;
         left: 50%;
-        margin-left: -240px; /* Half of width */
+        margin-left: -240px;
         border-radius: 20px;
     }
 }
 
-/* Drawer Header */
+/* =========================================
+   BOTTOM DRAWER – FINAL VERSION
+   (Stable, Isolated, No Side Effects)
+========================================= */
+
+/* -------------------------
+   BACKDROP
+-------------------------- */
+.drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(2px);
+
+    z-index: 998;
+}
+
+.drawer-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* -------------------------
+   DRAWER CONTAINER
+-------------------------- */
+.bottom-drawer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    max-height: 85vh;
+
+    background: #ffffff;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.15);
+
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 999;
+    will-change: transform;
+}
+
+.bottom-drawer.open {
+    transform: translateY(0);
+}
+
+/* Centered drawer on tablet & desktop */
+@media (min-width: 768px) {
+    .bottom-drawer {
+        width: 480px;
+        left: 50%;
+        margin-left: -240px;
+        border-radius: 20px;
+    }
+}
+
+/* -------------------------
+   DRAWER HEADER
+-------------------------- */
 .drawer-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
     padding: 18px 24px;
     border-bottom: 1px solid #f0f0f0;
 }
@@ -494,38 +460,47 @@
 .drawer-header h3 {
     margin: 0;
     font-size: 1.1rem;
+    font-weight: 600;
     color: #111;
 }
 
 .btn-close-drawer {
     background: none;
     border: none;
-    cursor: pointer;
-    color: #666;
     padding: 4px;
+
     display: flex;
     align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    color: #666;
 }
 
-/* Drawer Body (Scrollable) */
+/* -------------------------
+   DRAWER BODY
+-------------------------- */
 .drawer-body {
     padding: 24px;
     overflow-y: auto;
     flex: 1;
 }
 
+/* Section */
 .drawer-section {
     margin-bottom: 28px;
 }
 
 .drawer-section h4 {
-    margin: 0 0 12px 0;
+    margin: 0 0 12px;
     font-size: 0.95rem;
     font-weight: 600;
     color: #444;
 }
 
-/* Chips/Pills in Drawer */
+/* -------------------------
+   CATEGORY CHIPS
+-------------------------- */
 .drawer-chips {
     display: flex;
     flex-wrap: wrap;
@@ -533,17 +508,24 @@
 }
 
 .chip {
-    padding: 8px 16px;
-    border-radius: 30px;
-    border: 1px solid #e5e7eb;
-    background: #f9fafb;
-    font-size: 0.9rem;
-    cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+
+    padding: 8px 16px;
+    border-radius: 30px;
+
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+
+    font-size: 0.9rem;
     color: #4b5563;
-    transition: all 0.2s;
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .chip:hover {
@@ -552,83 +534,115 @@
 
 .chip.active {
     background: #175333;
-    color: white;
+    color: #ffffff;
     border-color: #175333;
 }
 
+/* Chip Count */
 .chip-count {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 10px;
+
     background: #e5e7eb;
     color: #374151;
-    font-size: 0.75rem;
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-weight: 700;
 }
 
 .chip.active .chip-count {
-    background: rgba(255,255,255,0.25);
-    color: white;
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffffff;
 }
 
-/* Price Section */
+/* -------------------------
+   PRICE RANGE
+-------------------------- */
 .drawer-row-between {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     margin-bottom: 10px;
 }
 
 .price-tag {
+    font-size: 0.9rem;
     font-weight: 700;
+
     color: #175333;
     background: #e6f0eb;
+
     padding: 4px 10px;
     border-radius: 6px;
-    font-size: 0.9rem;
 }
 
 .styled-range {
     width: 100%;
-    accent-color: #175333;
     height: 6px;
+
     background: #e5e7eb;
     border-radius: 5px;
-    outline: none;
+
+    accent-color: #175333;
     cursor: pointer;
 }
 
-/* Select Box */
+/* -------------------------
+   SORT SELECT
+-------------------------- */
+.select-wrapper {
+    position: relative;
+}
+
 .drawer-select {
     width: 100%;
     padding: 12px 16px;
+
     border-radius: 8px;
     border: 1px solid #d1d5db;
+
     font-size: 0.95rem;
-    background-color: white;
+    color: #333;
+    background: #ffffff;
+
     appearance: none;
     cursor: pointer;
-    color: #333;
 }
 
-/* Drawer Footer */
+.select-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6b7280;
+}
+
+/* -------------------------
+   DRAWER FOOTER
+-------------------------- */
 .drawer-footer {
     padding: 16px 24px;
     border-top: 1px solid #f0f0f0;
+
     display: flex;
     gap: 12px;
-    background: white;
+
+    background: #ffffff;
 }
 
 .btn-drawer-reset {
     flex: 1;
     padding: 14px;
+
+    background: #ffffff;
     border: 1px solid #d1d5db;
-    background: white;
     border-radius: 12px;
+
     font-weight: 600;
     color: #374151;
     cursor: pointer;
-    transition: background 0.2s;
+
+    transition: background-color 0.2s ease;
 }
 
 .btn-drawer-reset:hover {
@@ -638,25 +652,92 @@
 .btn-drawer-apply {
     flex: 2;
     padding: 14px;
+
     background: #175333;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 12px;
+
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+
+    transition: background-color 0.2s ease;
 }
 
 .btn-drawer-apply:hover {
     background: #0f3d24;
 }
 
-/* Mobile Tweak */
-@media (max-width: 480px) {
-    .btn-filter-trigger span {
-        display: none; /* Hide 'Filters' text on very small screens */
+.shop-hero {
+    animation: heroFadeIn var(--motion-base) var(--ease-soft);
+}
+
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
     }
-    .btn-filter-trigger {
-        padding: 0 16px;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
+.slider-item img {
+    transition:
+        transform var(--motion-fast) var(--ease-soft),
+        box-shadow var(--motion-fast) var(--ease-soft);
+}
+
+.slider-item img:hover {
+    transform: translateY(-4px) scale(1.015);
+    box-shadow: 0 14px 32px rgba(23,83,51,0.16);
+}
+/* =====================================
+   PRODUCT GRID – SMOOTH ENTRY
+===================================== */
+.animate-fade-in {
+    animation: gridFadeUp var(--motion-base) var(--ease-soft);
+}
+
+@keyframes gridFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.category-pill {
+    transition:
+        transform var(--motion-fast) var(--ease-soft),
+        box-shadow var(--motion-fast) var(--ease-soft),
+        background-color var(--motion-fast) linear;
+}
+
+.category-pill:hover {
+    transform: translateY(-2px);
+}
+.btn-filter-trigger {
+    transition:
+        background-color var(--motion-fast) linear,
+        transform var(--motion-fast) var(--ease-soft),
+        box-shadow var(--motion-fast) var(--ease-soft);
+}
+
+.btn-filter-trigger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(23,83,51,0.18);
+}
+.bottom-drawer {
+    will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+

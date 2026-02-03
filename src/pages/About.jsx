@@ -1,124 +1,135 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Leaf, Award, Users, Heart, ShieldCheck, Zap } from 'lucide-react';
+import { Leaf, Sun, Droplets, Heart } from 'lucide-react';
 import './About.css';
 
 const About = () => {
-    const fadeIn = {
-        hidden: { opacity: 0, y: 30 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.8, ease: "easeOut" }
+    // Floating animation for a weightless feel
+    const float = {
+        animate: {
+            y: [0, -15, 0],
+            transition: {
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }
         }
     };
 
-    const staggerContainer = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2
-            }
+    const fadeInUp = {
+        hidden: { opacity: 0, y: 50 },
+        visible: { 
+            opacity: 1, 
+            y: 0, 
+            transition: { duration: 0.8, ease: "easeOut" } 
         }
     };
 
     return (
         <div className="about-page">
-            {/* Minimalist Hero Section */}
-            <section className="vedayura-hero vedayura-hero-light">
-                <div className="container">
-                    <motion.div
+            
+            {/* HERO: Background Image with Glass Overlay */}
+            <section className="ethereal-hero">
+                <div className="hero-bg-img">
+                    <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2940&auto=format&fit=crop"/>
+                </div>
+                
+                <div className="container hero-container">
+                    <motion.div 
+                        className="glass-card hero-card"
                         initial="hidden"
                         animate="visible"
-                        variants={fadeIn}
-                        className="about-hero-content"
+                        variants={fadeInUp}
                     >
-                        <span className="vedayura-tagline">Our Heritage</span>
-                        <h1 className="about-title">Healing through <span className="text-secondary-themed">Authentic Ayurveda</span></h1>
-                        <p className="vedayura-desc">
-                            At VedAyura, we honor the sacred tradition of Ayurvedic healing. We seamlessly blend ancient wisdom with modern practices to deliver products that offer true purity and profound health benefits.
-                        </p>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Our Story - Image & Text */}
-            <section className="section about-story">
-                <div className="container grid-2-col-about items-center gap-2xl">
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={fadeIn}
-                        className="about-img-box"
-                    >
-                        <img
-                            src="https://wallpapersok.com/images/hd/ayurveda-hd-herbal-medicine-ota5ofqs76loufud.jpg"
-                            alt="Ayurvedic preparation"
-                        />
-                        <div className="experience-badge">
-                            <span className="number">25+</span>
-                            <span className="text">Years of <br />Legacy</span>
+                        <div className="icon-crown">
+                            <Leaf size={2} />
                         </div>
-                    </motion.div>
+                        <h1>Healing through Authentic Ayurveda</h1>
+                        <p>
+                           At VedAyura, we honor the sacred tradition of Ayurvedic healing. We seamlessly blend ancient wisdom with modern practices to deliver products that offer true purity and profound health benefits.
+                        </p>
 
-                    <motion.div
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                        className="about-text-box"
-                    >
-                        <motion.h2 variants={fadeIn}>Rooted in Tradition,<br />Perfected by Science</motion.h2>
-                        <motion.p variants={fadeIn}>
-                            Founded in the heart of traditional healing hubs, VedAyura began as a small family-led initiative dedicated to preserving the time-honored art of authentic Ayurvedic formulations.
-                        </motion.p>
-                        <motion.p variants={fadeIn}>
-                            Today, we unite ancient Ayurvedic texts with the latest scientific innovations. Our goal is clear: to offer products that are not just "natural" but truly "Ayurvedic"—crafted with the utmost respect for the ancient Charaka Samhita.
-                        </motion.p>
                     </motion.div>
                 </div>
             </section>
 
-            {/* Core Values - Grid Icons */}
-            <section className="section bg-light-themed values-section">
+            {/* PHILOSOPHY: Fluid Layout */}
+            <section className="section fluid-section">
                 <div className="container">
-                    <motion.div
+                    <div className="fluid-grid">
+                        <motion.div 
+                            className="fluid-img-wrapper"
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <img 
+                                src="https://wallpapersok.com/images/hd/ayurveda-hd-herbal-medicine-ota5ofqs76loufud.jpg" 
+                                alt="Ayurvedic Oils" 
+                                className="fluid-img" 
+                            />
+                            {/* Decorative organic circle */}
+                            <motion.div className="organic-circle" variants={float} animate="animate"></motion.div>
+                        </motion.div>
+
+                        <motion.div 
+                            className="fluid-content"
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8 }}
+                        >
+                            <span className="soft-tag">Our Philosophy</span>
+                            <h2>Rooted in Tradition,<br />Perfected by Science</h2>
+                            <p>
+                               Founded in the heart of traditional healing hubs, VedAyura began as a small family-led initiative dedicated to preserving the time-honored art of authentic Ayurvedic formulations.
+                            </p>
+                            <p>
+                               Today, we unite ancient Ayurvedic texts with the latest scientific innovations. Our goal is clear: to offer products that are not just "natural" but truly "Ayurvedic"—crafted with the utmost respect for the ancient Charaka Samhita.
+                            </p>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* VALUES: Horizontal Scroll / Soft Cards */}
+            <section className="section values-section">
+                <div className="container">
+                    <motion.div 
+                        className="values-header"
                         initial="hidden"
                         whileInView="visible"
                         viewport={{ once: true }}
-                        variants={fadeIn}
-                        className="text-center mb-2xl"
+                        variants={fadeInUp}
                     >
-                        <h2 className="section-title">The VedAyura Promise</h2>
-                        <p className="section-subtitle">What sets us apart in the world of wellness</p>
+                        <h2>The VedAyura Promise</h2>
                     </motion.div>
 
-                    <motion.div
-                        className="values-grid"
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        variants={staggerContainer}
-                    >
+                    <div className="soft-grid">
                         {[
-                            { icon: <Leaf size={32} />, title: "Ethical Sourcing", desc: "We partner with local farmers who uphold sustainable practices, ensuring our herbs are ethically sourced." },
-                            { icon: <Award size={32} />, title: "Certified Purity", desc: "Each product is tested rigorously to meet the highest standards of purity, free from harmful chemicals." },
-                            { icon: <ShieldCheck size={32} />, title: "Zero Synthetic", desc: "We do not use artificial colors, fragrances, or preservatives. Just pure, natural ingredients." },
-                            { icon: <Zap size={32} />, title: "High Bio-Availability", desc: "Our products are formulated to ensure maximum absorption, delivering the most effective results." }
-                        ].map((v, i) => (
-                            <motion.div key={i} className="value-card" variants={fadeIn}>
-                                <div className="value-icon">{v.icon}</div>
-                                <h3>{v.title}</h3>
-                                <p>{v.desc}</p>
+                            { icon: <Sun />, title: "Sun-Kissed Herbs", text: "Harvested at peak potency under the natural sun." },
+                            { icon: <Droplets />, title: "Essential Oils", text: "Cold-pressed extraction to retain 100% of nutrients." },
+                            { icon: <Heart />, title: "Conscious Care", text: "Formulations that are kind to your body and the planet." }
+                        ].map((item, index) => (
+                            <motion.div 
+                                key={index} 
+                                className="soft-card"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.2 }}
+                                whileHover={{ y: -10 }}
+                            >
+                                <div className="soft-icon">{item.icon}</div>
+                                <h3>{item.title}</h3>
+                                <p>{item.text}</p>
                             </motion.div>
                         ))}
-                    </motion.div>
+                    </div>
                 </div>
             </section>
         </div>
-
     );
 };
 

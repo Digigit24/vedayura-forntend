@@ -148,7 +148,7 @@ img {
 
 /* Utilities */
 .container {
-  margin: 0 auto;
+  margin: 0 ;
 }
 
 .btn {
@@ -299,10 +299,7 @@ img {
   animation-delay: 0.3s;
 }
 
-/* Layout Utilities */
-.text-center {
-  text-align: center;
-}
+
 
 .flex {
   display: flex;

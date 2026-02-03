@@ -167,7 +167,6 @@ const Navbar = () => {
                   <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Our Story</NavLink>
                   <NavLink to="/catalog" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Catalog</NavLink>
                   <NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Contact Us</NavLink>
-                  <NavLink to="/login" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>My Account</NavLink>
                 </nav>
 
                 <div className="mobile-menu-footer">

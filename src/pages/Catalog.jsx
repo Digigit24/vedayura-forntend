@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
 import { motion } from 'framer-motion';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search, SlidersHorizontal, ArrowRight } from 'lucide-react';
 import './Catalog.css';
 
 const Catalog = () => {
     const { products } = useShop();
-    const categories = ['Liquid', 'Powder', 'Capsules'];
-
+    
+    // ✅ ADDED "Oils" to the categories array here
+    const categories = ['Liquid', 'Powder', 'Capsules', 'Other'];
+    
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredProducts = products.filter(p =>
@@ -16,113 +18,77 @@ const Catalog = () => {
         p.category.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const fadeIn = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6, ease: "easeOut" }
-        }
-    };
-
-    const staggerContainer = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.1
-            }
+    const fadeUp = {
+        hidden: { opacity: 0, y: 40 },
+        visible: { 
+            opacity: 1, 
+            y: 0, 
+            transition: { duration: 0.8, ease: "easeOut" } 
         }
     };
 
     return (
-        <div className="catalog-page">
-            {/* Redesigned Hero: Zen Minimalist */}
-            <section className="catalog-hero-v2 vedayura-hero-dark">
-                <div className="hero-v2-bg">
-                    <div className="blob blob-1"></div>
-                    <div className="blob blob-2"></div>
-                </div>
-
-                <div className="container hero-v2-container">
-                    <motion.div
-                        className="hero-v2-content"
+        <div className="catalog-page-dark">
+            
+            {/* HERO: Dark & Immersive */}
+            <section className="dark-hero">
+                <div className="hero-bg-glow"></div>
+                <div className="container hero-content-center">
+                    <motion.div 
                         initial="hidden"
                         animate="visible"
-                        variants={staggerContainer}
+                        variants={fadeUp}
+                        className="text-center"
                     >
-                        <motion.span className="vedayura-tagline" variants={fadeIn}>
-                            The Vedayura Collection
-                        </motion.span>
-                        <motion.h1 className="vedayura-title" variants={fadeIn}>
-                            Curated Natural <br /><span>Wellness Library</span>
-                        </motion.h1>
-                        <motion.p className="vedayura-desc" variants={fadeIn}>
-                            Deep dive into our handcrafted Ayurvedic solutions. Each formulation is a result of years of tradition combined with modern purity standards.
-                        </motion.p>
+                        <span className="gold-subtitle">The Vedayura Collection</span>
+                        <h1 className="display-title">Curated Natural Wellness Library</h1>
+                        <p className="hero-desc">
+                           Deep dive into our handcrafted Ayurvedic solutions. Each formulation is a result of years of tradition combined with modern purity standards.
+                        </p>
 
-                        <motion.div className="hero-v2-search-wrapper" variants={fadeIn}>
-                            <div className="search-input-group">
-                                <Search size={22} className="search-icon" />
-                                <input
-                                    type="text"
-                                    placeholder="Looking for something specific?"
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                />
-                            </div>
-                        </motion.div>
-                    </motion.div>
-
-                    <motion.div
-                        className="hero-v2-visual"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1, delay: 0.3 }}
-                    >
-                        <img src="/assets/catalog-bg.png" alt="Ayurvedic Excellence" />
-                        <div className="floating-card">
-                            <span>Pure & Organic</span>
+                        {/* Glowing Search Bar */}
+                        <div className="dark-search-wrapper">
+                            <Search className="search-icon-dark" size={20} />
+                            <input
+                                type="text"
+                                placeholder="Search remedies..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                     </motion.div>
                 </div>
-
-                <div className="scroll-indicator">
-                    <ChevronDown size={24} />
-                </div>
             </section>
 
-            {/* Catalog Grid View */}
-            <div className="catalog-grid-container">
+            {/* CATALOG GRID */}
+            <div className="catalog-body-dark">
                 {categories.map((cat, idx) => {
+                    // Filter products for this specific category
                     const catProducts = filteredProducts.filter(p => p.category === cat);
+                    
+                    // If no products exist for this category (and no search is active), hide the section
                     if (catProducts.length === 0) return null;
 
                     return (
-                        <section key={cat} className="catalog-category-section">
+                        <section key={cat} className="category-block">
                             <div className="container">
-                                <motion.div
-                                    className="category-header"
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                >
-                                    <div className="category-info">
-                                        <span className="cat-index">#0{idx + 1}</span>
-                                        <h2>{cat} Collections</h2>
-                                    </div>
-                                    <div className="category-line"></div>
-                                </motion.div>
+                                <div className="category-header-dark">
+                                    <h2>{cat}</h2>
+                                    <div className="line-dec"></div>
+                                    <span className="count-badge">{catProducts.length} items</span>
+                                </div>
 
                                 <motion.div
-                                    className="catalog-products-grid"
+                                    className="dark-grid"
                                     initial="hidden"
                                     whileInView="visible"
-                                    viewport={{ once: true, margin: "-50px" }}
-                                    variants={staggerContainer}
+                                    viewport={{ once: true, margin: "-100px" }}
+                                    variants={{
+                                        visible: { transition: { staggerChildren: 0.1 } }
+                                    }}
                                 >
                                     {catProducts.map(product => (
-                                        <motion.div key={product.id} variants={fadeIn}>
+                                        <motion.div key={product.id} variants={fadeUp} className="dark-card-wrapper">
                                             <ProductCard product={product} />
                                         </motion.div>
                                     ))}
@@ -132,28 +98,28 @@ const Catalog = () => {
                     );
                 })}
 
+                {/* Empty State */}
                 {filteredProducts.length === 0 && (
-                    <div className="container text-center py-2xl">
-                        <div className="no-res-box">
-                            <Search size={48} className="mb-md opacity-20" />
-                            <h3>No matches found in our library</h3>
-                            <button className="btn btn-primary btn-txt mt-md" onClick={() => setSearchTerm('')}>Reset View</button>
-                        </div>
+                    <div className="container empty-dark">
+                        <h3>No matching elixirs found.</h3>
+                        <button onClick={() => setSearchTerm('')}>View All Products</button>
                     </div>
                 )}
             </div>
 
-            {/* Catalog Footer Promo */}
-            <section className="catalog-promo">
+            {/* DARK PROMO */}
+            <section className="dark-promo-section">
                 <div className="container">
-                    <div className="promo-card">
-                        <div className="promo-content">
-                            <h2>Expert Consultation</h2>
-                            <p>Not sure which formulation suits your body type? Our expert Vaidyas are here to help you choose.</p>
-                            <button className="btn-vedayura btn-vedayura-white">Book Appointment</button>
+                    <div className="promo-banner-dark">
+                        <div className="promo-text-side">
+                            <h2>Personalized Healing</h2>
+                            <p>Ayurveda treats the individual, not just the disease. Consult our Vaidyas for a custom plan.</p>
+                            <button className="btn-gold">
+                                Book Appointment <ArrowRight size={16} />
+                            </button>
                         </div>
-                        <div className="promo-visual">
-                            <img src="/assets/hero-img.png" alt="Consultation" />
+                        <div className="promo-visual-side">
+                            <div className="glow-circle"></div>
                         </div>
                     </div>
                 </div>

@@ -131,7 +131,7 @@ useEffect(() => {
       <section className="section">
         <div className="container">
           <div className="text-center mb-xl">
-            <h2 className="section-title mb-sm">Featured Collections</h2>
+            <h2 className="section-title">Featured Collections</h2>
             <p className="text-secondary">
               Handpicked essentials for your daily wellness routine.
             </p>

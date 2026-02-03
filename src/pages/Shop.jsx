@@ -33,6 +33,12 @@ const Shop = () => {
         setCurrentPage(1);
     }, [selectedCategory, activeSearch, priceRange, sortBy]);
 
+    useEffect(() => {
+    document.documentElement.style.scrollBehavior =
+        isDrawerOpen ? 'auto' : 'smooth';
+}, [isDrawerOpen]);
+
+
     // Pagination Logic
     const indexOfLastProduct = currentPage * productsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
@@ -44,7 +50,7 @@ const Shop = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    const categories = ['All', 'Liquid', 'Powder', 'Capsules'];
+    const categories = ['All', 'Liquid', 'Powder', 'Capsules', 'Other'];
 
     // Filter Logic
     useEffect(() => {
