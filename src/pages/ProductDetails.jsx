@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import TopMarquee from "../components/TopMarquee";
 import toast from 'react-hot-toast';
+import api from '../api';
 import {
     ShieldCheck,
     CheckCircle,
@@ -23,6 +24,8 @@ const ProductDetails = () => {
     const { id } = useParams();
     const { products, addToCart } = useShop();
 
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('benefits');
 
@@ -32,7 +35,68 @@ const ProductDetails = () => {
     const [isAnimating, setIsAnimating] = useState(false);
     const [direction, setDirection] = useState("right");
 
-    const product = products.find(p => p.id === parseInt(id));
+    // Load product - handles both string UUIDs and integer IDs
+    useEffect(() => {
+        const loadProduct = async () => {
+            setLoading(true);
+            
+            // First, try to find in context products
+            // Compare as strings to handle both UUID and integer IDs
+            const foundProduct = products.find(p => String(p.id) === String(id));
+            
+            if (foundProduct) {
+                setProduct(foundProduct);
+                setLoading(false);
+                return;
+            }
+
+            // If not found in context and products array is empty, wait a bit for products to load
+            if (products.length === 0) {
+                // Wait for products to load from API in ShopContext
+                setTimeout(() => {
+                    const retryProduct = products.find(p => String(p.id) === String(id));
+                    if (retryProduct) {
+                        setProduct(retryProduct);
+                    }
+                    setLoading(false);
+                }, 1000);
+                return;
+            }
+
+            // If products loaded but product not found, try fetching from API
+            try {
+                const res = await api.products.getById(id);
+                if (res && res.product) {
+                    const mappedProduct = {
+                        id: res.product.id,
+                        name: res.product.name,
+                        description: res.product.description,
+                        image: res.product.imageUrls?.[0] || '/assets/product-placeholder.png',
+                        images: res.product.imageUrls || ['/assets/product-placeholder.png'],
+                        category: res.product.category?.name || 'Uncategorized',
+                        price: res.product.discountedPrice || res.product.realPrice,
+                        realPrice: res.product.realPrice,
+                        discount_price: res.product.discountedPrice,
+                        stock: res.product.stockQuantity,
+                        rating: res.product.averageRating || 0,
+                        Ingredients: res.product.description || '',
+                        Benefits: res.product.benefits || [],
+                        productType: res.product.productType || ''
+                    };
+                    setProduct(mappedProduct);
+                } else {
+                    setProduct(null);
+                }
+            } catch (err) {
+                console.error('Failed to load product:', err);
+                setProduct(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProduct();
+    }, [id, products]);
 
     // Gallery images from product data
     const galleryImages =
@@ -90,16 +154,38 @@ const ProductDetails = () => {
 
     // Related products
     const relatedProducts = products
-        .filter(p => p.category === product?.category && p.id !== product?.id)
+        .filter(p => p.category === product?.category && String(p.id) !== String(product?.id))
         .slice(0, 4);
 
+    // Loading state
+    if (loading) {
+        return (
+            <div className="product-details-page">
+                <TopMarquee />
+                <div className="container">
+                    <div className="pd-loading">
+                        <div className="spinner"></div>
+                        <p>Loading product...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Product not found
     if (!product) {
         return (
-            <div className="pd-not-found">
-                <h2>Product not found</h2>
-                <Link to="/shop" className="btn-vedayura btn-vedayura-primary">
-                    Back to Shop
-                </Link>
+            <div className="product-details-page">
+                <TopMarquee />
+                <div className="container">
+                    <div className="pd-not-found">
+                        <h2>Product not found</h2>
+                        <p>The product you're looking for doesn't exist or has been removed.</p>
+                        <Link to="/shop" className="btn-vedayura btn-vedayura-primary">
+                            Back to Shop
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -111,13 +197,12 @@ const ProductDetails = () => {
     const handleAddToCart = () => {
         addToCart(product, quantity);
         toast.success(`${product.name} added to cart`, {
-    style: {
-        borderRadius: '12px',
-        background: '#22371f',
-        color: '#fff',
-    },
-});
-
+            style: {
+                borderRadius: '12px',
+                background: '#22371f',
+                color: '#fff',
+            },
+        });
     };
 
     return (
@@ -146,20 +231,19 @@ const ProductDetails = () => {
                                 {product.stock < 50 && (
                                     <span className="badge-low-stock">Low Stock</span>
                                 )}
-                               <span
-  className="badge-type"
-  style={{
-    backgroundColor:
-      product.category === 'Liquid'
-        ? '#02f83be9'      // soft teal
-        : product.category === 'Powder'
-        ? '#ff5100fb'       // soft earthy red
-        : '#9500ff70'     // capsules blue
-  }}
->
-  {product.category}
-</span>
-
+                                <span
+                                    className="badge-type"
+                                    style={{
+                                        backgroundColor:
+                                            product.category === 'Liquid'
+                                                ? '#02f83be9'
+                                                : product.category === 'Powder'
+                                                ? '#ff5100fb'
+                                                : '#9500ff70'
+                                    }}
+                                >
+                                    {product.category}
+                                </span>
                             </div>
 
                             <button className="slider-arrow arrow-left" onClick={prevSlide}>
@@ -213,11 +297,14 @@ const ProductDetails = () => {
 
                         {/* Header */}
                         <div className="pd-header">
-                            <h1 className="pd-title">{product.name}<span>({product.productType})</span></h1>
+                            <h1 className="pd-title">
+                                {product.name}
+                                {product.productType && <span>({product.productType})</span>}
+                            </h1>
 
                             <div className="pd-rating-row">
                                 <Star size={18} fill="#22c55e" color="#22c55e" />
-                                <strong>4.8</strong>
+                                <strong>{product.rating || 4.8}</strong>
                                 <span className="review-count">| 124 Reviews</span>
                             </div>
                         </div>
