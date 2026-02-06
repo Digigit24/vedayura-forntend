@@ -4,6 +4,24 @@ import { Minus, Plus, Trash2, ShoppingBag, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import './Cart.css';
 
+// Normalize cart items to a consistent shape
+// Server items: { id, quantity, productId, product: { id, name, imageUrls, discountedPrice, ... } }
+// Local items:  { id, name, images, price, discount_price, quantity, ... }
+const normalizeItem = (item) => {
+  const product = item.product || item;
+  const productId = product.id || item.productId || item.id;
+
+  return {
+    id: productId,
+    cartItemId: item.id,
+    name: product.name || item.name || 'Unknown Product',
+    image: product.imageUrls?.[0] || product.images?.[0] || item.images?.[0] || item.image || '/assets/product-placeholder.png',
+    price: product.discountedPrice || product.price || item.discount_price || item.price || 0,
+    quantity: item.quantity || 1,
+    stock: product.stockQuantity ?? product.stock ?? item.stock,
+  };
+};
+
 const Cart = () => {
   const {
     cart = [],
@@ -14,15 +32,17 @@ const Cart = () => {
 
   const navigate = useNavigate();
 
-  const subtotal = cart.reduce(
-    (acc, item) => acc + (item.discount_price || item.price) * item.quantity,
+  const normalizedCart = cart.map(normalizeItem);
+
+  const subtotal = normalizedCart.reduce(
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
   const shipping = subtotal > 999 ? 0 : 99;
   const total = subtotal + shipping;
 
-  if (cart.length === 0) {
+  if (normalizedCart.length === 0) {
     return (
       <div className="cart-empty">
         <ShoppingBag size={48} className="text-muted" strokeWidth={1.5} />
@@ -48,20 +68,20 @@ const Cart = () => {
       <div className="cart-drawer-header">
         <h3>My Cart</h3>
         <button className="drawer-close" onClick={closeDrawer}>
-    <X size={22} />
-  </button>
+          <X size={22} />
+        </button>
       </div>
 
       {/* Items */}
       <div className="cart-items">
-        {cart.map(item => (
-          <div key={item.id} className="cart-item">
-            <img src={item.images[0]} alt={item.name} />
+        {normalizedCart.map(item => (
+          <div key={item.cartItemId || item.id} className="cart-item">
+            <img src={item.image} alt={item.name} />
 
             <div className="cart-item-info">
               <h4>{item.name}</h4>
               <span className="price">
-                ₹{item.discount_price || item.price}
+                ₹{item.price}
               </span>
 
               <div className="qty-controls">

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import { Loader, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import './Login.css';
+import { color } from 'framer-motion';
 
 const Login = () => {
     const [isRegister, setIsRegister] = useState(false);
@@ -17,24 +18,116 @@ const Login = () => {
     const navigate = useNavigate();
     const { login, register } = useShop();
 
+    const validateEmail = (email) => {
+        // Strict email validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) return false;
+
+        // Block disposable/temporary email domains
+        const blockedDomains = [
+            'tempmail.com', 'throwaway.email', 'guerrillamail.com',
+            'mailinator.com', 'yopmail.com', 'sharklasers.com',
+            'guerrillamailblock.com', 'grr.la', 'dispostable.com',
+            'trashmail.com', 'fakeinbox.com', 'tempail.com',
+            'temp-mail.org', 'minutemail.com', 'maildrop.cc',
+            'harakirimail.com', 'getairmail.com', 'meltmail.com',
+            'binkmail.com', 'suremail.info', 'trashmail.net'
+        ];
+
+        const domain = email.split('@')[1].toLowerCase();
+        if (blockedDomains.includes(domain)) return false;
+
+        // Ensure domain has valid TLD (at least 2 chars)
+        const tld = domain.split('.').pop();
+        if (tld.length < 2) return false;
+
+        return true;
+    };
+
+    const validatePhone = (phone) => {
+        // Remove all spaces, dashes, and parentheses
+        const cleaned = phone.replace(/[\s\-()]/g, '');
+
+        // Indian mobile number validation
+        // Must be 10 digits (without country code) or 12-13 digits (with +91 or 91)
+        if (cleaned.startsWith('+91')) {
+            const number = cleaned.slice(3);
+            return /^[6-9]\d{9}$/.test(number);
+        } else if (cleaned.startsWith('91') && cleaned.length === 12) {
+            const number = cleaned.slice(2);
+            return /^[6-9]\d{9}$/.test(number);
+        } else if (cleaned.startsWith('0')) {
+            const number = cleaned.slice(1);
+            return /^[6-9]\d{9}$/.test(number);
+        } else {
+            // Plain 10-digit number starting with 6-9
+            return /^[6-9]\d{9}$/.test(cleaned);
+        }
+    };
+
+    const handlePhoneChange = (e) => {
+        // Only allow digits, +, spaces, and dashes
+        const value = e.target.value.replace(/[^0-9+\-\s]/g, '');
+        setPhone(value);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
 
         try {
+            // Email validation
+            if (!validateEmail(email)) {
+                setError('Please enter a valid email address (disposable emails are not allowed)');
+                setLoading(false);
+                return;
+            }
+
             if (isRegister) {
-                // Validation
+                // Registration validation
+                if (!name.trim()) {
+                    setError('Name is required');
+                    setLoading(false);
+                    return;
+                }
+
+                // Name should contain only letters and spaces, min 2 chars
+                if (!/^[a-zA-Z\s]{2,50}$/.test(name.trim())) {
+                    setError('Please enter a valid name (letters only, 2-50 characters)');
+                    setLoading(false);
+                    return;
+                }
+
+                // Phone validation (required for registration)
+                if (!phone.trim()) {
+                    setError('Phone number is required');
+                    setLoading(false);
+                    return;
+                }
+
+                if (!validatePhone(phone)) {
+                    setError('Please enter a valid 10-digit Indian mobile number (starting with 6-9)');
+                    setLoading(false);
+                    return;
+                }
+                
                 if (password.length < 6) {
                     setError('Password must be at least 6 characters');
                     setLoading(false);
                     return;
                 }
 
-                // Format phone number with +91 prefix if needed
-                let formattedPhone = phone.trim();
-                if (formattedPhone && !formattedPhone.startsWith('+')) {
-                    formattedPhone = '+91-' + formattedPhone.replace(/^0+/, '');
+                // Format phone number with +91 prefix
+                let formattedPhone = phone.trim().replace(/[\s\-()]/g, '');
+                if (formattedPhone.startsWith('+91')) {
+                    // already formatted
+                } else if (formattedPhone.startsWith('91') && formattedPhone.length === 12) {
+                    formattedPhone = '+' + formattedPhone;
+                } else if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '+91' + formattedPhone.slice(1);
+                } else {
+                    formattedPhone = '+91' + formattedPhone;
                 }
 
                 const res = await register(name, email, password, formattedPhone);
@@ -44,6 +137,7 @@ const Login = () => {
                     setError(res?.message || 'Registration failed. Please try again.');
                 }
             } else {
+                // Login
                 const res = await login(email, password);
                 if (res && res.success) {
                     const role = res.user?.role || '';
@@ -58,7 +152,11 @@ const Login = () => {
             }
         } catch (err) {
             console.error('Auth error:', err);
-            setError('Something went wrong. Please try again.');
+            if (err.message?.includes('Network') || err.message?.includes('fetch')) {
+                setError('Cannot connect to server. Please check your connection.');
+            } else {
+                setError(err.message || 'Something went wrong. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -100,15 +198,18 @@ const Login = () => {
                                 />
                             </div>
                             <div className="form-group">
-                                <label className="form-label">Phone Number</label>
+                                <label className="form-label">Phone Number <span>*</span></label>
                                 <input
                                     type="tel"
                                     className="form-input"
                                     value={phone}
-                                    onChange={(e) => setPhone(e.target.value)}
+                                    onChange={handlePhoneChange}
                                     placeholder="e.g. 9876543210"
+                                    maxLength={13}
+                                    required
                                     disabled={loading}
                                 />
+                                <small className="form-hint">Enter 10-digit Indian mobile number</small>
                             </div>
                         </>
                     )}
@@ -185,6 +286,10 @@ const Login = () => {
                         onClick={() => {
                             setIsRegister(!isRegister);
                             setError('');
+                            setEmail('');
+                            setPassword('');
+                            setName('');
+                            setPhone('');
                         }}
                     >
                         {isRegister ? 'Sign In' : 'Create Account'}

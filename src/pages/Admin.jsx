@@ -1,631 +1,882 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
 import {
-    LogOut, Grid, Package, ShoppingCart,
-    DollarSign, TrendingUp, AlertCircle, TrendingDown,
-    Users, Truck, FileText, Settings, Search, Bell,
-    Plus, Trash2, Edit2, X, Check, Eye, RotateCcw
+  LogOut, Grid, Package, ShoppingCart,
+  DollarSign, Settings, Search, Bell, Eye,
+  Plus, Trash2, Edit2, X, RotateCcw, Users
 } from 'lucide-react';
 import './Admin.css';
-import { getAllRefunds, approveRefund, rejectRefund } from '../api/refundService';
+import { getAllRefunds } from '../api/refundService';
+import { getAllCategories } from '../api/categoryService';
+import api from '../api';
 
-// NavItem Component moved outside to prevent re-creation on render
+// NavItem Component
 const NavItem = ({ tab, activeTab, setActiveTab, icon: Icon, label }) => (
-    <button
-        onClick={() => setActiveTab(tab)}
-        className={`admin-nav-item ${activeTab === tab ? 'active' : ''}`}
-    >
-        <Icon size={20} />
-        <span>{label}</span>
-        {activeTab === tab && <div className="active-indicator"></div>}
-    </button>
+  <button
+    onClick={() => setActiveTab(tab)}
+    className={`admxx-nav-item ${activeTab === tab ? 'admxx-active' : ''}`}
+  >
+    <Icon size={20} />
+    <span>{label}</span>
+    {activeTab === tab && <div className="admxx-active-indicator"></div>}
+  </button>
 );
 
 const Admin = () => {
-    const { user, logout, products, addProduct, updateProduct, deleteProduct } = useShop();
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('dashboard');
-    const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-    const [editingProduct, setEditingProduct] = useState(null);
+  const { user, logout, products, addProduct, updateProduct, deleteProduct } = useShop();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewingProduct, setViewingProduct] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [saving, setSaving] = useState(false);
 
-    // Safety check for products
-    if (!products) {
-        return <div className="p-xl text-center">Loading Admin Panel...</div>;
-    }
-
-    if (!user || (user.role && user.role.toLowerCase() !== 'admin')) {
-        return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <div className="text-center p-xl border rounded-lg shadow-sm bg-white">
-                    <h2 className="text-xl font-bold mb-md text-error">Access Restricted</h2>
-                    <p className="mb-md text-secondary">You must be an administrator to view this page.</p>
-                    <Link to="/login" className="btn btn-primary btn-txt ">Login as Admin</Link>
-                </div>
-            </div>
-        );
-    }
-
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
-
-    const handleEditProduct = (product) => {
-        setEditingProduct(product);
-        setIsProductModalOpen(true);
-    };
-
-    const handleAddProduct = () => {
-        setEditingProduct(null);
-        setIsProductModalOpen(true);
-    };
-
-    const handleDeleteProduct = async (id) => {
-        if (window.confirm("Are you sure you want to delete this product?")) {
-            await deleteProduct(id);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getAllCategories();
+        if (res?.categories) {
+          setCategories(res.categories);
         }
-    };
+      } catch (err) {
+        console.error('Failed to load categories', err);
+      }
+    })();
+  }, []);
 
-    const handleSaveProduct = async (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
-        const productData = {
-            id: editingProduct ? editingProduct.id : Date.now(),
-            name: formData.get('name'),
-            category: formData.get('category'),
-            price: Number(formData.get('price')),
-            stock: Number(formData.get('stock')),
-            image: formData.get('image') || 'https://picsum.photos/400',
-            description: formData.get('description'),
-        };
-
-        if (editingProduct) {
-            await updateProduct(productData);
-        } else {
-            await addProduct(productData);
-        }
-        setIsProductModalOpen(false);
-    };
-
-    const renderContent = () => {
-        switch (activeTab) {
-            case 'dashboard': return <DashboardHome products={products} />;
-            case 'inventory': return (
-                <Inventory
-                    products={products}
-                    onEdit={handleEditProduct}
-                    onDelete={handleDeleteProduct}
-                    onAdd={handleAddProduct}
-                />
-            );
-            case 'orders': return <Orders />;
-            case 'refunds': return <Refunds />;
-            case 'finance': return <Finance />;
-            default: return <DashboardHome products={products} />;
-        }
-    };
-
+  if (!products || !Array.isArray(products)) {
     return (
-        <div className="admin-layout">
-            {/* Sidebar */}
-            <aside className="admin-sidebar hidden-mobile">
-                <div className="sidebar-header">
-                    <div className="admin-brand">
-                        <span className="text-2xl">🌿</span>
-                        <span className="font-heading font-bold text-xl tracking-tight">Vedayura<span className="text-xs align-top opacity-70">Admin</span></span>
-                    </div>
-                </div>
+      <div className="admxx-loading-wrap">
+        <div className="admxx-loading-text">Loading Admin Panel...</div>
+      </div>
+    );
+  }
 
-                <div className="sidebar-content">
-                    <div className="user-mini-profile mb-xl">
-                        <div className="w-10 h-10 rounded-full bg-primary-light text-white flex items-center justify-center font-bold text-lg">
-                            {user.name.charAt(0)}
-                        </div>
-                        <div>
-                            <p className="font-medium text-sm text-white">{user.name}</p>
-                            <p className="text-xs text-white opacity-60">Administrator</p>
-                        </div>
-                    </div>
+  if (!user || !user.role || user.role.toLowerCase() !== 'admin') {
+    return (
+      <div className="admxx-access-wrap">
+        <div className="admxx-access-card">
+          <h2 className="admxx-access-title">Access Restricted</h2>
+          <p className="admxx-access-text">You must be an administrator to view this page.</p>
+          <Link to="/login" className="admxx-btn admxx-btn-primary">Login as Admin</Link>
+        </div>
+      </div>
+    );
+  }
 
-                    <nav className="flex flex-col gap-xs">
-                        <p className="text-xs uppercase tracking-wider text-white opacity-40 mb-xs pl-md font-bold">Main Menu</p>
-                        <NavItem tab="dashboard" activeTab={activeTab} setActiveTab={setActiveTab} icon={Grid} label="Dashboard" />
-                        <NavItem tab="inventory" activeTab={activeTab} setActiveTab={setActiveTab} icon={Package} label="Inventory" />
-                        <NavItem tab="orders" activeTab={activeTab} setActiveTab={setActiveTab} icon={ShoppingCart} label="Orders" />
-                        <NavItem tab="refunds" activeTab={activeTab} setActiveTab={setActiveTab} icon={RotateCcw} label="Refunds" />
-                        <NavItem tab="finance" activeTab={activeTab} setActiveTab={setActiveTab} icon={DollarSign} label="Finance" />
-                    </nav>
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
-                    <nav className="flex flex-col gap-xs mt-xl">
-                        <p className="text-xs uppercase tracking-wider text-white opacity-40 mb-xs pl-md font-bold">System</p>
-                        <button className="admin-nav-item"><Settings size={20} /> <span>Settings</span></button>
-                        <button onClick={handleLogout} className="admin-nav-item text-red-300 hover:text-red-100"><LogOut size={20} /> <span>Logout</span></button>
-                    </nav>
-                </div>
-            </aside>
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setIsProductModalOpen(true);
+  };
 
-            {/* Mobile Header & Nav */}
-            <div className="admin-mobile-header hidden-desktop">
-                <h2 className="font-bold flex items-center gap-sm">🌿 Admin</h2>
-                <div className="flex gap-sm">
-                    <button onClick={() => setActiveTab('dashboard')} className={`p-sm rounded ${activeTab === 'dashboard' ? 'bg-primary text-white' : 'bg-light'}`}><Grid size={20} /></button>
-                    <button onClick={() => setActiveTab('inventory')} className={`p-sm rounded ${activeTab === 'inventory' ? 'bg-primary text-white' : 'bg-light'}`}><Package size={20} /></button>
-                    <button onClick={() => setActiveTab('orders')} className={`p-sm rounded ${activeTab === 'orders' ? 'bg-primary text-white' : 'bg-light'}`}><ShoppingCart size={20} /></button>
-                    <button onClick={() => setActiveTab('refunds')} className={`p-sm rounded ${activeTab === 'refunds' ? 'bg-primary text-white' : 'bg-light'}`}><RotateCcw size={20} /></button>
-                    <button onClick={() => setActiveTab('finance')} className={`p-sm rounded ${activeTab === 'finance' ? 'bg-primary text-white' : 'bg-light'}`}><DollarSign size={20} /></button>
-                </div>
+  const handleAddProduct = () => {
+    setEditingProduct(null);
+    setIsProductModalOpen(true);
+  };
+
+  const handleDeleteProduct = async (id) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await deleteProduct(id);
+      } catch (error) {
+        console.error('Failed to delete product:', error);
+        alert('Failed to delete product. Please try again.');
+      }
+    }
+  };
+
+  const handleViewProduct = (product) => {
+    setViewingProduct(product);
+  };
+
+  const handleSaveProduct = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const formData = new FormData(e.target);
+
+    const benefitsText = formData.get('benefits') || '';
+    const benefitsArray = benefitsText.split(',').map((b) => b.trim()).filter(Boolean);
+
+    const price = formData.get('price');
+    const stock = formData.get('stock');
+
+    const productData = {
+      name: formData.get('name'),
+      categoryId: formData.get('categoryId'),
+      price: price ? Number(price) : undefined,
+      stock: stock ? Number(stock) : undefined,
+      image: formData.get('image') || 'https://picsum.photos/400',
+      ingredients: formData.get('ingredients') || '',
+      benefits: benefitsArray,
+    };
+
+    Object.keys(productData).forEach((key) => {
+      if (productData[key] === undefined) delete productData[key];
+    });
+
+    try {
+      if (editingProduct) {
+        const result = await updateProduct(editingProduct.id, productData);
+        console.log('✅ Product updated in database:', result);
+      } else {
+        const result = await addProduct(productData);
+        console.log('✅ Product created in database:', result);
+      }
+
+      setIsProductModalOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Failed to save product:', error);
+      alert('Failed to save product. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <DashboardHome products={products} />;
+      case 'inventory':
+        return (
+          <Inventory
+            products={products}
+            searchQuery={searchQuery}
+            onEdit={handleEditProduct}
+            onDelete={handleDeleteProduct}
+            onAdd={handleAddProduct}
+            onView={handleViewProduct}
+          />
+        );
+      case 'orders':
+        return <Orders />;
+      case 'users':
+        return <UserManagement />;
+      case 'refunds':
+        return <Refunds />;
+      case 'finance':
+        return <Finance />;
+      default:
+        return <DashboardHome products={products} />;
+    }
+  };
+
+  return (
+    <div className="admxx-layout">
+      <aside className="admxx-sidebar">
+        <div className="admxx-sidebar-header">🌿 Vedayura Admin</div>
+
+        <div className="admxx-sidebar-content">
+          <div className="admxx-user-mini">
+            <div className="admxx-user-avatar">{user.name.charAt(0)}</div>
+            <div>
+              <p className="admxx-user-name">{user.name}</p>
+              <p className="admxx-user-role">Administrator</p>
+            </div>
+          </div>
+
+          <nav className="admxx-nav">
+            <NavItem tab="dashboard" activeTab={activeTab} setActiveTab={setActiveTab} icon={Grid} label="Dashboard" />
+            <NavItem tab="inventory" activeTab={activeTab} setActiveTab={setActiveTab} icon={Package} label="Inventory" />
+            <NavItem tab="orders" activeTab={activeTab} setActiveTab={setActiveTab} icon={ShoppingCart} label="Orders" />
+            <NavItem tab="users" activeTab={activeTab} setActiveTab={setActiveTab} icon={Users} label="Users" />
+            <NavItem tab="refunds" activeTab={activeTab} setActiveTab={setActiveTab} icon={RotateCcw} label="Refunds" />
+            <NavItem tab="finance" activeTab={activeTab} setActiveTab={setActiveTab} icon={DollarSign} label="Finance" />
+          </nav>
+
+          <div className="admxx-nav-system">
+            <button className="admxx-nav-item"><Settings size={20} /> <span>Settings</span></button>
+            <button onClick={handleLogout} className="admxx-nav-item admxx-logout"><LogOut size={20} /> <span>Logout</span></button>
+          </div>
+        </div>
+      </aside>
+
+      <main className="admxx-main">
+        <header className="admxx-topbar">
+          <div className="admxx-search">
+            <Search size={16} />
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="admxx-search-clear"
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          <button className="admxx-bell">
+            <Bell size={20} />
+            <span className="admxx-bell-dot"></span>
+          </button>
+        </header>
+
+        <div className="admxx-content">
+          {renderContent()}
+        </div>
+      </main>
+
+      {/* Add/Edit Product Modal */}
+      {isProductModalOpen && (
+        <div className="admxx-modal-backdrop">
+          <div className="admxx-modal">
+            <div className="admxx-modal-header">
+              <h3>{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
+              <button onClick={() => setIsProductModalOpen(false)}><X size={20} /></button>
             </div>
 
-            {/* Main Content Area */}
-            <main className="admin-main">
-                <header className="admin-topbar sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b px-lg py-md flex justify-end items-center gap-lg">
-                    <div className="search-bar-mini flex items-center gap-sm bg-light px-md py-xs rounded-full border border-transparent focus-within:border-primary transition-all">
-                        <Search size={16} className="text-secondary" />
-                        <input type="text" placeholder="Search..." className="bg-transparent border-none text-sm focus:outline-none w-48" />
-                    </div>
-                    <button className="relative text-secondary hover:text-primary transition-colors">
-                        <Bell size={20} />
-                        <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-                </header>
+            <form onSubmit={handleSaveProduct} className="admxx-form" key={editingProduct?.id || 'new'}>
+              <input name="name" defaultValue={editingProduct?.name} placeholder="Name" required />
+              <select
+                name="categoryId"
+                defaultValue={editingProduct?.categoryId || ''}
+                required
+              >
+                <option value="">Select Category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+              <input name="price" type="number" defaultValue={editingProduct?.price} placeholder="Price" required />
+              <input name="stock" type="number" defaultValue={editingProduct?.stock} placeholder="Stock" required />
+              <input name="image" defaultValue={editingProduct?.image} placeholder="Image URL" />
+              <textarea name="ingredients" defaultValue={editingProduct?.ingredients} placeholder="Ingredients"></textarea>
+              <textarea name="benefits" defaultValue={editingProduct?.benefits?.join(', ')} placeholder="Benefits (comma separated)"></textarea>
 
-                <div className="admin-content-wrapper p-lg">
-                    {renderContent()}
-                </div>
-            </main>
-
-            {/* Product Modal */}
-            {isProductModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="bg-white rounded-xl shadow-2xl p-xl w-full max-w-lg m-md border overflow-hidden animate-fade-in">
-                        <div className="flex justify-between items-center mb-lg border-b pb-md">
-                            <h3 className="text-xl font-bold">{editingProduct ? 'Edit Product' : 'Add New Product'}</h3>
-                            <button onClick={() => setIsProductModalOpen(false)} className="text-secondary hover:text-dark p-xs rounded hover:bg-light"><X size={20} /></button>
-                        </div>
-                        <form onSubmit={handleSaveProduct} className="space-y-md">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
-                                <div>
-                                    <label className="block text-xs font-bold text-secondary uppercase mb-xs">Name</label>
-                                    <input name="name" defaultValue={editingProduct?.name} required className="w-full p-sm border rounded focus:border-primary outline-none" placeholder="Product Name" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-secondary uppercase mb-xs">Category</label>
-                                    <select name="category" defaultValue={editingProduct?.category || 'Skincare'} className="w-full p-sm border rounded focus:border-primary outline-none">
-                                        <option value="Skincare">Skincare</option>
-                                        <option value="Haircare">Haircare</option>
-                                        <option value="Ayurvedic Tablets">Ayurvedic Tablets</option>
-                                        <option value="Wellness Oils">Wellness Oils</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-secondary uppercase mb-xs">Price (₹)</label>
-                                    <input name="price" type="number" defaultValue={editingProduct?.price} required className="w-full p-sm border rounded focus:border-primary outline-none" min="0" />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-secondary uppercase mb-xs">Stock</label>
-                                    <input name="stock" type="number" defaultValue={editingProduct?.stock} required className="w-full p-sm border rounded focus:border-primary outline-none" min="0" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-secondary uppercase mb-xs">Image URL</label>
-                                <input name="image" defaultValue={editingProduct?.image} className="w-full p-sm border rounded focus:border-primary outline-none" placeholder="https://..." />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-secondary uppercase mb-xs">Description</label>
-                                <textarea name="description" defaultValue={editingProduct?.description} rows="3" className="w-full p-sm border rounded focus:border-primary outline-none" ></textarea>
-                            </div>
-                            <div className="flex justify-end gap-sm pt-md">
-                                <button type="button" onClick={() => setIsProductModalOpen(false)} className="btn btn-outline">Cancel</button>
-                                <button type="submit" className="btn btn-primary btn-txt">Save Product</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+              <div className="admxx-form-actions">
+                <button type="button" onClick={() => setIsProductModalOpen(false)}>Cancel</button>
+                <button type="submit" disabled={saving}>
+                  {saving ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      )}
+
+      {/* View Product Modal */}
+      {viewingProduct && (
+        <div className="admxx-modal-backdrop">
+          <div className="admxx-modal">
+            <div className="admxx-modal-header">
+              <h3>Product Details</h3>
+              <button onClick={() => setViewingProduct(null)}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="admxx-view-image-wrap">
+              <img
+                src={viewingProduct.image || 'https://picsum.photos/400'}
+                alt={viewingProduct.name}
+                className="admxx-view-image"
+              />
+            </div>
+
+            <div className="admxx-view-grid">
+              <div><strong>Name:</strong> {viewingProduct.name}</div>
+              <div><strong>Category:</strong> {viewingProduct.category}</div>
+              <div><strong>Price:</strong> ₹{viewingProduct.price}</div>
+              <div><strong>Stock:</strong> {viewingProduct.stock}</div>
+              <div><strong>Ingredients:</strong> {viewingProduct.ingredients || '-'}</div>
+              <div>
+                <strong>Benefits:</strong>
+                <ul>
+                  {(viewingProduct.benefits || []).map((b, i) => (
+                    <li key={i}>{b}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Bottom Navigation */}
+      <div className="admxx-mobile-nav">
+        <button
+          className={activeTab === 'dashboard' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('dashboard')}
+        >
+          <Grid />
+          <span>Home</span>
+        </button>
+        <button
+          className={activeTab === 'inventory' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('inventory')}
+        >
+          <Package />
+          <span>Items</span>
+        </button>
+        <button
+          className={activeTab === 'orders' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('orders')}
+        >
+          <ShoppingCart />
+          <span>Orders</span>
+        </button>
+        <button
+          className={activeTab === 'users' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('users')}
+        >
+          <Users />
+          <span>Users</span>
+        </button>
+        <button
+          className={activeTab === 'refunds' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('refunds')}
+        >
+          <RotateCcw />
+          <span>Refunds</span>
+        </button>
+        <button className="admxx-mobile-logout" onClick={handleLogout}>
+          <LogOut />
+          <span>Logout</span>
+        </button>
+      </div>
+    </div>
+  );
 };
 
-/* --- Sub Components --- */
-
-const StatCard = ({ title, value, subtext, icon: Icon, colorClass, trend }) => (
-    <div className="stat-card bg-white p-lg rounded-xl border border-transparent hover:border-light shadow-sm hover:shadow-md transition-all">
-        <div className="flex justify-between items-start mb-sm">
-            <div className={`p-sm rounded-lg ${colorClass} bg-opacity-10 text-${colorClass.split('-')[1]}-600`}>
-                <Icon size={24} />
-            </div>
-            {trend && <span className={`text-xs font-bold px-2 py-1 rounded-full ${trend > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{trend > 0 ? '+' : ''}{trend}%</span>}
-        </div>
-        <div>
-            <p className="text-secondary text-sm font-medium mb-xs">{title}</p>
-            <h3 className="text-2xl font-bold text-dark">{value}</h3>
-            {subtext && <p className="text-xs text-secondary mt-xs flex items-center gap-xs">{subtext}</p>}
-        </div>
-    </div>
-);
+// ====== SUB COMPONENTS ======
 
 const DashboardHome = ({ products }) => (
-    <div className="animate-fade-in space-y-lg">
-        <div>
-            <h2 className="text-2xl font-bold text-dark mb-sm">Dashboard Overview</h2>
-            <p className="text-secondary">Welcome back, here's what's happening with your store today.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
-            <StatCard title="Total Revenue" value="₹8,45,000" icon={Users} colorClass="bg-emerald-500 text-emerald-600" trend={12} />
-            <StatCard title="Total Orders" value="1,245" icon={ShoppingCart} colorClass="bg-blue-500 text-blue-600" trend={8} />
-            <StatCard title="Total Products" value={products.length} icon={Package} colorClass="bg-purple-500 text-purple-600" subtext={`${products.filter(p => p.stock < 20).length} Low Stock alert`} />
-            <StatCard title="Active Users" value="8,432" icon={Users} colorClass="bg-orange-500 text-orange-600" trend={-2} />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
-            <div className="lg:col-span-2 bg-white p-xl rounded-xl border shadow-sm">
-                <div className="flex justify-between items-center mb-lg">
-                    <h3 className="font-bold text-lg">Sales Analytics (Weekly)</h3>
-                </div>
-                {/* CSS Based Bar Chart */}
-                <div className="h-64 flex items-end justify-between gap-md px-md border-b border-dashed pb-4">
-                    {[40, 65, 55, 80, 70, 90, 85].map((h, i) => (
-                        <div key={i} className="group relative flex-1 bg-primary opacity-20 hover:opacity-100 transition-all rounded-t-sm" style={{ height: `${h}%` }}>
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-dark text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">₹{h}k Revenue</div>
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-between text-xs text-secondary mt-md uppercase font-bold tracking-wider">
-                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                </div>
-            </div>
-
-            <div className="bg-white p-xl rounded-xl border shadow-sm">
-                <h3 className="font-bold text-lg mb-lg">Recent Operations</h3>
-                <div className="space-y-md relative">
-                    <div className="absolute left-2 top-2 bottom-2 w-0.5 bg-gray-100"></div>
-                    <div className="relative pl-lg">
-                        <div className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white bg-green-500 shadow-sm"></div>
-                        <p className="text-sm font-bold text-dark">Order #1024 Delivered</p>
-                        <p className="text-xs text-secondary">2 hours ago</p>
-                    </div>
-                    <div className="relative pl-lg">
-                        <div className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white bg-blue-500 shadow-sm"></div>
-                        <p className="text-sm font-bold text-dark">New Stock Added</p>
-                        <p className="text-xs text-secondary">Ashwagandha (50 units)</p>
-                    </div>
-                    <div className="relative pl-lg">
-                        <div className="absolute left-0 top-1 w-4 h-4 rounded-full border-2 border-white bg-yellow-500 shadow-sm"></div>
-                        <p className="text-sm font-bold text-dark">New User Registered</p>
-                        <p className="text-xs text-secondary">Rahul Sharma</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div className="admxx-section">
+    <h2>Dashboard</h2>
+    <p>Total Products: {products.length}</p>
+  </div>
 );
 
-const Inventory = ({ products, onEdit, onDelete, onAdd }) => (
-    <div className="animate-fade-in bg-white rounded-xl shadow-sm border overflow-hidden">
-        <div className="p-lg border-b flex justify-between items-center bg-gray-50/50">
-            <div>
-                <h2 className="text-lg font-bold">Inventory Management</h2>
-                <p className="text-xs text-secondary">Manage {products.length} products</p>
-            </div>
-            <div className="flex gap-sm">
-                <button onClick={onAdd} className="btn btn-primary btn-txt text-sm gap-xs"><Plus size={16} /> Add Product</button>
-            </div>
-        </div>
-
-        <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-                <thead className="bg-gray-50 text-secondary text-xs uppercase tracking-wider font-semibold">
-                    <tr>
-                        <th className="px-lg py-md">Product</th>
-                        <th className="px-lg py-md">Category</th>
-                        <th className="px-lg py-md">Price</th>
-                        <th className="px-lg py-md">Stock</th>
-                        <th className="px-lg py-md">Status</th>
-                        <th className="px-lg py-md text-right">Actions</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y">
-                    {products.map(p => (
-                        <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
-                            <td className="px-lg py-md">
-                                <div className="flex items-center gap-md">
-                                    <img src={p.image} alt="" className="w-10 h-10 rounded-md object-cover border" />
-                                    <div>
-                                        <p className="font-medium text-sm text-dark">{p.name}</p>
-                                        <p className="text-xs text-secondary">ID: #{p.id}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-lg py-md text-sm text-secondary">{p.category}</td>
-                            <td className="px-lg py-md text-sm font-medium">₹{p.price}</td>
-                            <td className="px-lg py-md text-sm font-mono">{p.stock}</td>
-                            <td className="px-lg py-md">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${p.stock < 30 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
-                                    {p.stock < 30 ? 'Low Stock' : 'In Stock'}
-                                </span>
-                            </td>
-                            <td className="px-lg py-md text-right">
-                                <div className="flex items-center justify-end gap-xs">
-                                    <button onClick={() => onEdit(p)} className="text-secondary hover:text-primary p-sm rounded hover:bg-light" title="Edit"><Edit2 size={16} /></button>
-                                    <button onClick={() => onDelete(p.id)} className="text-secondary hover:text-red-600 p-sm rounded hover:bg-light" title="Delete"><Trash2 size={16} /></button>
-                                </div>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
-    </div>
-);
-
-const Orders = () => {
-    const [orders, setOrders] = useState([
-        { id: 1, status: 'Processing', paid: true },
-        { id: 2, status: 'Shipped', paid: true },
-        { id: 3, status: 'Processing', paid: true }
-    ]);
-
-    const handleShip = (id) => {
-        setOrders(orders.map(o => o.id === id ? { ...o, status: 'Shipped' } : o));
-        alert(`Order #AYU102${id} marked as Shipped!`);
-    };
-
-    const handleInvoice = (id) => {
-        alert(`Generating Invoice for Order #AYU102${id}... (Download would start here)`);
-    };
-
-    const handleTrack = (id) => {
-        alert(`Tracking Order #AYU102${id}\nCurrent Location: New Delhi Distribution Hub\nExpected Delivery: Tomorrow`);
-    };
-
+const Inventory = ({ products, searchQuery, onEdit, onDelete, onAdd, onView }) => {
+  const filteredProducts = products.filter((p) => {
+    const q = searchQuery.toLowerCase();
     return (
-        <div className="animate-fade-in space-y-lg">
-            <div className="flex justify-between items-center mb-md">
-                <h2 className="text-xl font-bold">Order Management</h2>
-                <div className="flex bg-gray-100 p-1 rounded-lg">
-                    <button className="px-md py-xs rounded-md bg-white shadow-sm text-sm font-medium text-primary">All</button>
-                    <button className="px-md py-xs rounded-md text-sm font-medium text-secondary hover:text-dark">Processing</button>
-                    <button className="px-md py-xs rounded-md text-sm font-medium text-secondary hover:text-dark">Shipped</button>
-                </div>
-            </div>
-
-            <div className="space-y-md">
-                {orders.map((order) => (
-                    <div key={order.id} className="bg-white rounded-xl border shadow-sm p-lg hover:shadow-md transition-all group">
-                        <div className="flex justify-between items-start mb-md">
-                            <div className="flex gap-md items-center">
-                                <div className={`p-md rounded-full ${order.status === 'Shipped' ? 'bg-green-50 text-green-600' : 'bg-blue-50 text-blue-600'}`}>
-                                    <Package size={24} />
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-dark text-lg group-hover:text-primary transition-colors">Order #AYU102{order.id}</h4>
-                                    <p className="text-sm text-secondary">Placed on Jan {10 + order.id}, 2026 by <span className="text-dark font-medium">Customer {order.id}</span></p>
-                                </div>
-                            </div>
-                            <span className={`px-md py-xs rounded-full text-xs font-bold uppercase tracking-wide ${order.status === 'Shipped' ? 'bg-green-100 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>
-                                {order.status}
-                            </span>
-                        </div>
-
-                        <div className="pl-[60px] grid grid-cols-1 md:grid-cols-3 gap-md border-t pt-md mt-sm">
-                            <div>
-                                <p className="text-xs text-secondary uppercase font-bold mb-xs">Amount</p>
-                                <p className="font-mono text-dark font-medium">₹2,499.00</p>
-                            </div>
-                            <div>
-                                <p className="text-xs text-secondary uppercase font-bold mb-xs">Payment</p>
-                                <div className="flex items-center gap-xs"><div className="w-2 h-2 rounded-full bg-green-500"></div> <span className="text-sm">Paid (Razorpay)</span></div>
-                            </div>
-                            <div className="flex justify-end gap-sm items-center">
-                                <button onClick={() => handleInvoice(order.id)} className="btn btn-outline btn-sm text-xs">Invoice</button>
-                                {order.status === 'Shipped' ? (
-                                    <button onClick={() => handleTrack(order.id)} className="btn btn-outline text-blue-600 border-blue-200 hover:bg-blue-50 btn-sm text-xs gap-xs flex items-center"><Truck size={14} /> Track Shipment</button>
-                                ) : (
-                                    <button onClick={() => handleShip(order.id)} className="btn btn-primary btn-txt btn-sm text-xs">Ship Now</button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
+      p.name?.toLowerCase().includes(q) ||
+      p.category?.toLowerCase().includes(q) ||
+      String(p.id).includes(q)
     );
+  });
+
+  return (
+    <div className="admxx-section">
+      <div className="admxx-section-header">
+        <h2>Inventory</h2>
+        <button onClick={onAdd}><Plus size={16} /> Add</button>
+      </div>
+
+      {filteredProducts.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
+        <table className="admxx-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td>{p.category}</td>
+                <td>₹{p.price}</td>
+                <td>{p.stock}</td>
+                <td>
+                  <button onClick={() => onView(p)} title="View"><Eye size={16} /></button>
+                  <button onClick={() => onEdit(p)} title="Edit"><Edit2 size={16} /></button>
+                  <button onClick={() => onDelete(p.id)} title="Delete"><Trash2 size={16} /></button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+const Orders = () => (
+  <div className="admxx-section">
+    <h2>Orders</h2>
+    <p>Orders module placeholder</p>
+  </div>
+);
+
+// ====== USER MANAGEMENT COMPONENT ======
+const UserManagement = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewingUser, setViewingUser] = useState(null);
+  const [viewingUserDetails, setViewingUserDetails] = useState(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+
+  useEffect(() => {
+    loadUsers();
+  }, []);
+
+  const loadUsers = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('ayurveda_token');
+      const res = await fetch('/api/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setUsers(data.users);
+      } else {
+        setError(data.message || 'Failed to load users');
+      }
+    } catch (err) {
+      console.error('Failed to load users:', err);
+      setError('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewUser = async (user) => {
+    setViewingUser(user);
+    setLoadingDetails(true);
+    try {
+      const token = localStorage.getItem('ayurveda_token');
+      const res = await fetch(`/api/users/${user.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setViewingUserDetails(data.user);
+      }
+    } catch (err) {
+      console.error('Failed to load user details:', err);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const handleDeleteUser = async (userId, userName) => {
+    if (!window.confirm(`Are you sure you want to delete user "${userName}"? This cannot be undone.`)) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('ayurveda_token');
+      const res = await fetch(`/api/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+      } else {
+        alert(data.message || 'Failed to delete user');
+      }
+    } catch (err) {
+      console.error('Failed to delete user:', err);
+      alert('Failed to delete user');
+    }
+  };
+
+  const filteredUsers = users.filter((u) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      u.name?.toLowerCase().includes(q) ||
+      u.email?.toLowerCase().includes(q) ||
+      u.phone?.toLowerCase().includes(q) ||
+      u.role?.toLowerCase().includes(q)
+    );
+  });
+
+  const formatDate = (dateStr) => {
+    return new Date(dateStr).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="admxx-section">
+        <h2>Users</h2>
+        <p>Loading users...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="admxx-section">
+        <h2>Users</h2>
+        <p style={{ color: '#e74c3c' }}>{error}</p>
+        <button onClick={loadUsers}>Retry</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="admxx-section">
+      <div className="admxx-section-header">
+        <h2>Users ({users.length})</h2>
+      </div>
+
+      {/* Search */}
+      <div className="admxx-user-search">
+        <div className="admxx-search" style={{ maxWidth: '350px' }}>
+          <Search size={16} />
+          <input
+            type="text"
+            placeholder="Search by name, email, phone..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button type="button" className="admxx-search-clear" onClick={() => setSearchQuery('')}>×</button>
+          )}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="admxx-user-stats">
+        <div className="admxx-user-stat-card" style={{ background: '#f0fdf4', border: '1px solid #bbf7d0' }}>
+          <strong>{users.filter((u) => u.role === 'USER').length}</strong> Customers
+        </div>
+        <div className="admxx-user-stat-card" style={{ background: '#fef3c7', border: '1px solid #fde68a' }}>
+          <strong>{users.filter((u) => u.role === 'ADMIN').length}</strong> Admins
+        </div>
+        <div className="admxx-user-stat-card" style={{ background: '#ede9fe', border: '1px solid #c4b5fd' }}>
+          <strong>{users.length}</strong> Total
+        </div>
+      </div>
+
+      {/* Table */}
+      {filteredUsers.length === 0 ? (
+        <p className="admxx-no-data">No users found.</p>
+      ) : (
+        <table className="admxx-table admxx-users-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Role</th>
+              <th>Cart</th>
+              <th>Wishlist</th>
+              <th>Orders</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredUsers.map((u) => (
+              <tr key={u.id}>
+                <td>
+                  <div className="admxx-user-cell">
+                    <div
+                      className="admxx-user-cell-avatar"
+                      style={{ background: u.role === 'ADMIN' ? '#fde68a' : '#bbf7d0' }}
+                    >
+                      {u.name?.charAt(0)?.toUpperCase()}
+                    </div>
+                    <div className="admxx-user-cell-info">
+                      <span className="admxx-user-cell-name">{u.name}</span>
+                      <span className="admxx-user-cell-email">{u.email}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>{u.email}</td>
+                <td>{u.phone || '-'}</td>
+                <td>
+                  <span className={`admxx-role-badge ${u.role === 'ADMIN' ? 'admin' : 'user'}`}>
+                    {u.role}
+                  </span>
+                </td>
+                <td>{u.cartItemCount || 0}</td>
+                <td>{u.wishlistItemCount || 0}</td>
+                <td>{u._count?.orders || 0}</td>
+                <td>{formatDate(u.createdAt)}</td>
+                <td>
+                  <button onClick={() => handleViewUser(u)} title="View"><Eye size={16} /></button>
+                  {u.role !== 'ADMIN' && (
+                    <button onClick={() => handleDeleteUser(u.id, u.name)} title="Delete"><Trash2 size={16} /></button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {/* View User Modal */}
+      {viewingUser && (
+        <div className="admxx-modal-backdrop">
+          <div className="admxx-modal">
+            <div className="admxx-modal-header">
+              <h3>User Details</h3>
+              <button onClick={() => { setViewingUser(null); setViewingUserDetails(null); }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="admxx-user-detail-header">
+              <div
+                className="admxx-user-detail-avatar"
+                style={{ background: viewingUser.role === 'ADMIN' ? '#fde68a' : '#bbf7d0' }}
+              >
+                {viewingUser.name?.charAt(0)?.toUpperCase()}
+              </div>
+              <div>
+                <div className="admxx-user-detail-name">{viewingUser.name}</div>
+                <div className="admxx-user-detail-role">
+                  <span className={`admxx-role-badge ${viewingUser.role === 'ADMIN' ? 'admin' : 'user'}`}>
+                    {viewingUser.role}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="admxx-user-detail-grid">
+              <div><strong>Email</strong>{viewingUser.email}</div>
+              <div><strong>Phone</strong>{viewingUser.phone || 'Not provided'}</div>
+              <div><strong>Joined</strong>{formatDate(viewingUser.createdAt)}</div>
+              <div><strong>Orders</strong>{viewingUser._count?.orders || 0}</div>
+              <div><strong>Cart Items</strong>{viewingUser.cartItemCount || 0}</div>
+              <div><strong>Wishlist Items</strong>{viewingUser.wishlistItemCount || 0}</div>
+              <div><strong>Reviews</strong>{viewingUser._count?.reviews || 0}</div>
+            </div>
+
+            {/* Cart Items */}
+            {loadingDetails ? (
+              <p className="admxx-no-data">Loading details...</p>
+            ) : (
+              <>
+                {viewingUserDetails?.cartItems?.length > 0 && (
+                  <div className="admxx-user-orders-section">
+                    <h4>🛒 Cart Items ({viewingUserDetails.cartItems.length})</h4>
+                    <table className="admxx-table">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Price</th>
+                          <th>Qty</th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {viewingUserDetails.cartItems.map((item) => (
+                          <tr key={item.id}>
+                            <td style={{ textAlign: 'left' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <img
+                                  src={item.product?.imageUrls?.[0] || 'https://picsum.photos/40'}
+                                  alt={item.product?.name}
+                                  style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover' }}
+                                />
+                                {item.product?.name}
+                              </div>
+                            </td>
+                            <td>₹{Number(item.product?.discountedPrice || item.product?.realPrice || 0).toFixed(2)}</td>
+                            <td>{item.quantity}</td>
+                            <td>₹{(Number(item.product?.discountedPrice || item.product?.realPrice || 0) * item.quantity).toFixed(2)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Wishlist Items */}
+                {viewingUserDetails?.wishlistItems?.length > 0 && (
+                  <div className="admxx-user-orders-section">
+                    <h4>❤️ Wishlist ({viewingUserDetails.wishlistItems.length})</h4>
+                    <table className="admxx-table">
+                      <thead>
+                        <tr>
+                          <th>Product</th>
+                          <th>Price</th>
+                          <th>Added</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {viewingUserDetails.wishlistItems.map((item) => (
+                          <tr key={item.id}>
+                            <td style={{ textAlign: 'left' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <img
+                                  src={item.product?.imageUrls?.[0] || 'https://picsum.photos/40'}
+                                  alt={item.product?.name}
+                                  style={{ width: '36px', height: '36px', borderRadius: '6px', objectFit: 'cover' }}
+                                />
+                                {item.product?.name}
+                              </div>
+                            </td>
+                            <td>₹{Number(item.product?.discountedPrice || item.product?.realPrice || 0).toFixed(2)}</td>
+                            <td>{formatDate(item.createdAt)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Orders */}
+                {viewingUserDetails?.orders?.length > 0 ? (
+                  <div className="admxx-user-orders-section">
+                    <h4>📦 Recent Orders ({viewingUserDetails.orders.length})</h4>
+                    <table className="admxx-table">
+                      <thead>
+                        <tr>
+                          <th>Order ID</th>
+                          <th>Amount</th>
+                          <th>Status</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {viewingUserDetails.orders.map((order) => (
+                          <tr key={order.id}>
+                            <td style={{ fontSize: '12px' }}>{order.id.slice(0, 8)}...</td>
+                            <td>₹{Number(order.totalAmount).toFixed(2)}</td>
+                            <td>
+                              <span className={`admxx-role-badge ${
+                                order.status === 'DELIVERED' ? 'user' : 'admin'
+                              }`}>
+                                {order.status}
+                              </span>
+                            </td>
+                            <td>{formatDate(order.createdAt)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="admxx-no-data">No orders yet.</p>
+                )}
+
+                {/* Reviews */}
+                {viewingUserDetails?.reviews?.length > 0 && (
+                  <div className="admxx-user-orders-section">
+                    <h4>⭐ Reviews ({viewingUserDetails.reviews.length})</h4>
+                    {viewingUserDetails.reviews.map((review) => (
+                      <div key={review.id} className="admxx-address-card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                          <strong>{review.product?.name}</strong>
+                          <span>{'⭐'.repeat(review.rating)}</span>
+                        </div>
+                        {review.comment && <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#666' }}>{review.comment}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Addresses */}
+                {viewingUserDetails?.addresses?.length > 0 && (
+                  <div className="admxx-user-orders-section">
+                    <h4>📍 Addresses</h4>
+                    {viewingUserDetails.addresses.map((addr) => (
+                      <div key={addr.id} className="admxx-address-card">
+                        {addr.street}, {addr.city}, {addr.state} - {addr.pincode}
+                        {addr.isDefault && <span className="admxx-address-default">(Default)</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Empty state */}
+                {!viewingUserDetails?.cartItems?.length &&
+                 !viewingUserDetails?.wishlistItems?.length &&
+                 !viewingUserDetails?.orders?.length &&
+                 !viewingUserDetails?.reviews?.length &&
+                 !viewingUserDetails?.addresses?.length && (
+                  <p className="admxx-no-data">No activity found for this user.</p>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 const Refunds = () => {
-    const [refunds, setRefunds] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [refunds, setRefunds] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    React.useEffect(() => {
-        loadRefunds();
-    }, []);
+  useEffect(() => {
+    loadRefunds();
+  }, []);
 
-    const loadRefunds = async () => {
-        try {
-            const data = await getAllRefunds();
-            if (data.success) {
-                setRefunds(data.refunds);
-            }
-        } catch (error) {
-            console.error("Failed to load refunds", error);
-            // Mock data for display if API fails (likely no backend)
-            setRefunds([
-                {
-                    id: 'ref_1',
-                    orderId: 'AYU1025',
-                    amount: 1200,
-                    reason: 'Product Damaged',
-                    userNote: 'Received broken bottle',
-                    status: 'REQUESTED',
-                    requestedAt: new Date().toISOString()
-                }
-            ]);
-        } finally {
-            setLoading(false);
-        }
-    };
+  const loadRefunds = async () => {
+    try {
+      const data = await getAllRefunds();
+      if (data.success) setRefunds(data.refunds);
+    } catch {
+      setRefunds([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleApprove = async (id) => {
-        const note = window.prompt("Approve Note (Optional):", "Approved by Admin");
-        if (note !== null) {
-            try {
-                await approveRefund(id, note);
-                alert("Refund Approved");
-                loadRefunds();
-            } catch (e) {
-                alert("Failed to approve (Backend required)");
-                // Optimistic update for demo
-                setRefunds(prev => prev.map(r => r.id === id ? { ...r, status: 'PROCESSING' } : r));
-            }
-        }
-    };
-
-    const handleReject = async (id) => {
-        const note = window.prompt("Rejection Reason (Required):");
-        if (note) {
-            try {
-                await rejectRefund(id, note);
-                alert("Refund Rejected");
-                loadRefunds();
-            } catch (e) {
-                alert("Failed to reject (Backend required)");
-                // Optimistic update for demo
-                setRefunds(prev => prev.map(r => r.id === id ? { ...r, status: 'REJECTED' } : r));
-            }
-        }
-    };
-
-    return (
-        <div className="animate-fade-in space-y-lg">
-            <div className="flex justify-between items-center mb-md">
-                <h2 className="text-xl font-bold">Refund Management</h2>
-                <div className="flex bg-blue-50 text-blue-800 px-md py-xs rounded-full text-sm font-bold items-center gap-xs">
-                    <RotateCcw size={16} /> Pending Requests: {refunds.filter(r => r.status === 'REQUESTED').length}
-                </div>
+  return (
+    <div className="admxx-section">
+      <h2>Refunds</h2>
+      {loading
+        ? 'Loading...'
+        : refunds.length === 0
+        ? 'No refunds'
+        : refunds.map((r) => (
+            <div key={r.id}>
+              {r.orderId} - {r.status}
             </div>
-
-            <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-                <table className="w-full text-left border-collapse">
-                    <thead className="bg-gray-50 text-secondary text-xs uppercase tracking-wider font-semibold">
-                        <tr>
-                            <th className="px-lg py-md">Order ID</th>
-                            <th className="px-lg py-md">Reason</th>
-                            <th className="px-lg py-md">Amount</th>
-                            <th className="px-lg py-md">Status</th>
-                            <th className="px-lg py-md text-right">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                        {loading ? (
-                            <tr><td colSpan="5" className="p-xl text-center">Loading refunds...</td></tr>
-                        ) : refunds.length === 0 ? (
-                            <tr><td colSpan="5" className="p-xl text-center text-secondary">No refund requests found.</td></tr>
-                        ) : (
-                            refunds.map(refund => (
-                                <tr key={refund.id} className="hover:bg-gray-50/50">
-                                    <td className="px-lg py-md font-medium">{refund.orderId}</td>
-                                    <td className="px-lg py-md">
-                                        <p className="text-sm text-dark">{refund.reason}</p>
-                                        <p className="text-xs text-secondary italic">"{refund.userNote}"</p>
-                                    </td>
-                                    <td className="px-lg py-md font-bold">₹{refund.amount}</td>
-                                    <td className="px-lg py-md">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold ${refund.status === 'REQUESTED' ? 'bg-orange-100 text-orange-800' :
-                                            refund.status === 'APPROVED' || refund.status === 'PROCESSING' || refund.status === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                                                'bg-red-100 text-red-800'
-                                            }`}>
-                                            {refund.status}
-                                        </span>
-                                    </td>
-                                    <td className="px-lg py-md text-right">
-                                        {refund.status === 'REQUESTED' && (
-                                            <div className="flex justify-end gap-sm">
-                                                <button onClick={() => handleApprove(refund.id)} className="btn btn-sm btn-outline text-green-600 border-green-200 hover:bg-green-50">Approve</button>
-                                                <button onClick={() => handleReject(refund.id)} className="btn btn-sm btn-outline text-red-600 border-red-200 hover:bg-red-50">Reject</button>
-                                            </div>
-                                        )}
-                                        {refund.status !== 'REQUESTED' && (
-                                            <span className="text-xs text-secondary">Processed</span>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+          ))}
+    </div>
+  );
 };
 
 const Finance = () => (
-    <div className="animate-fade-in">
-        <div className="mb-lg">
-            <h2 className="text-2xl font-bold">Financial Performance</h2>
-            <p className="text-secondary">Track your income, expenses, and overall profitability.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-lg mb-xl">
-            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-xl rounded-xl border border-emerald-100 flex flex-col justify-between h-48">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-emerald-700 font-medium mb-xs">Total Income</p>
-                        <h2 className="text-4xl font-bold text-emerald-900">₹8.45L</h2>
-                    </div>
-                    <div className="p-sm bg-white rounded-lg shadow-sm text-emerald-600"><TrendingUp /></div>
-                </div>
-                <div className="w-full bg-emerald-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-emerald-600 h-full w-[70%]"></div>
-                </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-rose-50 to-orange-50 p-xl rounded-xl border border-rose-100 flex flex-col justify-between h-48">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <p className="text-rose-700 font-medium mb-xs">Total Expenses</p>
-                        <h2 className="text-4xl font-bold text-rose-900">₹3.20L</h2>
-                    </div>
-                    <div className="p-sm bg-white rounded-lg shadow-sm text-rose-600"><TrendingDown /></div>
-                </div>
-                <div className="w-full bg-rose-200 h-1.5 rounded-full overflow-hidden">
-                    <div className="bg-rose-600 h-full w-[40%]"></div>
-                </div>
-            </div>
-        </div>
-
-        <div className="bg-white rounded-xl border shadow-sm p-xl">
-            <h3 className="font-bold text-lg mb-lg">Expense Breakdown</h3>
-            <div className="space-y-lg">
-                <div className="flex items-center group">
-                    <div className="w-full">
-                        <div className="flex justify-between mb-xs">
-                            <div className="flex items-center gap-sm">
-                                <div className="p-xs bg-blue-100 text-blue-600 rounded"><Truck size={14} /></div>
-                                <span className="font-medium text-sm">Logistics</span>
-                            </div>
-                            <span className="text-sm font-bold">₹45,000</span>
-                        </div>
-                        <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div className="bg-blue-500 h-full w-[35%]"></div></div>
-                    </div>
-                </div>
-
-                <div className="flex items-center group">
-                    <div className="w-full">
-                        <div className="flex justify-between mb-xs">
-                            <div className="flex items-center gap-sm">
-                                <div className="p-xs bg-purple-100 text-purple-600 rounded"><Users size={14} /></div>
-                                <span className="font-medium text-sm">Marketing</span>
-                            </div>
-                            <span className="text-sm font-bold">₹1,10,000</span>
-                        </div>
-                        <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div className="bg-purple-500 h-full w-[65%]"></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+  <div className="admxx-section">
+    <h2>Finance</h2>
+    <p>Finance dashboard placeholder</p>
+  </div>
 );
 
 export default Admin;

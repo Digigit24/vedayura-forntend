@@ -9,11 +9,11 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+   const token = localStorage.getItem('ayurveda_token');
+   console.log('🔑 Interceptor:', config.url, token ? '✅ Token attached' : '❌ No token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
-
 export default axiosClient;

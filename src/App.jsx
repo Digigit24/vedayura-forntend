@@ -14,14 +14,15 @@ import Catalog from './pages/Catalog';
 import { Toaster } from 'react-hot-toast';
 import Contact from './pages/Contact';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <ShopProvider>
       <Router>
         <ScrollToTop />
-          <Toaster position="top-left" />
-        <CartDrawer /> {/* ✅ ALWAYS MOUNTED */}
+        <Toaster position="top-left" />
+        <CartDrawer />
 
         <Layout>
           <Routes>
@@ -30,10 +31,9 @@ function App() {
             <Route path="/product/:id" element={<ProductDetails />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute adminOnly><Admin /></ProtectedRoute>} />
             <Route path="/about" element={<About />} />
-
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/contact" element={<Contact />} />
           </Routes>

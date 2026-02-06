@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import productsData from '../data/products';
 import api from '../api';
 
@@ -11,72 +11,116 @@ export const ShopProvider = ({ children }) => {
     const [drawerType, setDrawerType] = useState(null);
     const [user, setUser] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-    // Helper functions to get user-specific localStorage keys
-    const getCartKey = (userId) => userId ? `ayurveda_cart_${userId}` : 'ayurveda_cart_guest';
-    const getWishlistKey = (userId) => userId ? `ayurveda_wishlist_${userId}` : 'ayurveda_wishlist_guest';
+    const getCartKey = useCallback((userId) => {
+        return userId ? `ayurveda_cart_${userId}` : 'ayurveda_cart_guest';
+    }, []);
 
-    // Load user-specific cart and wishlist from localStorage
-    const loadUserData = (userId) => {
+    const getWishlistKey = useCallback((userId) => {
+        return userId ? `ayurveda_wishlist_${userId}` : 'ayurveda_wishlist_guest';
+    }, []);
+
+    const loadUserData = useCallback((userId) => {
         const cartKey = getCartKey(userId);
         const wishlistKey = getWishlistKey(userId);
-        
-        const savedCart = localStorage.getItem(cartKey);
-        const savedWishlist = localStorage.getItem(wishlistKey);
-        
-        if (savedCart) setCart(JSON.parse(savedCart));
-        else setCart([]);
-        
-        if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
-        else setWishlist([]);
-    };
 
-    // Save cart to localStorage for current user
+        try {
+            const savedCart = localStorage.getItem(cartKey);
+            const savedWishlist = localStorage.getItem(wishlistKey);
+
+            if (savedCart) setCart(JSON.parse(savedCart));
+            else setCart([]);
+
+            if (savedWishlist) setWishlist(JSON.parse(savedWishlist));
+            else setWishlist([]);
+        } catch (e) {
+            console.warn('Failed to load user data from localStorage:', e);
+            setCart([]);
+            setWishlist([]);
+        }
+    }, [getCartKey, getWishlistKey]);
+
+    // Helper to extract cart items array from various API response shapes
+    const extractCartItems = useCallback((res) => {
+        if (!res) return null;
+        if (Array.isArray(res)) return res;
+        if (Array.isArray(res.cart)) return res.cart;
+        if (Array.isArray(res.items)) return res.items;
+        if (res.cart && Array.isArray(res.cart.items)) return res.cart.items;
+        return null;
+    }, []);
+
+    // Helper to extract wishlist items array from various API response shapes
+    const extractWishlistItems = useCallback((res) => {
+        if (!res) return null;
+        if (Array.isArray(res)) return res;
+        if (Array.isArray(res.wishlist)) return res.wishlist;
+        if (res.wishlist && Array.isArray(res.wishlist.items)) return res.wishlist.items;
+        if (Array.isArray(res.items)) return res.items;
+        return null;
+    }, []);
+
     useEffect(() => {
         if (user?.id) {
             localStorage.setItem(getCartKey(user.id), JSON.stringify(cart));
         } else {
             localStorage.setItem(getCartKey(null), JSON.stringify(cart));
         }
-    }, [cart, user?.id]);
+    }, [cart, user?.id, getCartKey]);
 
-    // Save wishlist to localStorage for current user
     useEffect(() => {
         if (user?.id) {
             localStorage.setItem(getWishlistKey(user.id), JSON.stringify(wishlist));
         } else {
             localStorage.setItem(getWishlistKey(null), JSON.stringify(wishlist));
         }
-    }, [wishlist, user?.id]);
+    }, [wishlist, user?.id, getWishlistKey]);
 
-    // Initial load: check for saved user and token
     useEffect(() => {
-        const savedUser = localStorage.getItem('ayurveda_user');
+        let savedUser = null;
         const savedToken = localStorage.getItem('ayurveda_token');
-        
-        if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
-            // Load user-specific data
-            loadUserData(parsedUser.id);
+
+        try {
+            const raw = localStorage.getItem('ayurveda_user');
+            if (raw && raw !== 'undefined' && raw !== 'null') {
+                savedUser = JSON.parse(raw);
+            }
+        } catch (e) {
+            console.warn('Corrupt user data in localStorage, clearing');
+            localStorage.removeItem('ayurveda_user');
+        }
+
+        if (savedUser && savedUser.id && savedToken) {
+            console.log('✅ Session restored for:', savedUser.name || savedUser.email);
+            setUser(savedUser);
+            loadUserData(savedUser.id);
+            setIsAuthLoading(false);
         } else if (savedToken) {
-            // Token exists but no user - fetch user data
+            console.log('🔄 Token found, fetching user profile...');
             api.auth.me().then(res => {
                 if (res && res.user) {
+                    console.log('✅ Profile fetched:', res.user.name || res.user.email);
                     setUser(res.user);
                     localStorage.setItem('ayurveda_user', JSON.stringify(res.user));
                     loadUserData(res.user.id);
+                } else {
+                    console.warn('Invalid token response, clearing session');
+                    localStorage.removeItem('ayurveda_token');
+                    localStorage.removeItem('ayurveda_user');
+                    loadUserData(null);
                 }
-            }).catch(() => {
-                // Invalid token, load guest data
+            }).catch((err) => {
+                console.warn('Failed to fetch profile:', err.message);
                 loadUserData(null);
+            }).finally(() => {
+                setIsAuthLoading(false);
             });
         } else {
-            // No user, load guest data
             loadUserData(null);
+            setIsAuthLoading(false);
         }
 
-        // Fetch products from API (fallback to local data)
         (async () => {
             try {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
@@ -84,17 +128,14 @@ export const ShopProvider = ({ children }) => {
                     const mappedProducts = res.products.map(p => ({
                         id: p.id,
                         name: p.name,
-                        description: p.description,
+                        category: p.category?.name || 'Uncategorized',
+                        categoryId: p.categoryId,
+                        price: p.discountedPrice || p.realPrice,
+                        stock: p.stockQuantity,
                         image: p.imageUrls?.[0] || '/assets/product-placeholder.png',
                         images: p.imageUrls || ['/assets/product-placeholder.png'],
-                        category: p.category?.name || 'Uncategorized',
-                        price: p.discountedPrice || p.realPrice,
-                        realPrice: p.realPrice,
-                        discount_price: p.discountedPrice,
-                        stock: p.stockQuantity,
-                        rating: p.averageRating || 0,
-                        Ingredients: p.description || '',
-                        Benefits: []
+                        ingredients: p.ingredients || '',
+                        benefits: p.benefits || [],
                     }));
                     setProducts(mappedProducts);
                 } else {
@@ -104,102 +145,92 @@ export const ShopProvider = ({ children }) => {
                 console.warn('Failed to load products from API, using local data', err);
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Sync with server when user logs in
     useEffect(() => {
         if (!user?.id) return;
 
-        (async () => {
-            try {
-                // Fetch server-side cart
-                const cartRes = await api.cart.get();
-                if (cartRes) {
-                    let serverCart = [];
-                    if (Array.isArray(cartRes)) serverCart = cartRes;
-                    else if (Array.isArray(cartRes.cart)) serverCart = cartRes.cart;
-                    else if (Array.isArray(cartRes.items)) serverCart = cartRes.items;
+        const token = localStorage.getItem('ayurveda_token');
+        if (!token) {
+            console.warn('No token found, skipping server sync');
+            return;
+        }
 
-                    // Merge local cart with server cart (server takes precedence)
-                    const localCart = JSON.parse(localStorage.getItem(getCartKey(user.id)) || '[]');
-                    
-                    // Upload local items to server if they don't exist
-                    for (const item of localCart) {
-                        const existsOnServer = serverCart.find(si => si.id === item.id || si.productId === item.id);
-                        if (!existsOnServer) {
-                            try {
-                                await api.cart.add(item.id, item.quantity);
-                            } catch (err) {
-                                console.error('Failed to sync local cart item', err);
-                            }
+        (async () => {
+            // ── Cart sync ──
+            try {
+                const cartRes = await api.cart.get();
+                const serverCart = extractCartItems(cartRes) || [];
+
+                const localCart = JSON.parse(localStorage.getItem(getCartKey(user.id)) || '[]');
+                for (const item of localCart) {
+                    const existsOnServer = serverCart.find(si =>
+                        si.id === item.id || si.productId === item.id
+                    );
+                    if (!existsOnServer) {
+                        try {
+                            await api.cart.add(item.id, item.quantity);
+                        } catch (err) {
+                            // Silently ignore sync errors
                         }
                     }
+                }
 
-                    // Reload cart from server after sync
-                    const updatedCartRes = await api.cart.get();
-                    if (updatedCartRes) {
-                        if (Array.isArray(updatedCartRes)) setCart(updatedCartRes);
-                        else if (Array.isArray(updatedCartRes.cart)) setCart(updatedCartRes.cart);
-                        else if (Array.isArray(updatedCartRes.items)) setCart(updatedCartRes.items);
-                    }
+                const updatedCartRes = await api.cart.get();
+                const updatedCart = extractCartItems(updatedCartRes);
+                if (updatedCart) {
+                    setCart(updatedCart);
                 }
             } catch (err) {
                 console.error('Failed to sync cart with server', err);
             }
 
+            // ── Wishlist sync ──
             try {
-                // Fetch server-side wishlist
                 const wishRes = await api.wishlist.get();
-                if (wishRes) {
-                    let serverWishlist = [];
-                    if (Array.isArray(wishRes)) serverWishlist = wishRes;
-                    else if (Array.isArray(wishRes.wishlist)) serverWishlist = wishRes.wishlist;
+                const serverWishlist = extractWishlistItems(wishRes) || [];
 
-                    // Merge local wishlist with server wishlist
-                    const localWishlist = JSON.parse(localStorage.getItem(getWishlistKey(user.id)) || '[]');
-                    
-                    // Upload local items to server if they don't exist
-                    for (const item of localWishlist) {
-                        const existsOnServer = serverWishlist.find(si => si.id === item.id || si.productId === item.id);
-                        if (!existsOnServer) {
-                            try {
-                                await api.wishlist.add(item.id);
-                            } catch (err) {
-                                console.error('Failed to sync local wishlist item', err);
-                            }
+                const localWishlist = JSON.parse(localStorage.getItem(getWishlistKey(user.id)) || '[]');
+                for (const item of localWishlist) {
+                    const itemProductId = item.productId || item.product?.id || item.id;
+                    const existsOnServer = serverWishlist.find(si => {
+                        const serverProductId = si.productId || si.product?.id || si.id;
+                        return serverProductId === itemProductId;
+                    });
+                    if (!existsOnServer) {
+                        try {
+                            await api.wishlist.add(itemProductId);
+                        } catch (err) {
+                            // Silently ignore - likely "already exists"
                         }
                     }
+                }
 
-                    // Reload wishlist from server after sync
-                    const updatedWishRes = await api.wishlist.get();
-                    if (updatedWishRes) {
-                        if (Array.isArray(updatedWishRes)) setWishlist(updatedWishRes);
-                        else if (Array.isArray(updatedWishRes.wishlist)) setWishlist(updatedWishRes.wishlist);
-                    }
+                const updatedWishRes = await api.wishlist.get();
+                const updatedWishlist = extractWishlistItems(updatedWishRes);
+                if (updatedWishlist) {
+                    setWishlist(updatedWishlist);
                 }
             } catch (err) {
                 console.error('Failed to sync wishlist with server', err);
             }
         })();
-    }, [user?.id]);
+    }, [user?.id, getCartKey, getWishlistKey, extractCartItems, extractWishlistItems]);
 
-    const openCart = () => setDrawerType("cart");
-    const openWishlist = () => setDrawerType("wishlist");
-    const closeDrawer = () => setDrawerType(null);
+    const openCart = useCallback(() => setDrawerType("cart"), []);
+    const openWishlist = useCallback(() => setDrawerType("wishlist"), []);
+    const closeDrawer = useCallback(() => setDrawerType(null), []);
 
-    const logout = () => {
-        // Clear auth data
+    const logout = useCallback(() => {
         localStorage.removeItem('ayurveda_token');
         localStorage.removeItem('ayurveda_user');
-        
-        // Reset to guest state
         setUser(null);
-        
-        // Load guest cart and wishlist
         loadUserData(null);
-    };
+    }, [loadUserData]);
 
-    const addToCart = (product, quantity = 1) => {
+    const addToCart = useCallback((product, quantity = 1) => {
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
@@ -218,9 +249,9 @@ export const ShopProvider = ({ children }) => {
             }
             return [...prev, newItem];
         });
-    };
+    }, [user?.id]);
 
-    const removeFromCart = (productId) => {
+    const removeFromCart = useCallback((productId) => {
         setCart(prev => {
             const next = prev.filter(item => item.id !== productId);
             if (user?.id) {
@@ -228,9 +259,9 @@ export const ShopProvider = ({ children }) => {
             }
             return next;
         });
-    };
+    }, [user?.id]);
 
-    const updateQuantity = (productId, quantity) => {
+    const updateQuantity = useCallback((productId, quantity) => {
         if (quantity < 1) return;
         setCart(prev => {
             const updated = prev.map(item => item.id === productId ? { ...item, quantity } : item);
@@ -239,35 +270,81 @@ export const ShopProvider = ({ children }) => {
             }
             return updated;
         });
-    };
+    }, [user?.id]);
 
-    const clearCart = () => {
-        setCart([]);
-        if (user?.id) {
-            // Clear cart on server as well
-            cart.forEach(item => {
-                api.cart.remove(item.id).catch(err => console.error(err));
-            });
-        }
-    };
+    const clearCart = useCallback(() => {
+        setCart(prev => {
+            if (user?.id) {
+                prev.forEach(item => {
+                    api.cart.remove(item.id).catch(err => console.error(err));
+                });
+            }
+            return [];
+        });
+    }, [user?.id]);
 
-    const toggleWishlist = (product) => {
+    const toggleWishlist = useCallback((product) => {
         setWishlist(prev => {
-            const exists = prev.find(item => item.id === product.id);
+            // Check by product.id or by nested productId/product.id for server-synced items
+            const exists = prev.find(item => {
+                const itemProductId = item.productId || item.product?.id || item.id;
+                return itemProductId === product.id;
+            });
+
             if (exists) {
                 if (user?.id) {
                     api.wishlist.remove(product.id).catch(err => console.error(err));
                 }
-                return prev.filter(item => item.id !== product.id);
+                return prev.filter(item => {
+                    const itemProductId = item.productId || item.product?.id || item.id;
+                    return itemProductId !== product.id;
+                });
             }
+
             if (user?.id) {
                 api.wishlist.add(product.id).catch(err => console.error(err));
             }
             return [...prev, product];
         });
-    };
+    }, [user?.id]);
 
-    const login = async (email, password) => {
+    const addToWishlist = useCallback((product) => {
+        setWishlist(prev => {
+            const exists = prev.find(item => {
+                const itemProductId = item.productId || item.product?.id || item.id;
+                return itemProductId === product.id;
+            });
+            if (exists) return prev;
+
+            if (user?.id) {
+                api.wishlist.add(product.id).catch(() => {
+                    // Silently ignore - likely "already exists"
+                });
+            }
+            return [...prev, product];
+        });
+    }, [user?.id]);
+
+    const removeFromWishlist = useCallback((productId) => {
+        setWishlist(prev => {
+            if (user?.id) {
+                api.wishlist.remove(productId).catch(err => console.error(err));
+            }
+            return prev.filter(item => {
+                const itemProductId = item.productId || item.product?.id || item.id;
+                return itemProductId !== productId;
+            });
+        });
+    }, [user?.id]);
+
+    const isInWishlist = useCallback((productId) => {
+        return wishlist.some(item => {
+            const itemProductId = item.productId || item.product?.id || item.id;
+            return itemProductId === productId;
+        });
+    }, [wishlist]);
+
+    const login = useCallback(async (email, password) => {
         try {
             const res = await api.auth.login(email, password);
             if (res && res.token) {
@@ -275,8 +352,6 @@ export const ShopProvider = ({ children }) => {
                 if (res.user) {
                     localStorage.setItem('ayurveda_user', JSON.stringify(res.user));
                     setUser(res.user);
-                    
-                    // Load user-specific data after login
                     loadUserData(res.user.id);
                 }
                 return { success: true, user: res.user };
@@ -289,18 +364,22 @@ export const ShopProvider = ({ children }) => {
             }
             return { success: false, message: 'Unable to connect to server. Please try again.' };
         }
-    };
+    }, [loadUserData]);
 
-    const register = async (name, email, password, phone) => {
+    const register = useCallback(async (name, email, password, phone) => {
         try {
-            const res = await api.auth.register({ name, email, password, phone });
+            console.log('📤 Sending to backend:', { name, email, password, phone });
+            const res = await api.auth.register({
+                name,
+                email,
+                password,
+                phone: phone || undefined
+            });
             if (res && res.token) {
                 localStorage.setItem('ayurveda_token', res.token);
                 if (res.user) {
                     localStorage.setItem('ayurveda_user', JSON.stringify(res.user));
                     setUser(res.user);
-                    
-                    // Load user-specific data after registration
                     loadUserData(res.user.id);
                 }
                 return { success: true, user: res.user };
@@ -308,99 +387,114 @@ export const ShopProvider = ({ children }) => {
             return { success: false, message: res?.message || res?.error || 'Registration failed' };
         } catch (err) {
             console.error('Register failed', err);
-            const errorMsg = err.response?.data?.message 
-                || err.response?.data?.error 
-                || err.message 
+            const errorMsg = err.response?.data?.message
+                || err.response?.data?.error
+                || err.message
                 || 'Registration failed. Please try again.';
             return { success: false, message: errorMsg };
         }
-    };
+    }, [loadUserData]);
 
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+    const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
 
-    // Product CRUD Operations
-    const addProduct = async (newProduct) => {
-        const isAdmin = user && String(user.role).toLowerCase().includes('admin');
-        if (isAdmin) {
-            try {
-                const backendPayload = {
-                    name: newProduct.name,
-                    description: newProduct.description || '',
-                    categoryId: newProduct.categoryId,
-                    realPrice: newProduct.price,
-                    discountedPrice: newProduct.price,
-                    stockQuantity: newProduct.stock,
-                    imageUrls: [newProduct.image || 'https://picsum.photos/400']
+    const addProduct = useCallback(async (newProduct) => {
+        const isAdmin = user && String(user.role).toLowerCase().includes("admin");
+        if (!isAdmin) throw new Error("Not authorized");
+
+        try {
+            const backendPayload = {
+                name: newProduct.name,
+                ingredients: newProduct.ingredients || "",
+                benefits: newProduct.benefits || [],
+                categoryId: newProduct.categoryId,
+                realPrice: Number(newProduct.price),
+                discountedPrice: Number(newProduct.price),
+                stockQuantity: Number(newProduct.stock),
+                imageUrls: [newProduct.image || "https://picsum.photos/400"],
+            };
+
+            const res = await api.products.create(backendPayload);
+
+            if (res && res.product) {
+                const mapped = {
+                    id: res.product.id,
+                    name: res.product.name,
+                    image: res.product.imageUrls?.[0],
+                    images: res.product.imageUrls || [],
+                    category: res.product.category?.name || "Uncategorized",
+                    price: res.product.discountedPrice || res.product.realPrice,
+                    realPrice: res.product.realPrice,
+                    discount_price: res.product.discountedPrice,
+                    stock: res.product.stockQuantity,
+                    ingredients: res.product.ingredients || "",
+                    benefits: res.product.benefits || [],
                 };
-                const res = await api.products.create(backendPayload);
-                if (res && res.product) {
-                    const mapped = {
-                        id: res.product.id,
-                        name: res.product.name,
-                        image: res.product.imageUrls?.[0],
-                        category: res.product.category?.name || 'Uncategorized',
-                        price: res.product.discountedPrice || res.product.realPrice,
-                        stock: res.product.stockQuantity
-                    };
-                    setProducts(prev => [...prev, mapped]);
-                    return mapped;
-                }
-            } catch (err) {
-                console.error('Create product failed', err);
+                setProducts((prev) => [...prev, mapped]);
+                return mapped;
             }
+            throw new Error("Invalid API response");
+        } catch (err) {
+            console.error("Create product failed", err);
+            throw err;
         }
-        const productWithId = { ...newProduct, id: Date.now() };
-        setProducts(prev => [...prev, productWithId]);
-        return productWithId;
-    };
+    }, [user]);
 
-    const updateProduct = async (updatedProduct) => {
-        const isAdmin = user && String(user.role).toLowerCase().includes('admin');
-        if (isAdmin) {
-            try {
-                const backendPayload = {
-                    name: updatedProduct.name,
-                    description: updatedProduct.description || '',
-                    realPrice: updatedProduct.price,
-                    discountedPrice: updatedProduct.price,
-                    stockQuantity: updatedProduct.stock,
-                    imageUrls: [updatedProduct.image || 'https://picsum.photos/400']
+    const updateProduct = useCallback(async (id, updatedProduct) => {
+        const isAdmin = user && String(user.role).toLowerCase().includes("admin");
+        if (!isAdmin) throw new Error("Not authorized");
+
+        try {
+            const backendPayload = {
+                name: updatedProduct.name,
+                ingredients: updatedProduct.ingredients || "",
+                benefits: updatedProduct.benefits || [],
+                categoryId: updatedProduct.categoryId,
+                realPrice: Number(updatedProduct.price),
+                discountedPrice: Number(updatedProduct.price),
+                stockQuantity: Number(updatedProduct.stock),
+                imageUrls: [updatedProduct.image || "https://picsum.photos/400"],
+            };
+
+            const res = await api.products.update(id, backendPayload);
+
+            if (res && res.product) {
+                const mapped = {
+                    id: res.product.id,
+                    name: res.product.name,
+                    image: res.product.imageUrls?.[0],
+                    images: res.product.imageUrls || [],
+                    category: res.product.category?.name || "Uncategorized",
+                    categoryId: res.product.categoryId,
+                    price: res.product.discountedPrice || res.product.realPrice,
+                    realPrice: res.product.realPrice,
+                    discount_price: res.product.discountedPrice,
+                    stock: res.product.stockQuantity,
+                    ingredients: res.product.ingredients || "",
+                    benefits: res.product.benefits || [],
                 };
-                const res = await api.products.update(updatedProduct.id, backendPayload);
-                if (res && res.product) {
-                    const mapped = {
-                        id: res.product.id,
-                        name: res.product.name,
-                        image: res.product.imageUrls?.[0],
-                        category: res.product.category?.name || 'Uncategorized',
-                        price: res.product.discountedPrice || res.product.realPrice,
-                        stock: res.product.stockQuantity
-                    };
-                    setProducts(prev => prev.map(p => p.id === mapped.id ? mapped : p));
-                    return mapped;
-                }
-            } catch (err) {
-                console.error('Update product failed', err);
+                setProducts(prev => prev.map(p => (p.id === mapped.id ? mapped : p)));
+                return mapped;
             }
+            throw new Error("Invalid API response");
+        } catch (err) {
+            console.error("Update product failed", err);
+            throw err;
         }
-        setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
-        return updatedProduct;
-    };
+    }, [user]);
 
-    const deleteProduct = async (id) => {
-        const isAdmin = user && String(user.role).toLowerCase().includes('admin');
-        if (isAdmin) {
-            try {
-                await api.products.remove(id);
-                setProducts(prev => prev.filter(p => p.id !== id));
-                return true;
-            } catch (err) {
-                console.error('Delete product failed', err);
-            }
+    const deleteProduct = useCallback(async (id) => {
+        const isAdmin = user && String(user.role).toLowerCase().includes("admin");
+        if (!isAdmin) throw new Error("Not authorized");
+
+        try {
+            await api.products.remove(id);
+            setProducts((prev) => prev.filter((p) => p.id !== id));
+            return true;
+        } catch (err) {
+            console.error("Delete product failed", err);
+            throw err;
         }
-        setProducts(prev => prev.filter(p => p.id !== id));
-        return true;
-    };
+    }, [user]);
 
     const value = {
         user,
@@ -420,12 +514,15 @@ export const ShopProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         toggleWishlist,
-        addToWishlist: toggleWishlist,
+        addToWishlist,
+        removeFromWishlist,
+        isInWishlist,
         login,
         logout,
         register,
         isMenuOpen,
         toggleMenu,
+        isAuthLoading,
         addProduct,
         updateProduct,
         deleteProduct
