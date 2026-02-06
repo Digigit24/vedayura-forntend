@@ -10,6 +10,8 @@ import './Admin.css';
 import { getAllRefunds } from '../api/refundService';
 import { getAllCategories } from '../api/categoryService';
 import api from '../api';
+import StockManagement from '../components/StockManagement';
+import '../components/StockManagement.css'
 
 // NavItem Component
 const NavItem = ({ tab, activeTab, setActiveTab, icon: Icon, label }) => (
@@ -159,6 +161,8 @@ const Admin = () => {
         );
       case 'orders':
         return <Orders />;
+        case 'stock':
+  return <StockManagement products={products} />;
       case 'users':
         return <UserManagement />;
       case 'refunds':
@@ -188,6 +192,7 @@ const Admin = () => {
             <NavItem tab="dashboard" activeTab={activeTab} setActiveTab={setActiveTab} icon={Grid} label="Dashboard" />
             <NavItem tab="inventory" activeTab={activeTab} setActiveTab={setActiveTab} icon={Package} label="Inventory" />
             <NavItem tab="orders" activeTab={activeTab} setActiveTab={setActiveTab} icon={ShoppingCart} label="Orders" />
+            <NavItem tab="stock" activeTab={activeTab} setActiveTab={setActiveTab} icon={Package} label="Stock In/Out" />
             <NavItem tab="users" activeTab={activeTab} setActiveTab={setActiveTab} icon={Users} label="Users" />
             <NavItem tab="refunds" activeTab={activeTab} setActiveTab={setActiveTab} icon={RotateCcw} label="Refunds" />
             <NavItem tab="finance" activeTab={activeTab} setActiveTab={setActiveTab} icon={DollarSign} label="Finance" />
@@ -334,6 +339,15 @@ const Admin = () => {
           <ShoppingCart />
           <span>Orders</span>
         </button>
+
+        <button
+  className={activeTab === 'stock' ? 'admxx-active' : ''}
+  onClick={() => setActiveTab('stock')}
+>
+  <Package />
+  <span>Stock</span>
+</button>
+
         <button
           className={activeTab === 'users' ? 'admxx-active' : ''}
           onClick={() => setActiveTab('users')}

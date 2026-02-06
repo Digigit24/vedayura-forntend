@@ -124,6 +124,7 @@ export const ShopProvider = ({ children }) => {
         (async () => {
             try {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
+                console.log("Products API response:", res);
                 if (res && Array.isArray(res.products)) {
                     const mappedProducts = res.products.map(p => ({
                         id: p.id,

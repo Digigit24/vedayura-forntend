@@ -104,8 +104,8 @@ useEffect(() => {
       <section className="section">
         <div className="container">
           <div className="text-center mb-xl">
-            <h2 className="section-title">Featured Collections</h2>
-            <p className="text-secondary">
+            <h2 className="section-title1">Featured Collections</h2>
+            <p className="text-secondary1">
               Handpicked essentials for your daily wellness routine.
             </p>
           </div>
@@ -115,7 +115,7 @@ useEffect(() => {
             ))}
           </div>
           <div className="text-center mt-2xl pt-lg">
-            <Link to="/shop" className="btn btn-primary btn-outline  btn-txt">
+            <Link to="/shop" className="btn btn-primary view-btn btn-txt">
               View All Products
             </Link>
           </div>
@@ -125,8 +125,8 @@ useEffect(() => {
    
 <section className="section bg-testimonials">
   <div className="container">
-    <h2 className="section-title text-center">Stories of Healing</h2>
-    <p className="text-secondary text-center mb-xl">Hear from our satisfied customers who experienced the power of Ayurveda with VedAyura.</p>
+    <h2 className="section-title1 text-center">Stories of Healing</h2>
+    <p className="text-secondary1 text-center mb-xl">Hear from our satisfied customers who experienced the power of Ayurveda with VedAyura.</p>
 
     <div className="testimonials-grid">
    
@@ -155,6 +155,16 @@ useEffect(() => {
         <div className="testimonial-header">
           <div className="stars">★★★★★</div>
           <h4 className="testimonial-name">Priya Menon</h4>
+        </div>
+        <p className="testimonial-text">
+          "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
+        </p>
+      </div>
+
+      <div className="testimonial-card">
+        <div className="testimonial-header">
+          <div className="stars">★★★★★</div>
+          <h4 className="testimonial-name">Aditya Sharma</h4>
         </div>
         <p className="testimonial-text">
           "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
