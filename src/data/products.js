@@ -38,10 +38,10 @@ const products = [
         ],
         productType: "Blood Sugar Support",
         images: [
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder-tr.png"
+            "/assets/diabofit-capsules-878.png",
+            "/assets/diabofit-capsules-878.png",
+            "/assets/diabofit-capsules-878.png",
+            "/assets/diabofit-capsules-878.png"
         ],
         stock: 30,
     },
@@ -194,10 +194,10 @@ const products = [
         ],
         productType: "Herbal Joint Support",
         images: [
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder-tr.png"
+            "/assets/arthofit-623.png",
+            "/assets/arthofit-623.png",
+            "/assets/arthofit-623.png",
+            "/assets/arthofit-623.png"
         ],
         stock: 35,
     },
@@ -265,7 +265,7 @@ const products = [
         ],
         stock: 35,
     },
-     {
+    {
         id: 13,
         name: "immuntity Booster",
         category: "Liquid",
@@ -288,7 +288,7 @@ const products = [
         ],
         stock: 35,
     },
-     {
+    {
         id: 14,
         name: "Heart Care",
         category: "Capsules",
@@ -310,7 +310,7 @@ const products = [
         ],
         stock: 35,
     },
-     {
+    {
         id: 15,
         name: "Coffee",
         category: "Other",
