@@ -1,36 +1,34 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useShop } from '../context/ShopContext';
-import TopMarquee from "../components/TopMarquee";
-import toast from 'react-hot-toast';
-import api from '../api';
 import {
-    ShieldCheck,
-    CheckCircle,
-    Truck,
-    Package,
-    Star,
-    ChevronRight,
-    ChevronLeft,
-    Minus,
-    Plus,
-    Leaf,
-    Droplet,
-    Heart,
-    Share2,
-    Play,
-    X,
-    Clock,
     AlertTriangle,
     Award,
     BookOpen,
-    Info,
+    CheckCircle,
+    ChevronLeft,
+    ChevronRight,
+    Clock,
+    Droplet,
+    Heart,
+    Leaf,
     MessageSquare,
+    Minus,
+    Package,
+    Play,
+    Plus,
+    Share2,
+    ShieldCheck,
+    Star,
     ThumbsUp,
-    ThumbsDown,
-    User
+    Truck,
+    User,
+    X
 } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
+import { Link, useParams } from 'react-router-dom';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
+import TopMarquee from "../components/TopMarquee";
+import { useShop } from '../context/ShopContext';
 import './ProductDetails.css';
 
 const ProductDetails = () => {
@@ -358,8 +356,6 @@ const ProductDetails = () => {
         { key: 'description', label: 'Description', icon: <BookOpen size={16} /> },
         { key: 'benefits', label: 'Benefits', icon: <CheckCircle size={16} /> },
         { key: 'ingredients', label: 'Ingredients', icon: <Leaf size={16} /> },
-        { key: 'howToUse', label: 'How to Use', icon: <Info size={16} /> },
-        { key: 'specifications', label: 'Specifications', icon: <Package size={16} /> },
         { key: 'reviews', label: `Reviews (${product.reviewCount || reviews.length || 0})`, icon: <MessageSquare size={16} /> },
     ];
 
@@ -408,8 +404,8 @@ const ProductDetails = () => {
                                     style={{
                                         backgroundColor:
                                             product.category === 'Liquid' ? '#02f83be9'
-                                            : product.category === 'Powder' ? '#ff5100fb'
-                                            : '#9500ff70'
+                                                : product.category === 'Powder' ? '#ff5100fb'
+                                                    : '#9500ff70'
                                     }}
                                 >
                                     {product.category}
@@ -632,36 +628,7 @@ const ProductDetails = () => {
                                     </div>
                                 )}
 
-                                {/* How to Use */}
-                                {activeTab === 'howToUse' && (
-                                    <div className="tab-how-to-use">
-                                        {product.howToUse ? (
-                                            <p>{product.howToUse}</p>
-                                        ) : (
-                                            <p className="tab-empty">Usage instructions not available.</p>
-                                        )}
-                                    </div>
-                                )}
 
-                                {/* Specifications */}
-                                {activeTab === 'specifications' && (
-                                    <div className="tab-specifications">
-                                        {Object.keys(specsData).length > 0 ? (
-                                            <table className="specs-table">
-                                                <tbody>
-                                                    {Object.entries(specsData).map(([key, value]) => (
-                                                        <tr key={key}>
-                                                            <td className="spec-label">{key}</td>
-                                                            <td className="spec-value">{value}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        ) : (
-                                            <p className="tab-empty">No specifications available.</p>
-                                        )}
-                                    </div>
-                                )}
 
                                 {/* Reviews */}
                                 {activeTab === 'reviews' && (

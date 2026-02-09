@@ -1,4 +1,4 @@
-const BASE_URL =  "http://localhost:5001/api";
+const BASE_URL = "https://vedayura.celiyo.com/api";
 
 async function request(
   path,
