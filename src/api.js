@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || "https://vedayura.celiyo.com/api";
+const BASE_URL =  "http://localhost:5001/api";
 
 async function request(
   path,
