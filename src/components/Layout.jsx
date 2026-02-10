@@ -1,14 +1,13 @@
-import Navbar from './Navbar';
-import CartDrawer from './CartDrawer';
 import Footer from './Footer';
+import Navbar from './Navbar';
 
 const Layout = ({ children }) => {
   return (
-    <>
-      <Navbar /> 
-      <main>{children}</main>
+    <div className="app-min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 };
 

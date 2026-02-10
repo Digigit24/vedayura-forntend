@@ -1,6 +1,6 @@
-import { createContext, useState, useContext, useEffect, useCallback } from 'react';
-import productsData from '../data/products';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import api from '../api';
+import productsData from '../data/products';
 
 const ShopContext = createContext();
 
@@ -126,18 +126,33 @@ export const ShopProvider = ({ children }) => {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
                 console.log("Products API response:", res);
                 if (res && Array.isArray(res.products)) {
-                    const mappedProducts = res.products.map(p => ({
-                        id: p.id,
-                        name: p.name,
-                        category: p.category?.name || 'Uncategorized',
-                        categoryId: p.categoryId,
-                        price: p.discountedPrice || p.realPrice,
-                        stock: p.stockQuantity,
-                        image: p.imageUrls?.[0] || '/assets/product-placeholder.png',
-                        images: p.imageUrls || ['/assets/product-placeholder.png'],
-                        ingredients: p.ingredients || '',
-                        benefits: p.benefits || [],
-                    }));
+                    const mappedProducts = res.products.map(p => {
+                        // Find local override by Name + Category to ensure we target the right variant
+                        // (e.g. DiaboFit Capsules vs Liquid)
+                        const localMatch = productsData.find(local =>
+                            local.name.toLowerCase().trim() === p.name.toLowerCase().trim() &&
+                            local.category.toLowerCase().trim() === (p.category?.name || p.category || '').toLowerCase().trim()
+                        );
+
+                        // Use local images if available, otherwise backend images
+                        const finalImages = (localMatch && localMatch.images && localMatch.images.length > 0)
+                            ? localMatch.images
+                            : (p.imageUrls || ['/assets/product-placeholder.png']);
+
+                        return {
+                            id: p.id,
+                            name: p.name,
+                            category: p.category?.name || 'Uncategorized',
+                            categoryId: p.categoryId,
+                            price: p.discountedPrice || p.realPrice,
+                            stock: p.stockQuantity,
+                            image: finalImages[0], // Setup main image
+                            images: finalImages,   // Setup gallery
+                            ingredients: p.ingredients || '',
+                            benefits: p.benefits || [],
+                            description: p.description || '', // Ensure description is passed
+                        };
+                    });
                     setProducts(mappedProducts);
                 } else {
                     console.warn('API returned unexpected format, using local data');

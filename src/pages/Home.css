@@ -1,6 +1,11 @@
 /* =========================================
    HOME NEWSLETTER COMPONENT (Interactive & Modern)
    ========================================= */
+.home-page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
 .home-newsletter-card {
   background: linear-gradient(135deg, #1c3618 0%, #214f25 100%);
   border-radius: 24px;
@@ -12,6 +17,8 @@
   box-shadow: 0 20px 50px rgba(28, 54, 24, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* ... rest of existing styles ... */
 
 .newsletter-content-wrapper {
   position: relative;
@@ -343,7 +350,7 @@
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(5,1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--spacing-xl);
 }
 
@@ -438,14 +445,21 @@
 .delay-200 {
   animation-delay: 0.2s;
 }
+
 /* Product Grid Section */
 .test-section {
-  padding: var(--spacing-2xl) 0; /* Adjust spacing around the section */
-  background-color: #f5f4f4; /* Light background color (use any color or gradient) */
-  background-image: url('/assets/product-bg.png'); /* Optional: background image */
-  background-size: cover; /* Ensures the background image covers the entire section */
-  background-position: center; /* Centers the background image */
-  background-repeat: no-repeat; /* Prevents repeating the background image */
+  padding: var(--spacing-2xl) 0;
+  /* Adjust spacing around the section */
+  background-color: #f5f4f4;
+  /* Light background color (use any color or gradient) */
+  background-image: url('/assets/product-bg.png');
+  /* Optional: background image */
+  background-size: cover;
+  /* Ensures the background image covers the entire section */
+  background-position: center;
+  /* Centers the background image */
+  background-repeat: no-repeat;
+  /* Prevents repeating the background image */
 }
 
 .container {
@@ -460,8 +474,10 @@
   font-weight: 700;
   margin: 0 auto var(--spacing-sm);
   text-align: center;
-  width: fit-content; /* optional */
+  width: fit-content;
+  /* optional */
 }
+
 .text-secondary {
   font-size: 1.15rem;
   color: var(--color-text-secondary);
@@ -469,6 +485,7 @@
   margin-bottom: var(--spacing-md);
   text-align: left;
 }
+
 .text-secondary1 {
   font-size: 1.15rem;
   color: var(--color-text-secondary);
@@ -476,8 +493,9 @@
   margin-bottom: var(--spacing-md);
   text-align: center;
 }
+
 .view-btn {
-  display:inline-flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-left: 45%;
@@ -497,15 +515,18 @@
 
 
 .mt-2xl {
-  margin-top: var(--spacing-2xl); /* Large margin-top */
+  margin-top: var(--spacing-2xl);
+  /* Large margin-top */
 }
 
 .pt-lg {
-  padding-top: var(--spacing-lg); /* Large padding on top */
+  padding-top: var(--spacing-lg);
+  /* Large padding on top */
 }
 
 .mb-xl {
-  margin-bottom: var(--spacing-xl); /* Large bottom margin */
+  margin-bottom: var(--spacing-xl);
+  /* Large bottom margin */
 }
 
 /* Add specific styles for the product cards if needed */
@@ -523,41 +544,51 @@
 .bg-testimonials {
   position: relative;
   background-image: url('https://png.pngtree.com/background/20250215/original/pngtree-endless-texture-of-adaptogenic-herbal-plants-a-seamless-ayurveda-pattern-on-picture-image_15267883.jpg');
-  background-size:cover;
+  background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* Keeps the background fixed for sharper appearance */
+  background-attachment: fixed;
+  /* Keeps the background fixed for sharper appearance */
   padding: var(--spacing-2xl) 0;
 }
+
 .bg-testimonials::before {
-  content: ''; /* Empty content for the overlay */
+  content: '';
+  /* Empty content for the overlay */
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.333); /* Darker overlay for contrast */
-  z-index: 0; /* Ensure it's below the content but above the background */
+  background: rgba(255, 255, 255, 0.333);
+  /* Darker overlay for contrast */
+  z-index: 0;
+  /* Ensure it's below the content but above the background */
 }
 
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  /* Responsive grid */
   gap: var(--spacing-xl);
-  z-index: 2; /* Ensure grid is above the overlay */
+  z-index: 2;
+  /* Ensure grid is above the overlay */
 }
 
 .testimonial-card {
-  background-color: rgba(255, 255, 255, 0.781); /* Semi-transparent white background to contrast the image */
+  background-color: rgba(255, 255, 255, 0.781);
+  /* Semi-transparent white background to contrast the image */
   padding: var(--spacing-xl);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 2; /* Ensure cards are above the overlay */
+  z-index: 2;
+  /* Ensure cards are above the overlay */
 }
 
 .testimonial-card:hover {
-  transform: translateY(-10px); /* Subtle hover effect */
+  transform: translateY(-10px);
+  /* Subtle hover effect */
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -567,6 +598,7 @@
   gap: 12px;
   margin-bottom: var(--spacing-md);
 }
+
 .stars {
   color: #fbbf24;
   font-size: 1.25rem;
@@ -596,6 +628,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -620,10 +653,12 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
   .testimonials-grid {
-    grid-template-columns: 1fr; /* Stack testimonials on small screens */
+    grid-template-columns: 1fr;
+    /* Stack testimonials on small screens */
   }
 
   .testimonial-card {
-    padding: var(--spacing-lg); /* Slightly reduced padding on mobile */
+    padding: var(--spacing-lg);
+    /* Slightly reduced padding on mobile */
   }
 }
