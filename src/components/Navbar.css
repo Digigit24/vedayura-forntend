@@ -1,217 +1,204 @@
 .top-bar {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: var(--color-primary);
-    position: relative;
-    color: #e6ece5;
-    overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-primary);
+  position: relative;
+  color: #e6ece5;
+  overflow: hidden;
 }
 
 .main-header {
-    background-color: rgb(255, 255, 255);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 15px 0;
-    position: relative;
-    top: 0;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: rgb(255, 255, 255);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 15px 0;
+  position: relative;
+  top: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .main-header.scrolled {
-    padding: 10px 0;
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 10px 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.3s ease;
 }
 
 .logo:hover {
-    transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .desktop-nav {
-    display: flex;
-    gap: 30px;
+  display: flex;
+  gap: 30px;
 }
 
 .desktop-nav a {
-    text-decoration: none;
-    color:#654c19;
-    font-weight: 700;
-    font-size: 1rem;
-    position: sticky;
-    padding: 4px 0;
-    transition: color 0.3s ease;
+  text-decoration: none;
+  color: #654c19;
+  font-weight: 700;
+  font-size: 1rem;
+  position: sticky;
+  padding: 4px 0;
+  transition: color 0.3s ease;
 }
 
 .desktop-nav a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: var(--color-primary);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
 }
 
 .desktop-nav a:hover {
-    color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .desktop-nav a.active {
-    color: var(--color-primary);
-    font-weight: 600;
+  color: var(--color-primary);
+  font-weight: 600;
 }
 
 .desktop-nav a:hover::after,
 .desktop-nav a.active::after {
-    width: 100%;
+  width: 100%;
 }
 
 .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .search-form {
-    display: flex;
-    align-items: center;
-    background: #f1f3f0;
-    padding: 8px 16px;
-    border-radius: 99px;
-    border: 1px solid transparent;
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  background: #f1f3f0;
+  padding: 8px 16px;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
 }
 
 .search-form:focus-within {
-    background: white;
-    border-color: var(--color-primary-light);
-    box-shadow: 0 0 0 4px rgba(88, 174, 121, 0.1);
+  background: white;
+  border-color: var(--color-primary-light);
+  box-shadow: 0 0 0 4px rgba(88, 174, 121, 0.1);
 }
 
 .search-form input {
-    background: none;
-    border: none;
-    outline: none;
-    font-size: 0.9rem;
-    padding-left: 8px;
-    width: 140px;
-    transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 0.9rem;
+  padding-left: 8px;
+  width: 140px;
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .search-form input:focus {
-    width: 200px;
+  width: 200px;
 }
 
 .search-form button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    display: flex;
-    align-items: center;
-    transition: color 0.3s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  transition: color 0.3s;
 }
 
 .search-form button:hover {
-    color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 .icon-link {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text-secondary);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
 }
 
 .icon-link:hover {
-    color: var(--color-primary);
-    transform: translateY(-2px);
+  color: var(--color-primary);
+  transform: translateY(-2px);
 }
 
 .badge {
-    position: absolute;
-    top: -5px;
-    right: -8px;
-    background-color: #fa0808;
-    color: white;
-    font-size: 0.6rem;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 4px;
-    border-radius: 50%;
-    font-weight: 700;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: #fa0808;
+  color: white;
+  font-size: 0.6rem;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border-radius: 50%;
+  font-weight: 700;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-menu-btn {
-    background: #f4f6f3;
-    border: none;
-    cursor: pointer;
-    color: var(--color-text-primary);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.mobile-menu-btn:hover {
-    background: #e6ece5;
+  width: 40px;
+  height: 40px;
 }
 
 /* Visibility Utilities */
 .hidden-desktop {
-    display: none;
+  display: none;
 }
 
 .hidden-mobile {
-    display: flex;
+  display: flex;
 }
 
 @media (max-width: 900px) {
-    .hidden-desktop {
-        display: flex;
-    }
+  .hidden-desktop {
+    display: flex;
+  }
 
-    .hidden-mobile {
-        display: none !important;
-    }
+  .hidden-mobile {
+    display: none !important;
+  }
 
-    .main-header {
-        padding: 10px 0;
-    }
+  .main-header {
+    padding: 10px 0;
+  }
 
-    .logo img {
-        height: 38px !important;
-    }
+  .logo img {
+    height: 38px !important;
+  }
 
-    .header-actions {
-        gap: 12px;
-    }
+  .header-actions {
+    gap: 12px;
+  }
 
-    .icon-link {
-        color: var(--color-primary);
-    }
+  .icon-link {
+    color: var(--color-primary);
+  }
 }
 
 /* Navbar.css */
@@ -220,90 +207,84 @@
 
 /* Mobile Menu Container */
 .mobile-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 85%;
-    /* Menu takes 85% of width */
-    max-width: 320px;
-    height: 100vh;
-    background-color: #ffffff;
-    z-index: 2000;
-    /* Must be higher than header */
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-    padding-top: 80px;
-    /* Space for the logo/close button */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 85%;
+  /* Menu takes 85% of width */
+  max-width: 320px;
+  height: 100vh;
+  background-color: #ffffff;
+  z-index: 2000;
+  /* Must be higher than header */
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  padding-top: 80px;
+  /* Space for the logo/close button */
 }
 
 /* Backdrop (Dark overlay) */
 .mobile-menu-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    /* Semi-transparent black */
-    backdrop-filter: blur(2px);
-    z-index: 1999;
-    /* Just behind the menu */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent black */
+  backdrop-filter: blur(2px);
+  z-index: 1999;
+  /* Just behind the menu */
 }
 
 /* Mobile Content Styling */
 .mobile-menu-content {
-    display: flex;
-    flex-direction: column;
-    height: 50%;
-    padding: 0 24px 40px;
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+  padding: 0 24px 40px;
 }
 
 /* Links */
 .mobile-nav-links {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .mobile-nav-links a {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--color-primary-dark);
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f0f0f0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-primary-dark);
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .mobile-nav-links a.active {
-    color: var(--color-primary);
-    font-weight: 700;
-    border-left: 3px solid var(--color-primary);
-    padding-left: 8px;
-    background-color: rgba(23, 83, 51, 0.05);
+  color: var(--color-primary);
+  font-weight: 700;
+  border-left: 3px solid var(--color-primary);
+  padding-left: 8px;
+  background-color: rgba(23, 83, 51, 0.05);
 }
 
 .mobile-menu-footer {
-    margin-top: auto;
-    padding-top: 30px;
-    text-align: center;
+  margin-top: auto;
+  padding-top: 30px;
+  text-align: center;
 }
 
 .mobile-menu-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
-    border: none;
-    color: #175333;
-    /* Your brand primary color */
-    cursor: pointer;
-    z-index: 2002;
-    padding: 5px;
-    transition: transform 0.2s ease;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2002;
 }
 
 .mobile-menu-close:active {
-    transform: scale(0.9);
+  transform: scale(0.9);
 }
+
 /* ===============================
    Navbar User Auth Styles
    Add this to end of Navbar.css
@@ -378,6 +359,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -576,6 +558,7 @@
     width: 220px;
   }
 }
+
 /* ===================================================
    GUEST MODE STYLES — Append to existing Navbar.css
    =================================================== */

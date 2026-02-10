@@ -44,23 +44,7 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: #f8f8f8;
-  cursor: pointer;
-  color: #333;
-  transition: all 0.2s ease;
   z-index: 10;
-}
-
-.drawer-close:hover {
-  background: #eee;
-  transform: rotate(90deg);
 }
 
 /* ===== Content ===== */

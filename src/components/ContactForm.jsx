@@ -83,7 +83,7 @@ const ContactForm = () => {
 
                 <button
                     type="submit"
-                    className={`submit-btn ${formStatus}`}
+                    className={`btn btn-primary submit-btn ${formStatus}`}
                     disabled={formStatus === 'submitting' || formStatus === 'success'}
                 >
                     {formStatus === 'submitting' ? (

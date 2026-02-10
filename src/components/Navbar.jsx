@@ -97,7 +97,7 @@ const Navbar = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="mobile-menu-btn hidden-desktop"
+            className="btn btn-icon hidden-desktop"
             onClick={toggleMenu}
             aria-label="Toggle Menu"
             style={{ zIndex: 3000, position: 'sticky' }}
@@ -271,7 +271,7 @@ const Navbar = () => {
                 <div className="nav-user-wrapper">
                   <button
                     ref={guestBtnRef}
-                    className="nav-auth-btn"
+                    className="btn btn-icon"
                     onClick={() => {
                       if (!showGuestDropdown && guestBtnRef.current) {
                         const rect = guestBtnRef.current.getBoundingClientRect();
@@ -349,7 +349,7 @@ const Navbar = () => {
               transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
             >
               <button
-                className="mobile-menu-close"
+                className="btn btn-icon"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <X size={28} />

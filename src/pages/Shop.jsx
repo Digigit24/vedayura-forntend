@@ -19,7 +19,7 @@ const Shop = () => {
     const [priceRange, setPriceRange] = useState(2000);
     const [sortBy, setSortBy] = useState('featured');
     const [activeSearch, setActiveSearch] = useState(searchQuery || '');
-    
+
     // UI State: Drawer
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -70,12 +70,12 @@ const Shop = () => {
     // Filter Logic
     useEffect(() => {
         let result = [...products];
-        
+
         // 1. Category
         if (selectedCategory !== 'All') {
             result = result.filter(p => p.category === selectedCategory);
         }
-        
+
         // 2. Search
         if (activeSearch) {
             const q = activeSearch.toLowerCase();
@@ -85,7 +85,7 @@ const Shop = () => {
                 (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
             );
         }
-        
+
         // 3. Price
         result = result.filter(p => {
             const price = p.discount_price || p.price || 0;
@@ -98,7 +98,7 @@ const Shop = () => {
         } else if (sortBy === 'price-high') {
             result.sort((a, b) => (b.discount_price || b.price || 0) - (a.discount_price || a.price || 0));
         }
-        
+
         setFilteredProducts(result);
     }, [selectedCategory, activeSearch, priceRange, sortBy, products]);
 
@@ -181,14 +181,14 @@ const Shop = () => {
                                 </button>
                             )}
                         </div>
-                        
-                        <button 
+
+                        <button
                             className={`btn-filter-trigger ${isDrawerOpen ? 'active' : ''}`}
                             onClick={() => setIsDrawerOpen(true)}
                         >
                             <SlidersHorizontal size={18} />
                             <span>Filters</span>
-                            {(selectedCategory !== 'All' || priceRange < 2000 || sortBy !== 'featured') && 
+                            {(selectedCategory !== 'All' || priceRange < 2000 || sortBy !== 'featured') &&
                                 <span className="filter-badge"></span>
                             }
                         </button>
@@ -214,7 +214,7 @@ const Shop = () => {
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button
-                                            className={`btn-shop btn-shop-outline ${currentPage === 1 ? 'disabled' : ''}`}
+                                            className={`btn btn-icon ${currentPage === 1 ? 'disabled' : ''}`}
                                             onClick={() => paginate(currentPage - 1)}
                                             disabled={currentPage === 1}
                                         >
@@ -223,14 +223,14 @@ const Shop = () => {
                                         {[...Array(totalPages)].map((_, i) => (
                                             <button
                                                 key={i + 1}
-                                                className={`btn-shop ${currentPage === i + 1 ? 'btn-shop-primary' : 'btn-shop-outline'}`}
+                                                className={`btn btn-icon ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}`}
                                                 onClick={() => paginate(i + 1)}
                                             >
                                                 {i + 1}
                                             </button>
                                         ))}
                                         <button
-                                            className={`btn-shop btn-shop-outline ${currentPage === totalPages ? 'disabled' : ''}`}
+                                            className={`btn btn-icon ${currentPage === totalPages ? 'disabled' : ''}`}
                                             onClick={() => paginate(currentPage + 1)}
                                             disabled={currentPage === totalPages}
                                         >
@@ -246,7 +246,7 @@ const Shop = () => {
                                 </div>
                                 <h3>No matching products found</h3>
                                 <p>Try adjusting your search or filters.</p>
-                                <button className="btn-shop btn-shop-primary" onClick={resetFilters}>
+                                <button className="btn btn-primary" onClick={resetFilters}>
                                     Reset All Filters
                                 </button>
                             </div>
@@ -256,27 +256,27 @@ const Shop = () => {
             </div>
 
             {/* Bottom Drawer */}
-            <div 
-                className={`drawer-backdrop ${isDrawerOpen ? 'open' : ''}`} 
+            <div
+                className={`drawer-backdrop ${isDrawerOpen ? 'open' : ''}`}
                 onClick={() => setIsDrawerOpen(false)}
             ></div>
-            
+
             <div className={`bottom-drawer ${isDrawerOpen ? 'open' : ''}`}>
                 <div className="drawer-header">
                     <h3>Filter & Sort</h3>
-                    <button className="btn-close-drawer" onClick={() => setIsDrawerOpen(false)}>
+                    <button className="btn btn-icon" onClick={() => setIsDrawerOpen(false)}>
                         <X size={24} />
                     </button>
                 </div>
-                
+
                 <div className="drawer-body">
                     {/* Categories */}
                     <div className="drawer-section">
                         <h4>Categories</h4>
                         <div className="drawer-chips">
                             {categories.map(cat => {
-                                const count = cat === 'All' 
-                                    ? products.length 
+                                const count = cat === 'All'
+                                    ? products.length
                                     : products.filter(p => p.category === cat).length;
                                 return (
                                     <button
@@ -312,9 +312,9 @@ const Shop = () => {
                     <div className="drawer-section">
                         <h4>Sort By</h4>
                         <div className="select-wrapper">
-                            <select 
-                                value={sortBy} 
-                                onChange={(e) => setSortBy(e.target.value)} 
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
                                 className="drawer-select"
                             >
                                 <option value="featured">Featured</option>
@@ -327,10 +327,10 @@ const Shop = () => {
                 </div>
 
                 <div className="drawer-footer">
-                    <button className="btn-drawer-reset" onClick={resetFilters}>
+                    <button className="btn btn-outline btn-drawer-reset" onClick={resetFilters}>
                         Reset
                     </button>
-                    <button className="btn-drawer-apply" onClick={() => setIsDrawerOpen(false)}>
+                    <button className="btn btn-primary btn-drawer-apply" onClick={() => setIsDrawerOpen(false)}>
                         Show {filteredProducts.length} Results
                     </button>
                 </div>

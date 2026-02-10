@@ -231,30 +231,7 @@
    FILTER BUTTON
 ========================================= */
 .btn-filter-trigger {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    height: 48px;
-    padding: 0 24px;
-    background: #175333;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    position: relative;
-
-    transition:
-        background-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.btn-filter-trigger:hover {
-    background: #0f3d24;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(23, 83, 51, 0.2);
+    box-shadow: 0 4px 12px rgba(23, 83, 51, 0.1);
 }
 
 .filter-badge {
@@ -292,19 +269,6 @@
 .pagination .btn-shop {
     width: 45px;
     height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-
-    transition:
-        transform 0.2s ease,
-        background-color 0.2s ease;
-}
-
-.pagination .btn-shop:hover {
-    transform: translateY(-1px);
 }
 
 .btn-shop.disabled {
@@ -367,7 +331,6 @@
     .btn-filter-trigger {
         height: 42px;
         padding: 0 16px;
-        font-size: 0.85rem;
     }
 
     .pagination {
@@ -377,7 +340,6 @@
     .pagination .btn-shop {
         width: 36px;
         height: 36px;
-        font-size: 0.9rem;
     }
 }
 
@@ -687,40 +649,10 @@
 
 .btn-drawer-reset {
     flex: 1;
-    padding: 14px;
-
-    background: #ffffff;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-
-    font-weight: 600;
-    color: #374151;
-    cursor: pointer;
-
-    transition: background-color 0.2s ease;
-}
-
-.btn-drawer-reset:hover {
-    background: #f9fafb;
 }
 
 .btn-drawer-apply {
     flex: 2;
-    padding: 14px;
-
-    background: #175333;
-    color: #ffffff;
-    border: none;
-    border-radius: 12px;
-
-    font-weight: 600;
-    cursor: pointer;
-
-    transition: background-color 0.2s ease;
-}
-
-.btn-drawer-apply:hover {
-    background: #0f3d24;
 }
 
 .shop-hero {

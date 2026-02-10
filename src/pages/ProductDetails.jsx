@@ -9,17 +9,13 @@ import {
     Droplet,
     Heart,
     Leaf,
-    MessageSquare,
     Minus,
     Package,
     Play,
     Plus,
     Share2,
     ShieldCheck,
-    Star,
-    ThumbsUp,
     Truck,
-    User,
     X
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -50,10 +46,6 @@ const ProductDetails = () => {
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [activeVideo, setActiveVideo] = useState(null);
 
-    // Reviews
-    const [reviewSort, setReviewSort] = useState('newest');
-    const [showAllReviews, setShowAllReviews] = useState(false);
-
     // Wishlist check
     const isInWishlist = wishlist.some(item => String(item.id) === String(product?.id));
 
@@ -72,9 +64,6 @@ const ProductDetails = () => {
             realPrice: p.realPrice,
             discount_price: p.discountedPrice,
             stock: p.stockQuantity ?? p.stock, // Handle both if already normalized or raw
-            rating: p.averageRating || p.rating || 0,
-            reviewCount: p.reviewCount || p.reviews?.length || 0,
-            reviews: p.reviews || [],
             ingredients: p.ingredients || '',
             benefits: p.benefits || [],
             howToUse: p.howToUse || p.usage || '',
@@ -176,7 +165,6 @@ const ProductDetails = () => {
         setQuantity(1);
         setActiveTab('description');
         setShowVideoModal(false);
-        setShowAllReviews(false);
     }, [id]);
 
     // ─── Slider controls ────────────────────────────────────────
@@ -221,18 +209,6 @@ const ProductDetails = () => {
         return () => clearInterval(interval);
     }, [isHovered, nextSlide, galleryImages.length]);
 
-    // ─── Render star rating ─────────────────────────────────────
-    const renderStars = (rating, size = 16) => {
-        return Array.from({ length: 5 }, (_, i) => (
-            <Star
-                key={i}
-                size={size}
-                fill={i < Math.round(rating) ? '#22c55e' : 'transparent'}
-                color={i < Math.round(rating) ? '#22c55e' : '#d1d5db'}
-            />
-        ));
-    };
-
     const featureIconMap = {
         leaf: <Leaf size={18} />,
         shield: <ShieldCheck size={18} />,
@@ -267,7 +243,7 @@ const ProductDetails = () => {
                     <div className="pd-not-found">
                         <h2>Product not found</h2>
                         <p>The product you're looking for doesn't exist or has been removed.</p>
-                        <Link to="/shop" className="btn-vedayura btn-vedayura-primary">
+                        <Link to="/shop" className="btn btn-vedayura btn-vedayura-primary">
                             Back to Shop
                         </Link>
                     </div>
@@ -289,24 +265,6 @@ const ProductDetails = () => {
     // Stock helpers
     const isOutOfStock = product.stock === 0;
     const isLowStock = product.stock > 0 && product.stock < 50;
-
-    // Reviews helpers
-    const reviews = product.reviews || [];
-    const sortedReviews = [...reviews].sort((a, b) => {
-        if (reviewSort === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
-        if (reviewSort === 'highest') return b.rating - a.rating;
-        if (reviewSort === 'lowest') return a.rating - b.rating;
-        return 0;
-    });
-    const visibleReviews = showAllReviews ? sortedReviews : sortedReviews.slice(0, 3);
-
-    const ratingBreakdown = [5, 4, 3, 2, 1].map(star => ({
-        star,
-        count: reviews.filter(r => Math.round(r.rating) === star).length,
-        percent: reviews.length > 0
-            ? Math.round((reviews.filter(r => Math.round(r.rating) === star).length / reviews.length) * 100)
-            : 0
-    }));
 
     // Specifications
     const specsData = {
@@ -384,7 +342,6 @@ const ProductDetails = () => {
         { key: 'description', label: 'Description', icon: <BookOpen size={16} /> },
         { key: 'benefits', label: 'Benefits', icon: <CheckCircle size={16} /> },
         { key: 'ingredients', label: 'Ingredients', icon: <Leaf size={16} /> },
-        { key: 'reviews', label: `Reviews (${product.reviewCount || reviews.length || 0})`, icon: <MessageSquare size={16} /> },
     ];
 
     return (
@@ -443,13 +400,13 @@ const ProductDetails = () => {
                             {/* Wishlist & Share buttons */}
                             <div className="pd-action-buttons-overlay">
                                 <button
-                                    className={`pd-icon-btn ${isInWishlist ? 'active' : ''}`}
+                                    className={`btn btn-icon pd-icon-btn ${isInWishlist ? 'active' : ''}`}
                                     onClick={handleWishlistToggle}
                                     title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
                                 >
                                     <Heart size={20} fill={isInWishlist ? '#ef4444' : 'none'} color={isInWishlist ? '#ef4444' : '#fff'} />
                                 </button>
-                                <button className="pd-icon-btn" onClick={handleShare} title="Share">
+                                <button className="btn btn-icon pd-icon-btn" onClick={handleShare} title="Share">
                                     <Share2 size={20} color="#fff" />
                                 </button>
                             </div>
@@ -491,7 +448,7 @@ const ProductDetails = () => {
                             {galleryImages.map((img, idx) => (
                                 <button
                                     key={`img-${idx}`}
-                                    className={`pd-thumb-btn ${currentImageIndex === idx ? 'active' : ''}`}
+                                    className={`btn pd-thumb-btn ${currentImageIndex === idx ? 'active' : ''}`}
                                     onClick={() => goToSlide(idx)}
                                 >
                                     <img src={img} alt={`View ${idx + 1}`} />
@@ -500,7 +457,7 @@ const ProductDetails = () => {
                             {productVideos.map((video, idx) => (
                                 <button
                                     key={`vid-${idx}`}
-                                    className="pd-thumb-btn pd-thumb-video"
+                                    className="btn pd-thumb-btn pd-thumb-video"
                                     onClick={() => { setActiveVideo(video); setShowVideoModal(true); }}
                                 >
                                     <Play size={24} className="video-play-icon" />
@@ -522,22 +479,6 @@ const ProductDetails = () => {
                                 {product.name}
                                 {product.productType && <span className="pd-product-type">({product.productType})</span>}
                             </h1>
-
-                            <div className="pd-rating-row">
-                                <div className="pd-stars">
-                                    {renderStars(product.rating, 18)}
-                                </div>
-                                {product.rating > 0 ? (
-                                    <>
-                                        <strong>{product.rating.toFixed(1)}</strong>
-                                        <span className="review-count">
-                                            | {product.reviewCount || reviews.length} {(product.reviewCount || reviews.length) === 1 ? 'Review' : 'Reviews'}
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span className="review-count no-reviews">No reviews yet</span>
-                                )}
-                            </div>
                         </div>
 
                         {/* Price block */}
@@ -587,7 +528,7 @@ const ProductDetails = () => {
                                     </div>
 
                                     <button
-                                        className="btn-vedayura btn-vedayura-primary full-width"
+                                        className="btn btn-vedayura btn-vedayura-primary full-width"
                                         onClick={handleAddToCart}
                                     >
                                         Add to Cart — ₹{(product.price * quantity).toFixed(2)}
@@ -608,7 +549,7 @@ const ProductDetails = () => {
                                 {tabs.map(tab => (
                                     <button
                                         key={tab.key}
-                                        className={`tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+                                        className={`btn tab-btn ${activeTab === tab.key ? 'active' : ''}`}
                                         onClick={() => setActiveTab(tab.key)}
                                     >
                                         {tab.icon}
@@ -656,111 +597,6 @@ const ProductDetails = () => {
                                     </div>
                                 )}
 
-
-
-                                {/* Reviews */}
-                                {activeTab === 'reviews' && (
-                                    <div className="tab-reviews">
-
-                                        {/* Rating overview */}
-                                        {reviews.length > 0 ? (
-                                            <>
-                                                <div className="review-overview">
-                                                    <div className="review-score-card">
-                                                        <span className="big-rating">{product.rating?.toFixed(1) || '0.0'}</span>
-                                                        <div className="review-score-stars">
-                                                            {renderStars(product.rating, 20)}
-                                                        </div>
-                                                        <span className="total-reviews">
-                                                            Based on {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
-                                                        </span>
-                                                    </div>
-                                                    <div className="rating-bars">
-                                                        {ratingBreakdown.map(({ star, count, percent }) => (
-                                                            <div key={star} className="rating-bar-row">
-                                                                <span className="bar-label">{star} ★</span>
-                                                                <div className="bar-track">
-                                                                    <div className="bar-fill" style={{ width: `${percent}%` }}></div>
-                                                                </div>
-                                                                <span className="bar-count">{count}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-
-                                                {/* Sort */}
-                                                <div className="review-sort-row">
-                                                    <label>Sort by:</label>
-                                                    <select value={reviewSort} onChange={(e) => setReviewSort(e.target.value)}>
-                                                        <option value="newest">Newest First</option>
-                                                        <option value="highest">Highest Rated</option>
-                                                        <option value="lowest">Lowest Rated</option>
-                                                    </select>
-                                                </div>
-
-                                                {/* Review cards */}
-                                                <div className="review-list">
-                                                    {visibleReviews.map((review, i) => (
-                                                        <div key={review.id || i} className="review-card">
-                                                            <div className="review-card-header">
-                                                                <div className="review-user">
-                                                                    <div className="review-avatar">
-                                                                        <User size={16} />
-                                                                    </div>
-                                                                    <div>
-                                                                        <strong>{review.userName || 'Anonymous'}</strong>
-                                                                        {review.verified && (
-                                                                            <span className="verified-badge">
-                                                                                <CheckCircle size={12} /> Verified Purchase
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-                                                                <span className="review-date">
-                                                                    {new Date(review.createdAt).toLocaleDateString('en-IN', {
-                                                                        year: 'numeric', month: 'short', day: 'numeric'
-                                                                    })}
-                                                                </span>
-                                                            </div>
-                                                            <div className="review-stars">
-                                                                {renderStars(review.rating, 14)}
-                                                            </div>
-                                                            {review.title && <h4 className="review-title">{review.title}</h4>}
-                                                            <p className="review-text">{review.comment || review.text}</p>
-                                                            {review.images?.length > 0 && (
-                                                                <div className="review-images">
-                                                                    {review.images.map((img, idx) => (
-                                                                        <img key={idx} src={img} alt={`Review ${idx + 1}`} />
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                            <div className="review-actions">
-                                                                <button className="review-helpful-btn">
-                                                                    <ThumbsUp size={14} /> Helpful ({review.helpfulCount || 0})
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                {sortedReviews.length > 3 && (
-                                                    <button
-                                                        className="btn-show-all-reviews"
-                                                        onClick={() => setShowAllReviews(!showAllReviews)}
-                                                    >
-                                                        {showAllReviews ? 'Show Less' : `View All ${sortedReviews.length} Reviews`}
-                                                    </button>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <div className="no-reviews">
-                                                <MessageSquare size={40} />
-                                                <p>No reviews yet. Be the first to review this product!</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
                             </div>
                         </div>
                     </div>
@@ -802,7 +638,7 @@ const ProductDetails = () => {
                 {showVideoModal && activeVideo && (
                     <div className="pd-video-modal-overlay" onClick={() => setShowVideoModal(false)}>
                         <div className="pd-video-modal" onClick={e => e.stopPropagation()}>
-                            <button className="pd-video-modal-close" onClick={() => setShowVideoModal(false)}>
+                            <button className="btn btn-icon pd-video-modal-close" onClick={() => setShowVideoModal(false)}>
                                 <X size={24} />
                             </button>
                             <video

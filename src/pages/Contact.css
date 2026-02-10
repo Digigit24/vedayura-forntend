@@ -103,9 +103,9 @@
 
 .info-card {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1.25rem;
-  padding: 1.5rem;
+  padding: 0.5rem;
   background: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
@@ -240,35 +240,13 @@
 }
 
 .submit-btn {
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s, transform 0.1s;
   margin-top: 1.5rem;
-  /* Ensure spacing */
   box-shadow: var(--shadow-md);
-}
-
-.submit-btn:hover {
-  background-color: var(--color-primary-dark);
-}
-
-.submit-btn:active {
-  transform: scale(0.99);
 }
 
 .submit-btn.success {
   background-color: #2e7d32;
+  border-color: #2e7d32;
   cursor: default;
 }
 
