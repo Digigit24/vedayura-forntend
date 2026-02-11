@@ -25,35 +25,35 @@ const ProductCard = ({ product, activeCategory }) => {
         <Link to={`/product/${product.id}`} className="product-image-link">
           <div className="product-image-wrapper">
             <img
-  src={isHovered ? product.images[3] : product.images[0]}
-  alt={product.name}
-  className="product-image"
-  onMouseEnter={() => setIsHovered(true)}
-  onMouseLeave={() => setIsHovered(false)}
-/>
+              src={isHovered && product.images && product.images[3] ? product.images[3] : (product.images ? product.images[0] : product.image)}
+              alt={product.name}
+              className="product-image"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            />
           </div>
         </Link>
 
-      <div className="card-actions">
-  <button
-  className={`action-btn ${isAdded ? 'added' : ''}`}
-  onClick={handleAddToCart}
-  disabled={isAdded}
->
-  {isAdded ? (
-    <>
-      <Check size={16} />
-      Added
-    </>
-  ) : (
-    <>
-      <ShoppingBag size={16} />
-      Add to Cart
-    </>
-  )}
-</button>
+        <div className="card-actions">
+          <button
+            className={`action-btn ${isAdded ? 'added' : ''}`}
+            onClick={handleAddToCart}
+            disabled={isAdded}
+          >
+            {isAdded ? (
+              <>
+                <Check size={16} />
+                Added
+              </>
+            ) : (
+              <>
+                <ShoppingBag size={16} />
+                Add to Cart
+              </>
+            )}
+          </button>
 
-</div>
+        </div>
         {product.discount_price < product.price && (
           <span className="discount-badge">
             -{Math.round(
@@ -61,17 +61,17 @@ const ProductCard = ({ product, activeCategory }) => {
             )}%
           </span>
         )}
-      <p
-  className="product-category-diagonal"
-  style={{
-    backgroundColor:'#5b3d20',
-         padding: '4px 3rem',
-    left: '30px',                // position in the middle
-    transform: 'translateX(-50%) rotate(-45deg)', // center + rotate
-  }}
->
-  {product.category}
-</p>
+        <p
+          className="product-category-diagonal"
+          style={{
+            backgroundColor: '#5b3d20',
+            padding: '4px 3rem',
+            left: '30px',                // position in the middle
+            transform: 'translateX(-50%) rotate(-45deg)', // center + rotate
+          }}
+        >
+          {product.category}
+        </p>
 
 
         <button

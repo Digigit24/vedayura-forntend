@@ -128,29 +128,30 @@ export const ShopProvider = ({ children }) => {
                 if (res && Array.isArray(res.products)) {
                     const mappedProducts = res.products.map(p => {
                         // Find local override by Name + Category to ensure we target the right variant
-                        // (e.g. DiaboFit Capsules vs Liquid)
                         const localMatch = productsData.find(local =>
                             local.name.toLowerCase().trim() === p.name.toLowerCase().trim() &&
-                            local.category.toLowerCase().trim() === (p.category?.name || p.category || '').toLowerCase().trim()
+                            (p.category?.name || p.category || '').toLowerCase().trim() === local.category.toLowerCase().trim()
                         );
 
                         // Use local images if available, otherwise backend images
                         const finalImages = (localMatch && localMatch.images && localMatch.images.length > 0)
                             ? localMatch.images
-                            : (p.imageUrls || ['/assets/product-placeholder.png']);
+                            : (p.imageUrls && p.imageUrls.length > 0 ? p.imageUrls : ['/assets/product-placeholder.png']);
 
                         return {
+                            ...p, // Keep all raw data too
                             id: p.id,
                             name: p.name,
-                            category: p.category?.name || 'Uncategorized',
+                            category: p.category?.name || (typeof p.category === 'string' ? p.category : 'Uncategorized'),
                             categoryId: p.categoryId,
-                            price: p.discountedPrice || p.realPrice,
-                            stock: p.stockQuantity,
-                            image: finalImages[0], // Setup main image
-                            images: finalImages,   // Setup gallery
+                            price: Number(p.discountedPrice || p.realPrice || 0),
+                            stock: p.stockQuantity ?? 0,
+                            image: finalImages[0],
+                            images: finalImages,
+                            imageUrls: p.imageUrls || finalImages, // Keep both for safety
                             ingredients: p.ingredients || '',
                             benefits: p.benefits || [],
-                            description: p.description || '', // Ensure description is passed
+                            description: p.description || '',
                         };
                     });
                     setProducts(mappedProducts);

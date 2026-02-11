@@ -52,20 +52,25 @@ const ProductDetails = () => {
     // ─── Normalize helper ───────────────────────────────────────
     const normalizeProduct = (p) => {
         if (!p) return null;
+
+        // Extract images robustly
+        const images = p.imageUrls || p.images || (p.image ? [p.image] : ['/assets/product-placeholder.png']);
+        const mainImage = images[0] || '/assets/product-placeholder.png';
+
         return {
             id: p.id,
             name: p.name,
             description: p.description || '',
-            image: p.imageUrls?.[0] || '/assets/product-placeholder.png',
-            images: p.imageUrls || ['/assets/product-placeholder.png'],
-            videos: p.videoUrls || [],
+            image: mainImage,
+            images: Array.isArray(images) ? images : [images],
+            videos: p.videoUrls || p.videos || [],
             category: p.category?.name || (typeof p.category === 'string' ? p.category : 'Uncategorized'),
-            price: p.discountedPrice || p.realPrice,
-            realPrice: p.realPrice,
-            discount_price: p.discountedPrice,
-            stock: p.stockQuantity ?? p.stock, // Handle both if already normalized or raw
-            ingredients: p.ingredients || '',
-            benefits: p.benefits || [],
+            price: Number(p.discountedPrice || p.realPrice || p.price || 0),
+            realPrice: Number(p.realPrice || p.price || 0),
+            discount_price: Number(p.discountedPrice || p.price || 0),
+            stock: Number(p.stockQuantity ?? p.stock ?? 0),
+            ingredients: p.ingredients || p.Ingredients || '', // Handle both casings
+            benefits: Array.isArray(p.benefits || p.Benefits) ? (p.benefits || p.Benefits) : [],
             howToUse: p.howToUse || p.usage || '',
             productType: p.productType || '',
             features: p.features || [],
@@ -83,70 +88,48 @@ const ProductDetails = () => {
             setLoading(true);
 
             let contextProduct = null;
-            if (products.length > 0) {
+            if (products && products.length > 0) {
                 const found = products.find(p => String(p.id) === String(id));
                 if (found) {
                     contextProduct = normalizeProduct(found);
                     setProduct(contextProduct);
+                    // Check if it's "complete" - if it has description & benefits, 
+                    // we show it IMMEDIATELY but still fetch in background to be safe.
+                    if (contextProduct.description && contextProduct.benefits?.length > 0) {
+                        setLoading(false);
+                    }
                 }
             }
 
-            // If we found a product in context that looks "complete" (has description & benefits), 
-            // we can skip the API call to save bandwidth/time.
-            // However, since the user reported missing details, we'll be aggressive and fetch 
-            // unless we are 100% sure we have data.
-            if (contextProduct && contextProduct.description && contextProduct.benefits?.length > 0) {
-                setLoading(false);
-                return;
-            }
-
-            // Fallback: Fetch from API (either not in context, or context data is incomplete)
+            // Fallback: Fetch from API (either not in context, or to get freshest data)
             try {
                 const res = await api.products.getById(id);
                 if (res?.product) {
-                    setProduct(normalizeProduct(res.product));
-                } else {
-                    // If API fails to find it, but we had a context product, keep the context product
-                    if (!contextProduct) {
-                        setProduct(null);
-                    }
+                    const freshProduct = normalizeProduct(res.product);
+                    setProduct(freshProduct);
+                } else if (!contextProduct) {
+                    setProduct(null);
                 }
             } catch (err) {
                 console.error('Failed to load product:', err);
-                // If API error, but we had context product, keep it
-                if (!contextProduct) {
-                    setProduct(null);
-                }
+                if (!contextProduct) setProduct(null);
             } finally {
                 setLoading(false);
             }
         };
 
         loadProduct();
-    }, [id, products]); // Re-run if ID or products context changes
+    }, [id, products]);
 
     // ─── Retry when products load after initial render ──────────
-    // This is useful if the user lands on the page, API fetch fails/is slow, 
-    // but then the global context loads the products list successfully.
     useEffect(() => {
-        if (products.length > 0) {
-            // We only want to "upgrade" form context if we don't have a full product yet
-            // OR if the current product is missing data that the context might have.
+        if (products && products.length > 0 && !product) {
             const found = products.find(p => String(p.id) === String(id));
             if (found) {
-                const normalizedFound = normalizeProduct(found);
-                setProduct(prev => {
-                    if (!prev) return normalizedFound;
-                    // If we already have a description, assume we have good data (fetched from API)
-                    // But if current state is missing description, update it from context
-                    if (!prev.description && normalizedFound.description) {
-                        return normalizedFound;
-                    }
-                    return prev;
-                });
+                setProduct(normalizeProduct(found));
             }
         }
-    }, [products, id]);
+    }, [products, id, product]);
 
     // ─── Gallery images ─────────────────────────────────────────
     const galleryImages = product?.images?.length > 0
