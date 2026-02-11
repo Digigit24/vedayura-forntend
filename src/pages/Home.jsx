@@ -114,11 +114,11 @@ useEffect(() => {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
-          <div className="text-center mt-2xl pt-lg">
-            <Link to="/shop" className="btn btn-primary view-btn btn-txt">
-              View All Products
-            </Link>
-          </div>
+         <div className="view-all-wrapper">
+  <Link to="/shop" className="view-all-btn">
+    View All Products
+  </Link>
+</div>
         </div>
       </section>
 
@@ -155,16 +155,6 @@ useEffect(() => {
         <div className="testimonial-header">
           <div className="stars">★★★★★</div>
           <h4 className="testimonial-name">Priya Menon</h4>
-        </div>
-        <p className="testimonial-text">
-          "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."
-        </p>
-      </div>
-
-      <div className="testimonial-card">
-        <div className="testimonial-header">
-          <div className="stars">★★★★★</div>
-          <h4 className="testimonial-name">Aditya Sharma</h4>
         </div>
         <p className="testimonial-text">
           "The <strong>Garcinia Plus</strong> capsules helped me with weight loss. I've noticed a decrease in cravings, and my metabolism is much better now."

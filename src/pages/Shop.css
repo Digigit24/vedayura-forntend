@@ -255,28 +255,83 @@
     justify-content: center;
 }
 
-/* =========================================
-   PAGINATION
-========================================= */
+
 .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin: 50px 0 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 60px;
+  flex-wrap: wrap;
 }
 
-.pagination .btn-shop {
-    width: 45px;
-    height: 45px;
+/* Arrow buttons */
+.page-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 100%;
+  border: 1px solid #2e7d32;
+  background: #fff;
+  color: #2e7d32;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn-shop.disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-    transform: none !important;
+.page-nav-btn:hover:not(.is-disabled) {
+  background: #2e7d32;
+  color: #fff;
 }
 
+.page-nav-btn.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Page number buttons */
+.page-number-btn {
+  min-width: 42px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 100%;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #333;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-number-btn:hover {
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+/* Active page */
+.page-number-btn.is-active {
+  background: linear-gradient(135deg, #2e7d32, #1e391f);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.3);
+}
+
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .page-number-btn,
+  .page-nav-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 14px;
+  }
+
+  .pagination {
+    gap: 8px;
+    margin-top: 28px;
+  }
+}
 /* =========================================
    MOBILE
 ========================================= */

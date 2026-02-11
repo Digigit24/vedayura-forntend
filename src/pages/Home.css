@@ -649,3 +649,46 @@
     /* Slightly reduced padding on mobile */
   }
 }
+.view-all-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 56px;
+}
+
+/* Button already styled before, keep it or replace with this */
+.view-all-btn {
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #2e7d32, #29612b);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+/* Hover effect */
+.view-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #256628, #43a047);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .view-all-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 20px;
+    font-size: 15px;
+  }
+
+  .view-all-wrapper {
+    margin-top: 32px;
+    padding: 0 16px;
+  }
+}

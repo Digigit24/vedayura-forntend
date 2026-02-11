@@ -212,31 +212,33 @@ const Shop = () => {
 
                                 {/* Pagination */}
                                 {totalPages > 1 && (
-                                    <div className="pagination">
-                                        <button
-                                            className={`btn btn-icon ${currentPage === 1 ? 'disabled' : ''}`}
-                                            onClick={() => paginate(currentPage - 1)}
-                                            disabled={currentPage === 1}
-                                        >
-                                            <ChevronLeft />
-                                        </button>
-                                        {[...Array(totalPages)].map((_, i) => (
-                                            <button
-                                                key={i + 1}
-                                                className={`btn btn-icon ${currentPage === i + 1 ? 'btn-primary' : 'btn-outline'}`}
-                                                onClick={() => paginate(i + 1)}
-                                            >
-                                                {i + 1}
-                                            </button>
-                                        ))}
-                                        <button
-                                            className={`btn btn-icon ${currentPage === totalPages ? 'disabled' : ''}`}
-                                            onClick={() => paginate(currentPage + 1)}
-                                            disabled={currentPage === totalPages}
-                                        >
-                                            <ChevronRight />
-                                        </button>
-                                    </div>
+                                  <div className="pagination">
+  <button
+    className={`page-nav-btn ${currentPage === 1 ? 'is-disabled' : ''}`}
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+  >
+    <ChevronLeft />
+  </button>
+
+  {[...Array(totalPages)].map((_, i) => (
+    <button
+      key={i + 1}
+      className={`page-number-btn ${currentPage === i + 1 ? 'is-active' : ''}`}
+      onClick={() => paginate(i + 1)}
+    >
+      {i + 1}
+    </button>
+  ))}
+
+  <button
+    className={`page-nav-btn ${currentPage === totalPages ? 'is-disabled' : ''}`}
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+  >
+    <ChevronRight />
+  </button>
+</div>
                                 )}
                             </>
                         ) : (
