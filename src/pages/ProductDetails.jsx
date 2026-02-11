@@ -18,7 +18,7 @@ import {
     Truck,
     X
 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useParams } from 'react-router-dom';
 import api from '../api';
@@ -26,6 +26,8 @@ import ProductCard from '../components/ProductCard';
 import TopMarquee from "../components/TopMarquee";
 import { useShop } from '../context/ShopContext';
 import './ProductDetails.css';
+
+const SLIDE_DURATION = 600;
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -36,27 +38,28 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
 
-    // Slider state
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    // Slider state — rewritten for real swipe motion
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [nextIndex, setNextIndex] = useState(null);
+    const [slideDirection, setSlideDirection] = useState(null); // 'left' | 'right'
+    const [slidePhase, setSlidePhase] = useState('idle');       // 'idle' | 'ready' | 'animating'
     const [isHovered, setIsHovered] = useState(false);
-    const [isAnimating, setIsAnimating] = useState(false);
-    const [direction, setDirection] = useState("right");
+    const nextImageRef = useRef(null);
 
     // Video modal
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [activeVideo, setActiveVideo] = useState(null);
 
-    // Wishlist check
+    // Touch/swipe support
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
+
     const isInWishlist = wishlist.some(item => String(item.id) === String(product?.id));
 
-    // ─── Normalize helper ───────────────────────────────────────
     const normalizeProduct = (p) => {
         if (!p) return null;
-
-        // Extract images robustly
         const images = p.imageUrls || p.images || (p.image ? [p.image] : ['/assets/product-placeholder.png']);
         const mainImage = images[0] || '/assets/product-placeholder.png';
-
         return {
             id: p.id,
             name: p.name,
@@ -69,7 +72,7 @@ const ProductDetails = () => {
             realPrice: Number(p.realPrice || p.price || 0),
             discount_price: Number(p.discountedPrice || p.price || 0),
             stock: Number(p.stockQuantity ?? p.stock ?? 0),
-            ingredients: p.ingredients || p.Ingredients || '', // Handle both casings
+            ingredients: p.ingredients || p.Ingredients || '',
             benefits: Array.isArray(p.benefits || p.Benefits) ? (p.benefits || p.Benefits) : [],
             howToUse: p.howToUse || p.usage || '',
             productType: p.productType || '',
@@ -82,31 +85,24 @@ const ProductDetails = () => {
         };
     };
 
-    // ─── Load product ───────────────────────────────────────────
     useEffect(() => {
         const loadProduct = async () => {
             setLoading(true);
-
             let contextProduct = null;
             if (products && products.length > 0) {
                 const found = products.find(p => String(p.id) === String(id));
                 if (found) {
                     contextProduct = normalizeProduct(found);
                     setProduct(contextProduct);
-                    // Check if it's "complete" - if it has description & benefits, 
-                    // we show it IMMEDIATELY but still fetch in background to be safe.
                     if (contextProduct.description && contextProduct.benefits?.length > 0) {
                         setLoading(false);
                     }
                 }
             }
-
-            // Fallback: Fetch from API (either not in context, or to get freshest data)
             try {
                 const res = await api.products.getById(id);
                 if (res?.product) {
-                    const freshProduct = normalizeProduct(res.product);
-                    setProduct(freshProduct);
+                    setProduct(normalizeProduct(res.product));
                 } else if (!contextProduct) {
                     setProduct(null);
                 }
@@ -117,80 +113,114 @@ const ProductDetails = () => {
                 setLoading(false);
             }
         };
-
         loadProduct();
     }, [id, products]);
 
-    // ─── Retry when products load after initial render ──────────
     useEffect(() => {
         if (products && products.length > 0 && !product) {
             const found = products.find(p => String(p.id) === String(id));
-            if (found) {
-                setProduct(normalizeProduct(found));
-            }
+            if (found) setProduct(normalizeProduct(found));
         }
     }, [products, id, product]);
 
-    // ─── Gallery images ─────────────────────────────────────────
     const galleryImages = product?.images?.length > 0
         ? product.images
         : [product?.image || '/assets/product-placeholder.png'];
 
-    // ─── Product videos ─────────────────────────────────────────
     const productVideos = product?.videos || [];
 
-    // ─── Reset on product change ────────────────────────────────
     useEffect(() => {
         window.scrollTo(0, 0);
-        setCurrentImageIndex(0);
-        setIsAnimating(false);
-        setDirection("right");
+        setCurrentIndex(0);
+        setNextIndex(null);
+        setSlideDirection(null);
+        setSlidePhase('idle');
         setQuantity(1);
         setActiveTab('description');
         setShowVideoModal(false);
     }, [id]);
 
-    // ─── Slider controls ────────────────────────────────────────
+    // ─── Core slide function (2-phase animation) ────────────────
+    const slideTo = useCallback((targetIndex, direction) => {
+        if (slidePhase !== 'idle' || galleryImages.length <= 1) return;
+        if (targetIndex === currentIndex) return;
+
+        setNextIndex(targetIndex);
+        setSlideDirection(direction);
+        setSlidePhase('ready'); // Phase 1: mount next image offscreen
+    }, [slidePhase, galleryImages.length, currentIndex]);
+
+    // Phase 2: once next image is in DOM at its offscreen position, trigger the slide
+    useEffect(() => {
+        if (slidePhase !== 'ready') return;
+
+        // Force browser to acknowledge the offscreen position first
+        const el = nextImageRef.current;
+        if (el) el.getBoundingClientRect(); // force reflow
+
+        // Now trigger the animation on next frame
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                setSlidePhase('animating');
+            });
+        });
+    }, [slidePhase]);
+
+    // Phase 3: after animation completes, swap current and clean up
+    useEffect(() => {
+        if (slidePhase !== 'animating') return;
+        const timer = setTimeout(() => {
+            setCurrentIndex(nextIndex);
+            setNextIndex(null);
+            setSlideDirection(null);
+            setSlidePhase('idle');
+        }, SLIDE_DURATION);
+        return () => clearTimeout(timer);
+    }, [slidePhase, nextIndex]);
+
+    // ─── Navigation helpers ─────────────────────────────────────
     const nextSlide = useCallback(() => {
-        if (isAnimating || galleryImages.length <= 1) return;
-        setDirection("right");
-        setIsAnimating(true);
-        setTimeout(() => {
-            setCurrentImageIndex(prev =>
-                prev === galleryImages.length - 1 ? 0 : prev + 1
-            );
-            setIsAnimating(false);
-        }, 350);
-    }, [galleryImages.length, isAnimating]);
+        const target = currentIndex === galleryImages.length - 1 ? 0 : currentIndex + 1;
+        slideTo(target, 'right');
+    }, [currentIndex, galleryImages.length, slideTo]);
 
-    const prevSlide = () => {
-        if (isAnimating || galleryImages.length <= 1) return;
-        setDirection("left");
-        setIsAnimating(true);
-        setTimeout(() => {
-            setCurrentImageIndex(prev =>
-                prev === 0 ? galleryImages.length - 1 : prev - 1
-            );
-            setIsAnimating(false);
-        }, 350);
-    };
+    const prevSlide = useCallback(() => {
+        const target = currentIndex === 0 ? galleryImages.length - 1 : currentIndex - 1;
+        slideTo(target, 'left');
+    }, [currentIndex, galleryImages.length, slideTo]);
 
-    const goToSlide = (index) => {
-        if (isAnimating || index === currentImageIndex) return;
-        setDirection(index > currentImageIndex ? "right" : "left");
-        setIsAnimating(true);
-        setTimeout(() => {
-            setCurrentImageIndex(index);
-            setIsAnimating(false);
-        }, 350);
-    };
+    const goToSlide = useCallback((index) => {
+        const direction = index > currentIndex ? 'right' : 'left';
+        slideTo(index, direction);
+    }, [currentIndex, slideTo]);
 
     // Auto-slide
     useEffect(() => {
         if (isHovered || galleryImages.length <= 1) return;
-        const interval = setInterval(nextSlide, 4000);
+        const interval = setInterval(nextSlide, 4500);
         return () => clearInterval(interval);
     }, [isHovered, nextSlide, galleryImages.length]);
+
+    // ─── Touch / swipe handlers ─────────────────────────────────
+    const handleTouchStart = (e) => {
+        touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e) => {
+        touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+        const diff = touchStartX.current - touchEndX.current;
+        const threshold = 50;
+        if (Math.abs(diff) > threshold) {
+            if (diff > 0) {
+                nextSlide();  // swipe left → next
+            } else {
+                prevSlide(); // swipe right → prev
+            }
+        }
+    };
 
     const featureIconMap = {
         leaf: <Leaf size={18} />,
@@ -202,7 +232,6 @@ const ProductDetails = () => {
         clock: <Clock size={18} />,
     };
 
-    // ─── Loading ────────────────────────────────────────────────
     if (loading) {
         return (
             <div className="product-details-page">
@@ -217,7 +246,6 @@ const ProductDetails = () => {
         );
     }
 
-    // ─── Not found ──────────────────────────────────────────────
     if (!product) {
         return (
             <div className="product-details-page">
@@ -235,32 +263,13 @@ const ProductDetails = () => {
         );
     }
 
-    // ─── All product-dependent computations AFTER null check ────
-
-    // Related products
     const relatedProducts = products
         .filter(p => p.category === product.category && String(p.id) !== String(product.id))
         .slice(0, 4);
 
-    // Fixed price (no discount logic)
-    const displayPrice = product.price;
-
-    // Stock helpers
     const isOutOfStock = product.stock === 0;
     const isLowStock = product.stock > 0 && product.stock < 50;
 
-    // Specifications
-    const specsData = {
-        ...(product.weight && { 'Weight': product.weight }),
-        ...(product.shelfLife && { 'Shelf Life': product.shelfLife }),
-        ...(product.manufacturer && { 'Manufacturer': product.manufacturer }),
-        ...(product.countryOfOrigin && { 'Country of Origin': product.countryOfOrigin }),
-        ...(product.productType && { 'Product Type': product.productType }),
-        ...(product.category && { 'Category': product.category }),
-        ...(product.specifications || {})
-    };
-
-    // Dynamic features
     const productFeatures = product.features?.length > 0
         ? product.features
         : [
@@ -269,7 +278,6 @@ const ProductDetails = () => {
             { icon: 'droplet', label: 'No Artificial Additives' },
         ];
 
-    // Share product
     const handleShare = async () => {
         const shareData = {
             title: product.name,
@@ -290,7 +298,6 @@ const ProductDetails = () => {
         }
     };
 
-    // Wishlist toggle
     const handleWishlistToggle = () => {
         if (isInWishlist) {
             removeFromWishlist(product.id);
@@ -320,12 +327,32 @@ const ProductDetails = () => {
         });
     };
 
-    // ─── Tab config ─────────────────────────────────────────────
     const tabs = [
         { key: 'description', label: 'Description', icon: <BookOpen size={16} /> },
         { key: 'benefits', label: 'Benefits', icon: <CheckCircle size={16} /> },
         { key: 'ingredients', label: 'Ingredients', icon: <Leaf size={16} /> },
     ];
+
+    // ─── Compute slider CSS classes ─────────────────────────────
+    const getCurrentImageClass = () => {
+        if (slidePhase === 'animating') {
+            // Current image exits: swipe right → current goes left, swipe left → current goes right
+            return slideDirection === 'right' ? 'slider-image slide-exit-left' : 'slider-image slide-exit-right';
+        }
+        return 'slider-image slide-center';
+    };
+
+    const getNextImageClass = () => {
+        if (slidePhase === 'ready') {
+            // Offscreen starting position
+            return slideDirection === 'right' ? 'slider-image slide-start-right' : 'slider-image slide-start-left';
+        }
+        if (slidePhase === 'animating') {
+            // Animate to center
+            return 'slider-image slide-center';
+        }
+        return 'slider-image';
+    };
 
     return (
         <div className="product-details-page">
@@ -333,7 +360,6 @@ const ProductDetails = () => {
 
             <div className="container">
 
-                {/* ── Breadcrumbs ──────────────────────────────── */}
                 <nav className="pd-breadcrumbs">
                     <Link to="/">Home</Link> <ChevronRight size={14} />
                     <Link to="/shop">Shop</Link> <ChevronRight size={14} />
@@ -351,11 +377,13 @@ const ProductDetails = () => {
                     {/* ══════════ LEFT COLUMN ══════════ */}
                     <div className="pd-gallery-wrapper">
 
-                        {/* Main image slider */}
                         <div
                             className="pd-main-image-card"
                             onMouseEnter={() => setIsHovered(true)}
                             onMouseLeave={() => setIsHovered(false)}
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
                         >
                             {/* Badges */}
                             <div className="pd-badge-overlay">
@@ -380,17 +408,32 @@ const ProductDetails = () => {
                                 </span>
                             </div>
 
-                            {/* Wishlist & Share buttons */}
-                            <div className="pd-action-buttons-overlay">
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "16px",
+                                    right: "16px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "10px",
+                                    zIndex: 5
+                                }}
+                            >
                                 <button
-                                    className={`btn btn-icon pd-icon-btn ${isInWishlist ? 'active' : ''}`}
                                     onClick={handleWishlistToggle}
-                                    title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                    title={isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+                                    aria-label="Toggle Wishlist"
+                                    style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
                                 >
-                                    <Heart size={20} fill={isInWishlist ? '#ef4444' : 'none'} color={isInWishlist ? '#ef4444' : '#fff'} />
+                                    <Heart size={28} stroke="#ef4444" fill={isInWishlist ? "#ef4444" : "none"} />
                                 </button>
-                                <button className="btn btn-icon pd-icon-btn" onClick={handleShare} title="Share">
-                                    <Share2 size={20} color="#fff" />
+                                <button
+                                    onClick={handleShare}
+                                    title="Share"
+                                    aria-label="Share Product"
+                                    style={{ background: "transparent", border: "none", cursor: "pointer", padding: 0 }}
+                                >
+                                    <Share2 size={28} stroke="#000000" />
                                 </button>
                             </div>
 
@@ -401,20 +444,22 @@ const ProductDetails = () => {
                             )}
 
                             <div className="slider-frame">
+                                {/* Current image */}
                                 <img
-                                    src={galleryImages[currentImageIndex]}
+                                    key={`current-${currentIndex}`}
+                                    src={galleryImages[currentIndex]}
                                     alt={product.name}
-                                    className={`slider-image current ${isAnimating ? `exit-${direction}` : ''}`}
+                                    className={getCurrentImageClass()}
                                 />
-                                {isAnimating && (
+
+                                {/* Next image (only during transition) */}
+                                {nextIndex !== null && (
                                     <img
-                                        src={
-                                            direction === "right"
-                                                ? galleryImages[(currentImageIndex + 1) % galleryImages.length]
-                                                : galleryImages[(currentImageIndex - 1 + galleryImages.length) % galleryImages.length]
-                                        }
+                                        key={`next-${nextIndex}`}
+                                        ref={nextImageRef}
+                                        src={galleryImages[nextIndex]}
                                         alt={product.name}
-                                        className={`slider-image next enter-${direction}`}
+                                        className={getNextImageClass()}
                                     />
                                 )}
                             </div>
@@ -426,12 +471,12 @@ const ProductDetails = () => {
                             )}
                         </div>
 
-                        {/* Thumbnails — images + video thumbnails */}
+                        {/* Thumbnails */}
                         <div className="pd-thumbnails-grid">
                             {galleryImages.map((img, idx) => (
                                 <button
                                     key={`img-${idx}`}
-                                    className={`btn pd-thumb-btn ${currentImageIndex === idx ? 'active' : ''}`}
+                                    className={`btn pd-thumb-btn ${currentIndex === idx ? 'active' : ''}`}
                                     onClick={() => goToSlide(idx)}
                                 >
                                     <img src={img} alt={`View ${idx + 1}`} />
@@ -456,7 +501,6 @@ const ProductDetails = () => {
                     {/* ══════════ RIGHT COLUMN ══════════ */}
                     <div className="pd-info-wrapper">
 
-                        {/* Header */}
                         <div className="pd-header">
                             <h1 className="pd-title">
                                 {product.name}
@@ -464,7 +508,6 @@ const ProductDetails = () => {
                             </h1>
                         </div>
 
-                        {/* Price block */}
                         <div className="pd-price-block">
                             <span className="price-label">MRP (Inclusive of taxes)</span>
                             <div className="price-row">
@@ -472,7 +515,6 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        {/* Features */}
                         <ul className="pd-features-list">
                             {productFeatures.map((feat, i) => (
                                 <li key={i}>
@@ -485,7 +527,6 @@ const ProductDetails = () => {
                             ))}
                         </ul>
 
-                        {/* Actions card */}
                         <div className={`pd-actions-card ${isOutOfStock ? 'out-of-stock' : ''}`}>
                             {isOutOfStock ? (
                                 <div className="pd-out-of-stock-msg">
@@ -526,7 +567,6 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        {/* ── Tabs ────────────────────────────────── */}
                         <div className="pd-info-tabs">
                             <div className="pd-tab-headers">
                                 {tabs.map(tab => (
@@ -542,8 +582,6 @@ const ProductDetails = () => {
                             </div>
 
                             <div className="pd-tab-content">
-
-                                {/* Description */}
                                 {activeTab === 'description' && (
                                     <div className="tab-description">
                                         {product.description ? (
@@ -554,7 +592,6 @@ const ProductDetails = () => {
                                     </div>
                                 )}
 
-                                {/* Benefits */}
                                 {activeTab === 'benefits' && (
                                     <ul className="benefits-list">
                                         {product.benefits?.length > 0
@@ -569,7 +606,6 @@ const ProductDetails = () => {
                                     </ul>
                                 )}
 
-                                {/* Ingredients */}
                                 {activeTab === 'ingredients' && (
                                     <div className="tab-ingredients">
                                         {product.ingredients ? (
@@ -579,13 +615,11 @@ const ProductDetails = () => {
                                         )}
                                     </div>
                                 )}
-
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ── Video Section ───────────────────────────── */}
                 {productVideos.length > 0 && (
                     <div className="pd-video-section">
                         <h2 className="section-title">Product Videos</h2>
@@ -598,13 +632,9 @@ const ProductDetails = () => {
                                 >
                                     <div className="pd-video-thumb">
                                         <img src={video.thumbnail || galleryImages[0]} alt={video.title || `Video ${idx + 1}`} />
-                                        <div className="pd-video-play-overlay">
-                                            <Play size={40} />
-                                        </div>
+                                        <div className="pd-video-play-overlay"><Play size={40} /></div>
                                         {video.duration && (
-                                            <span className="pd-video-duration">
-                                                <Clock size={12} /> {video.duration}
-                                            </span>
+                                            <span className="pd-video-duration"><Clock size={12} /> {video.duration}</span>
                                         )}
                                     </div>
                                     <div className="pd-video-info">
@@ -617,19 +647,13 @@ const ProductDetails = () => {
                     </div>
                 )}
 
-                {/* ── Video Modal ─────────────────────────────── */}
                 {showVideoModal && activeVideo && (
                     <div className="pd-video-modal-overlay" onClick={() => setShowVideoModal(false)}>
                         <div className="pd-video-modal" onClick={e => e.stopPropagation()}>
                             <button className="btn btn-icon pd-video-modal-close" onClick={() => setShowVideoModal(false)}>
                                 <X size={24} />
                             </button>
-                            <video
-                                src={activeVideo.url}
-                                controls
-                                autoPlay
-                                className="pd-video-player"
-                            />
+                            <video src={activeVideo.url} controls autoPlay className="pd-video-player" />
                             {activeVideo.title && (
                                 <div className="pd-video-modal-info">
                                     <h3>{activeVideo.title}</h3>
@@ -640,7 +664,6 @@ const ProductDetails = () => {
                     </div>
                 )}
 
-                {/* ── Related Products ────────────────────────── */}
                 {relatedProducts.length > 0 && (
                     <div className="pd-related">
                         <h2 className="section-title">You May Also Like</h2>

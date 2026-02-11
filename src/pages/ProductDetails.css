@@ -15,7 +15,6 @@
     margin-bottom: 60px;
 }
 
-/* Left Column - Sticky */
 .pd-gallery-wrapper {
     flex: 1;
     position: sticky;
@@ -23,14 +22,12 @@
     height: fit-content;
 }
 
-/* Right Column */
 .pd-info-wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-/* Mobile */
 @media (max-width: 900px) {
     .pd-layout {
         flex-direction: column;
@@ -73,7 +70,7 @@
 }
 
 /* =========================================
-   IMAGE SLIDER (2-IMAGE, NO FADE)
+   IMAGE SLIDER — SCREEN-SWIPE MOTION
    ========================================= */
 
 .pd-main-image-card {
@@ -86,59 +83,78 @@
     overflow: hidden;
     border-radius: var(--radius-xl);
     border: 1px solid var(--color-border);
+    /* Smooth touch scrolling feel */
+    touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
-/* Frame */
 .slider-frame {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-/* Base image */
-.slider-image {
     position: absolute;
     inset: 0;
+    overflow: hidden;
+}
+
+/* ── Base image (absolute, hidden by default) ── */
+.slider-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
-    transition: transform 0.35s ease;
     will-change: transform;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
-/* Current image */
-.slider-image.current {
+/* ── Resting / visible position (gives height to .slider-frame) ── */
+.slider-image.slide-center {
+    position: relative;
+    display: block;
     transform: translateX(0);
     z-index: 2;
 }
 
-/* Next image */
-.slider-image.next {
-    z-index: 1;
+/* ── During exit: go back to absolute so next image can be relative ── */
+.slider-image.slide-exit-left,
+.slider-image.slide-exit-right {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-/* Exit animations */
-.exit-right {
-    transform: translateX(-100%);
-}
-
-.exit-left {
+/* ── Starting positions (offscreen, NO transition so it snaps instantly) ── */
+.slider-image.slide-start-right {
+    position: absolute;
+    top: 0;
+    left: 0;
     transform: translateX(100%);
+    z-index: 3;
+    transition: none !important;
 }
 
-/* Enter start */
-.enter-right {
-    transform: translateX(100%);
-}
-
-.enter-left {
+.slider-image.slide-start-left {
+    position: absolute;
+    top: 0;
+    left: 0;
     transform: translateX(-100%);
+    z-index: 3;
+    transition: none !important;
 }
 
-/* Enter target */
-.slider-image.next.enter-right,
-.slider-image.next.enter-left {
-    transform: translateX(0);
+/* ── Exit: current image slides out ── */
+.slider-image.slide-exit-left {
+    transform: translateX(-100%);
+    z-index: 2;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slider-image.slide-exit-right {
+    transform: translateX(100%);
+    z-index: 2;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* =========================================
@@ -160,7 +176,7 @@
     cursor: pointer;
     z-index: 5;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
     color: #374151;
 }
 
@@ -173,6 +189,11 @@
     color: #fff;
     border-color: #175333;
     transform: translateY(-50%) scale(1.1);
+}
+
+.slider-arrow:active {
+    transform: translateY(-50%) scale(0.95);
+    transition: transform 0.1s ease;
 }
 
 .arrow-left {
@@ -217,8 +238,9 @@
 }
 
 /* =========================================
-   THUMBNAILS (RESTORED ACTIVE INDICATOR)
+   THUMBNAILS
    ========================================= */
+
 .pd-thumbnails-grid {
     display: flex;
     gap: 12px;
@@ -233,8 +255,6 @@
     display: none;
 }
 
-
-
 .pd-thumb-btn {
     flex: 0 0 80px;
     aspect-ratio: 1;
@@ -243,7 +263,7 @@
     padding: 6px;
     background: #fff;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     position: relative;
     scroll-snap-align: start;
 }
@@ -256,18 +276,26 @@
 
 .pd-thumb-btn:hover {
     border-color: var(--color-primary-light);
+    transform: translateY(-2px);
 }
 
 .pd-thumb-btn.active {
     border-color: var(--color-primary);
     border-width: 2px;
     background: #f0fdf4;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 83, 51, 0.15);
 }
 
 .pd-thumb-btn img {
     width: 100%;
     height: 100%;
     object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.pd-thumb-btn.active img {
+    transform: scale(1.05);
 }
 
 /* =========================================
@@ -292,7 +320,6 @@
     line-height: 1.2;
 }
 
-/* Price */
 .pd-price-row {
     display: flex;
     align-items: baseline;
@@ -309,7 +336,7 @@
 }
 
 /* =========================================
-   ACTIONS (RESTORED DETAILS)
+   ACTIONS
    ========================================= */
 
 .pd-actions-card {
@@ -349,7 +376,6 @@
     font-weight: 700;
 }
 
-/* Trust badges */
 .pd-trust-badges {
     display: flex;
     justify-content: space-between;
@@ -359,7 +385,7 @@
 }
 
 /* =========================================
-   PRODUCT INFO TABS — HIGH ATTENTION VERSION
+   PRODUCT INFO TABS
    ========================================= */
 
 .pd-info-tabs {
@@ -370,8 +396,6 @@
     padding: 2rem 2.25rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
-
-/* ===== TAB HEADERS ===== */
 
 .pd-tab-headers {
     display: grid;
@@ -406,13 +430,9 @@
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== CONTENT AREA ===== */
-
 .pd-tab-content {
     margin-top: 0.5rem;
 }
-
-/* ===== BENEFITS — CHECKLIST CARDS ===== */
 
 .benefits-list {
     display: grid;
@@ -448,8 +468,6 @@
     flex-shrink: 0;
 }
 
-/* ===== INGREDIENTS — BRAND NOTE STYLE ===== */
-
 .ingredients-text {
     position: relative;
     font-size: 0.95rem;
@@ -473,15 +491,11 @@
     margin-bottom: 0.5rem;
 }
 
-/* ===== MOBILE ADJUSTMENTS ===== */
-
 @media (max-width: 768px) {
     .pd-info-tabs {
         padding: 1rem;
-        /* Reduce overall padding on mobile */
     }
 
-    /* Use grid for tabs on mobile - fits 4 items perfectly in 2x2 */
     .pd-tab-headers {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -527,8 +541,6 @@
         margin-bottom: 1.5rem;
     }
 }
-
-
 
 /* =========================================
    RELATED PRODUCTS
@@ -596,7 +608,7 @@
         margin-top: 0;
         flex: 1;
         padding: 14px;
-        font-size: 0.95rem;
+        font-size: 0.8rem;
         height: 48px;
         border-radius: 12px;
         box-shadow: none;
@@ -605,10 +617,15 @@
     .product-details-page {
         padding-bottom: 140px;
     }
+
+    /* Mobile: always show arrows */
+    .slider-arrow {
+        opacity: 0.7;
+    }
 }
 
 /* =========================================
-   FEATURES LIST (RESTORED)
+   FEATURES LIST
    ========================================= */
 
 .pd-features-list {
@@ -633,10 +650,9 @@
 }
 
 /* =========================================
-   MISSING SUPPORTING STYLES (FIXED)
+   SUPPORTING STYLES
    ========================================= */
 
-/* Product not found state */
 .pd-not-found {
     min-height: 60vh;
     display: flex;
@@ -647,7 +663,6 @@
     text-align: center;
 }
 
-/* Price helpers */
 .currency {
     font-size: 1.4rem;
     color: var(--color-text-secondary);
@@ -658,18 +673,15 @@
     color: var(--color-text-secondary);
 }
 
-/* Quantity label */
 .qty-label {
     font-weight: 600;
     color: var(--color-primary-dark);
 }
 
-/* Full width buttons */
 .full-width {
     width: 100%;
 }
 
-/* Trust badges */
 .trust-item {
     display: flex;
     flex-direction: column;
@@ -684,7 +696,6 @@
     color: var(--color-primary);
 }
 
-/* Ingredients text */
 .ingredients-text {
     background: #fff;
     padding: 1.25rem;
@@ -694,7 +705,6 @@
     color: var(--color-text-secondary);
 }
 
-/* Benefits list */
 .benefits-list {
     list-style: none;
     padding: 0;
@@ -718,7 +728,6 @@
     margin-top: 2px;
 }
 
-/* Section title */
 .section-title {
     font-size: 2rem;
     font-weight: 700;
@@ -726,7 +735,6 @@
     margin-bottom: 2rem;
 }
 
-/* Product grid (related products) */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -816,7 +824,6 @@
     }
 }
 
-/* Video Modal */
 .pd-video-modal-overlay {
     position: fixed;
     inset: 0;
@@ -852,7 +859,6 @@
     margin-top: 15px;
 }
 
-/* Related Products Grid */
 @media (max-width: 768px) {
     .product-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -866,7 +872,6 @@
     }
 }
 
-/* Loading State */
 .pd-loading {
     display: flex;
     flex-direction: column;
@@ -886,13 +891,8 @@
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .pd-loading p {
@@ -900,7 +900,6 @@
     font-size: 1rem;
 }
 
-/* Not Found State */
 .pd-not-found {
     display: flex;
     flex-direction: column;

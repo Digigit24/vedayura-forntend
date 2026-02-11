@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, Heart, Settings, Bell, LogOut, RotateCcw, ChevronRight, MapPin, Phone, Mail, Calendar, Truck, FileText, AlertCircle } from 'lucide-react';
+import { Package, Heart, Settings, Bell, LogOut, RotateCcw, ChevronRight, MapPin, Phone, Mail, Calendar, Truck, FileText, AlertCircle, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 import api from '../api';
 import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
@@ -13,6 +14,19 @@ const Profile = () => {
     const [refunds, setRefunds] = useState([]);
     const [activeTab, setActiveTab] = useState('orders');
     const navigate = useNavigate();
+
+    // Refund modal state (replaces window.prompt)
+    const [refundModal, setRefundModal] = useState({ open: false, orderId: null });
+    const [refundReason, setRefundReason] = useState('');
+
+    const toastStyle = {
+        borderRadius: '14px',
+        background: '#1e293b',
+        color: '#f8fafc',
+        padding: '12px 20px',
+        fontSize: '0.9rem',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+    };
 
     const loadRefunds = async () => {
         try {
@@ -57,44 +71,90 @@ const Profile = () => {
         try {
             const data = await trackOrder(id);
             if (data.success && data.tracking) {
-                alert(`Status: ${data.tracking.currentStatus}\nTracking URL: ${data.tracking.trackingUrl}`);
+                toast.success(`Status: ${data.tracking.currentStatus}`, {
+                    style: toastStyle,
+                    icon: '📦',
+                    position: 'top-center',
+                    duration: 4000,
+                });
             } else {
-                alert("Tracking info not available yet.");
+                toast("Tracking info not available yet.", {
+                    style: toastStyle,
+                    icon: '⏳',
+                    position: 'top-center',
+                });
             }
         } catch (e) {
             console.warn("Tracking API failed", e);
-            alert(`Order #${id}\nCurrent Status: In Transit`);
+            toast(`Order #${id} — Status: In Transit`, {
+                style: toastStyle,
+                icon: '🚚',
+                position: 'top-center',
+            });
         }
     };
 
     const handleInvoice = (id) => {
-        alert(`Downloading Invoice for Order #${id}...`);
+        toast.success(`Downloading invoice for Order #${id}...`, {
+            style: toastStyle,
+            icon: '📄',
+            position: 'top-center',
+            duration: 3000,
+        });
     };
 
-    const handleRequestRefund = async (orderId) => {
-        const reason = window.prompt("Please enter the reason for refund:");
-        if (reason) {
-            try {
-                const result = await requestRefund({ orderId, reason, userNote: reason });
-                if (result.success) {
-                    alert("Refund requested successfully!");
-                    loadRefunds();
-                }
-            } catch (error) {
-                console.error("Refund request failed", error);
-                if (String(orderId).startsWith('AYU')) {
-                    const mockRefund = {
-                        id: `refund-${Date.now()}`,
-                        orderId: orderId,
-                        amount: 4500,
-                        reason: reason,
-                        status: 'REQUESTED'
-                    };
-                    setRefunds(prev => [mockRefund, ...prev]);
-                    alert("Refund requested successfully!");
-                } else {
-                    alert("Failed to request refund.");
-                }
+    // Open the refund modal instead of window.prompt
+    const handleRequestRefund = (orderId) => {
+        setRefundReason('');
+        setRefundModal({ open: true, orderId });
+    };
+
+    // Submit refund from modal
+    const handleSubmitRefund = async () => {
+        if (!refundReason.trim()) {
+            toast.error("Please enter a reason for the refund.", {
+                style: toastStyle,
+                icon: '⚠️',
+                position: 'top-center',
+            });
+            return;
+        }
+
+        const { orderId } = refundModal;
+        setRefundModal({ open: false, orderId: null });
+
+        try {
+            const result = await requestRefund({ orderId, reason: refundReason, userNote: refundReason });
+            if (result.success) {
+                toast.success("Refund requested successfully!", {
+                    style: toastStyle,
+                    icon: '✅',
+                    position: 'top-center',
+                });
+                loadRefunds();
+            }
+        } catch (error) {
+            console.error("Refund request failed", error);
+            if (String(orderId).startsWith('AYU')) {
+                const mockRefund = {
+                    id: `refund-${Date.now()}`,
+                    orderId: orderId,
+                    amount: 4500,
+                    reason: refundReason,
+                    status: 'REQUESTED'
+                };
+                setRefunds(prev => [mockRefund, ...prev]);
+                toast.success("Refund requested successfully!", {
+                    style: toastStyle,
+                    icon: '✅',
+                    position: 'top-center',
+                });
+            } else {
+                toast.error("Failed to request refund. Please try again.", {
+                    style: toastStyle,
+                    icon: '❌',
+                    position: 'top-center',
+                });
             }
         }
     };
@@ -119,7 +179,6 @@ const Profile = () => {
         });
     };
 
-    // Mock orders if none exist
     const displayOrders = orders.length > 0 ? orders : [
         { id: 'AYU1024', createdAt: '2026-01-12', totalAmount: 4500, status: 'DELIVERED' },
         { id: 'AYU1020', createdAt: '2026-01-05', totalAmount: 1200, status: 'PROCESSING' }
@@ -358,6 +417,49 @@ const Profile = () => {
                     )}
                 </div>
             </div>
+
+            {/* ── Refund Reason Modal (replaces window.prompt) ── */}
+            {refundModal.open && (
+                <div className="refund-modal-overlay" onClick={() => setRefundModal({ open: false, orderId: null })}>
+                    <div className="refund-modal" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            className="refund-modal-close"
+                            onClick={() => setRefundModal({ open: false, orderId: null })}
+                        >
+                            <X size={20} />
+                        </button>
+                        <div className="refund-modal-icon">
+                            <RotateCcw size={28} />
+                        </div>
+                        <h3>Request a Refund</h3>
+                        <p className="refund-modal-subtitle">
+                            Order <strong>#{String(refundModal.orderId).substring(0, 12)}</strong>
+                        </p>
+                        <textarea
+                            className="refund-modal-input"
+                            placeholder="Please tell us why you'd like a refund..."
+                            value={refundReason}
+                            onChange={(e) => setRefundReason(e.target.value)}
+                            rows={4}
+                            autoFocus
+                        />
+                        <div className="refund-modal-actions">
+                            <button
+                                className="btn-modal-cancel"
+                                onClick={() => setRefundModal({ open: false, orderId: null })}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn-modal-submit"
+                                onClick={handleSubmitRefund}
+                            >
+                                Submit Request
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

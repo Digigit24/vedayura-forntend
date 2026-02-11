@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
 import { Leaf, ShieldCheck } from "lucide-react";
@@ -182,9 +183,21 @@ const NewsletterHomeWrapper = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      alert("Please enter a valid email address");
-      return;
-    }
+ toast.error("Please enter a valid email address", {
+  style: {
+    borderRadius: '14px',
+    background: '#1e293b',
+    color: '#f8fafc',
+    padding: '12px 20px',
+    fontSize: '0.9rem',
+    boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+  },
+  icon: '✉️',
+  position: 'top-center',
+  duration: 3000,
+});
+  return;
+}
     // Simulate API call
     setStatus('sending');
     setTimeout(() => {

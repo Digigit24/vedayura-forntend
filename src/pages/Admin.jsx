@@ -4,14 +4,46 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   LogOut, Grid, Package, ShoppingCart,
   DollarSign, Settings, Search, Bell, Eye,
-  Plus, Trash2, Edit2, X, RotateCcw, Users
+  Plus, Trash2, Edit2, X, RotateCcw, Users, AlertTriangle
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import './Admin.css';
 import { getAllRefunds } from '../api/refundService';
 import { getAllCategories } from '../api/categoryService';
 import api from '../api';
 import StockManagement from '../components/StockManagement';
 import '../components/StockManagement.css'
+
+const toastStyle = {
+  borderRadius: '14px',
+  background: '#1e293b',
+  color: '#f8fafc',
+  padding: '12px 20px',
+  fontSize: '0.9rem',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
+};
+
+// ====== CONFIRM MODAL (replaces window.confirm) ======
+const ConfirmModal = ({ open, title, message, onConfirm, onCancel, confirmLabel = 'Confirm', danger = false }) => {
+  if (!open) return null;
+  return (
+    <div className="admxx-confirm-overlay" onClick={onCancel}>
+      <div className="admxx-confirm-modal" onClick={(e) => e.stopPropagation()}>
+        <div className={`admxx-confirm-icon ${danger ? 'danger' : ''}`}>
+          <AlertTriangle size={28} />
+        </div>
+        <h3>{title}</h3>
+        <p>{message}</p>
+        <div className="admxx-confirm-actions">
+          <button className="admxx-confirm-cancel" onClick={onCancel}>Cancel</button>
+          <button className={`admxx-confirm-btn ${danger ? 'danger' : ''}`} onClick={onConfirm}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // NavItem Component
 const NavItem = ({ tab, activeTab, setActiveTab, icon: Icon, label }) => (
@@ -35,6 +67,19 @@ const Admin = () => {
   const [viewingProduct, setViewingProduct] = useState(null);
   const [categories, setCategories] = useState([]);
   const [saving, setSaving] = useState(false);
+
+  // Confirm modal state
+  const [confirmModal, setConfirmModal] = useState({
+    open: false, title: '', message: '', onConfirm: null, confirmLabel: 'Confirm', danger: false
+  });
+
+  const showConfirm = ({ title, message, onConfirm, confirmLabel = 'Confirm', danger = false }) => {
+    setConfirmModal({ open: true, title, message, onConfirm, confirmLabel, danger });
+  };
+
+  const closeConfirm = () => {
+    setConfirmModal({ open: false, title: '', message: '', onConfirm: null, confirmLabel: 'Confirm', danger: false });
+  };
 
   useEffect(() => {
     (async () => {
@@ -84,15 +129,31 @@ const Admin = () => {
     setIsProductModalOpen(true);
   };
 
-  const handleDeleteProduct = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await deleteProduct(id);
-      } catch (error) {
-        console.error('Failed to delete product:', error);
-        alert('Failed to delete product. Please try again.');
-      }
-    }
+  const handleDeleteProduct = (id) => {
+    showConfirm({
+      title: 'Delete Product',
+      message: 'Are you sure you want to delete this product? This action cannot be undone.',
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: async () => {
+        closeConfirm();
+        try {
+          await deleteProduct(id);
+          toast.success('Product deleted successfully', {
+            style: toastStyle,
+            icon: '🗑️',
+            position: 'top-center',
+          });
+        } catch (error) {
+          console.error('Failed to delete product:', error);
+          toast.error('Failed to delete product. Please try again.', {
+            style: toastStyle,
+            icon: '❌',
+            position: 'top-center',
+          });
+        }
+      },
+    });
   };
 
   const handleViewProduct = (product) => {
@@ -127,18 +188,30 @@ const Admin = () => {
 
     try {
       if (editingProduct) {
-        const result = await updateProduct(editingProduct.id, productData);
-        console.log('✅ Product updated in database:', result);
+        await updateProduct(editingProduct.id, productData);
+        toast.success('Product updated successfully!', {
+          style: toastStyle,
+          icon: '✅',
+          position: 'top-center',
+        });
       } else {
-        const result = await addProduct(productData);
-        console.log('✅ Product created in database:', result);
+        await addProduct(productData);
+        toast.success('Product created successfully!', {
+          style: toastStyle,
+          icon: '✅',
+          position: 'top-center',
+        });
       }
 
       setIsProductModalOpen(false);
       setEditingProduct(null);
     } catch (error) {
       console.error('Failed to save product:', error);
-      alert('Failed to save product. Please try again.');
+      toast.error('Failed to save product. Please try again.', {
+        style: toastStyle,
+        icon: '❌',
+        position: 'top-center',
+      });
     } finally {
       setSaving(false);
     }
@@ -161,10 +234,10 @@ const Admin = () => {
         );
       case 'orders':
         return <Orders />;
-        case 'stock':
-  return <StockManagement products={products} />;
+      case 'stock':
+        return <StockManagement products={products} />;
       case 'users':
-        return <UserManagement />;
+        return <UserManagement showConfirm={showConfirm} closeConfirm={closeConfirm} />;
       case 'refunds':
         return <Refunds />;
       case 'finance':
@@ -316,6 +389,17 @@ const Admin = () => {
         </div>
       )}
 
+      {/* Confirm Modal (replaces all window.confirm calls) */}
+      <ConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={closeConfirm}
+        confirmLabel={confirmModal.confirmLabel}
+        danger={confirmModal.danger}
+      />
+
       {/* Mobile Bottom Navigation */}
       <div className="admxx-mobile-nav">
         <button
@@ -341,12 +425,12 @@ const Admin = () => {
         </button>
 
         <button
-  className={activeTab === 'stock' ? 'admxx-active' : ''}
-  onClick={() => setActiveTab('stock')}
->
-  <Package />
-  <span>Stock</span>
-</button>
+          className={activeTab === 'stock' ? 'admxx-active' : ''}
+          onClick={() => setActiveTab('stock')}
+        >
+          <Package />
+          <span>Stock</span>
+        </button>
 
         <button
           className={activeTab === 'users' ? 'admxx-active' : ''}
@@ -439,7 +523,7 @@ const Orders = () => (
 );
 
 // ====== USER MANAGEMENT COMPONENT ======
-const UserManagement = () => {
+const UserManagement = ({ showConfirm, closeConfirm }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -500,32 +584,50 @@ const UserManagement = () => {
     }
   };
 
-  const handleDeleteUser = async (userId, userName) => {
-    if (!window.confirm(`Are you sure you want to delete user "${userName}"? This cannot be undone.`)) {
-      return;
-    }
+  const handleDeleteUser = (userId, userName) => {
+    showConfirm({
+      title: 'Delete User',
+      message: `Are you sure you want to delete "${userName}"? This action cannot be undone.`,
+      confirmLabel: 'Delete User',
+      danger: true,
+      onConfirm: async () => {
+        closeConfirm();
+        try {
+          const token = localStorage.getItem('ayurveda_token');
+          const res = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
-    try {
-      const token = localStorage.getItem('ayurveda_token');
-      const res = await fetch(`/api/users/${userId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          const data = await res.json();
 
-      const data = await res.json();
-
-      if (data.success) {
-        setUsers((prev) => prev.filter((u) => u.id !== userId));
-      } else {
-        alert(data.message || 'Failed to delete user');
-      }
-    } catch (err) {
-      console.error('Failed to delete user:', err);
-      alert('Failed to delete user');
-    }
+          if (data.success) {
+            setUsers((prev) => prev.filter((u) => u.id !== userId));
+            toast.success(`User "${userName}" deleted successfully`, {
+              style: toastStyle,
+              icon: '🗑️',
+              position: 'top-center',
+            });
+          } else {
+            toast.error(data.message || 'Failed to delete user', {
+              style: toastStyle,
+              icon: '❌',
+              position: 'top-center',
+            });
+          }
+        } catch (err) {
+          console.error('Failed to delete user:', err);
+          toast.error('Failed to delete user. Please try again.', {
+            style: toastStyle,
+            icon: '❌',
+            position: 'top-center',
+          });
+        }
+      },
+    });
   };
 
   const filteredUsers = users.filter((u) => {
@@ -696,7 +798,6 @@ const UserManagement = () => {
               <div><strong>Reviews</strong>{viewingUser._count?.reviews || 0}</div>
             </div>
 
-            {/* Cart Items */}
             {loadingDetails ? (
               <p className="admxx-no-data">Loading details...</p>
             ) : (
@@ -736,7 +837,6 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {/* Wishlist Items */}
                 {viewingUserDetails?.wishlistItems?.length > 0 && (
                   <div className="admxx-user-orders-section">
                     <h4>❤️ Wishlist ({viewingUserDetails.wishlistItems.length})</h4>
@@ -770,7 +870,6 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {/* Orders */}
                 {viewingUserDetails?.orders?.length > 0 ? (
                   <div className="admxx-user-orders-section">
                     <h4>📦 Recent Orders ({viewingUserDetails.orders.length})</h4>
@@ -805,7 +904,6 @@ const UserManagement = () => {
                   <p className="admxx-no-data">No orders yet.</p>
                 )}
 
-                {/* Reviews */}
                 {viewingUserDetails?.reviews?.length > 0 && (
                   <div className="admxx-user-orders-section">
                     <h4>⭐ Reviews ({viewingUserDetails.reviews.length})</h4>
@@ -821,7 +919,6 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {/* Addresses */}
                 {viewingUserDetails?.addresses?.length > 0 && (
                   <div className="admxx-user-orders-section">
                     <h4>📍 Addresses</h4>
@@ -834,7 +931,6 @@ const UserManagement = () => {
                   </div>
                 )}
 
-                {/* Empty state */}
                 {!viewingUserDetails?.cartItems?.length &&
                  !viewingUserDetails?.wishlistItems?.length &&
                  !viewingUserDetails?.orders?.length &&
