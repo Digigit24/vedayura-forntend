@@ -328,14 +328,17 @@ const Shop = () => {
                     </div>
                 </div>
 
-                <div className="drawer-footer">
-                    <button className="btn btn-outline btn-drawer-reset" onClick={resetFilters}>
-                        Reset
-                    </button>
-                    <button className="btn btn-primary btn-drawer-apply" onClick={() => setIsDrawerOpen(false)}>
-                        Show {filteredProducts.length} Results
-                    </button>
-                </div>
+               <div className="drawer-footer">
+  <button className="btn btn-outline btn-drawer-reset" onClick={resetFilters}>
+    Reset
+  </button>
+  <button
+    className="btn btn-outline btn-drawer-reset"
+    onClick={() => setIsDrawerOpen(false)}
+  >
+    Show {filteredProducts.length} Results
+  </button>
+</div>
             </div>
         </div>
     );

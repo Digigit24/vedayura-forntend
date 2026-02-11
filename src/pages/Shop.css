@@ -311,7 +311,7 @@
 
 /* Active page */
 .page-number-btn.is-active {
-  background: linear-gradient(135deg, #2e7d32, #1e391f);
+  background: linear-gradient(135deg, #2e7d32, #214822);
   color: #fff;
   border-color: transparent;
   box-shadow: 0 6px 14px rgba(46, 125, 50, 0.3);
@@ -768,10 +768,12 @@
 }
 
 .btn-filter-trigger {
-    transition:
-        background-color var(--motion-fast) linear,
-        transform var(--motion-fast) var(--ease-soft),
-        box-shadow var(--motion-fast) var(--ease-soft);
+    background: #175333;
+    color: white;
+    border: 1px solid #175333;
+    transition: all var(--motion-fast) var(--ease-soft);
+    padding: 8px 15px;
+    border-radius: 999px;
 }
 
 .btn-filter-trigger:active {
