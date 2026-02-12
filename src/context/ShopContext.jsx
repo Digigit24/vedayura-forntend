@@ -43,16 +43,15 @@ export const ShopProvider = ({ children }) => {
 
         if (userId) {
             try {
-                // Try fetching addresses from server
                 const res = await api.addresses.getAll();
                 if (res && (Array.isArray(res) || Array.isArray(res.addresses))) {
                     const serverAddresses = Array.isArray(res) ? res : res.addresses;
                     const mapped = serverAddresses.map(addr => ({
                         id: addr.id,
-                        firstName: addr.firstName || user?.name?.split(' ')[0] || 'User',
-                        lastName: addr.lastName || user?.name?.split(' ')[1] || '',
-                        email: addr.email || user?.email || '',
-                        phone: addr.phone || user?.phone || '',
+                        firstName: addr.firstName || '',
+                        lastName: addr.lastName || '',
+                        email: addr.email || '',
+                        phone: addr.phone || '',
                         street: addr.street || '',
                         city: addr.city || '',
                         state: addr.state || '',
@@ -74,9 +73,8 @@ export const ShopProvider = ({ children }) => {
         } else {
             setAddresses([]);
         }
-    }, [getCartKey, getWishlistKey, user]);
+    }, [getCartKey, getWishlistKey]);
 
-    // Helper to extract cart items array from various API response shapes
     const extractCartItems = useCallback((res) => {
         if (!res) return null;
         if (Array.isArray(res)) return res;
@@ -86,7 +84,6 @@ export const ShopProvider = ({ children }) => {
         return null;
     }, []);
 
-    // Helper to extract wishlist items array from various API response shapes
     const extractWishlistItems = useCallback((res) => {
         if (!res) return null;
         if (Array.isArray(res)) return res;
@@ -96,6 +93,7 @@ export const ShopProvider = ({ children }) => {
         return null;
     }, []);
 
+    // Sync cart to localStorage
     useEffect(() => {
         if (user?.id) {
             localStorage.setItem(getCartKey(user.id), JSON.stringify(cart));
@@ -104,6 +102,7 @@ export const ShopProvider = ({ children }) => {
         }
     }, [cart, user?.id, getCartKey]);
 
+    // Sync wishlist to localStorage
     useEffect(() => {
         if (user?.id) {
             localStorage.setItem(getWishlistKey(user.id), JSON.stringify(wishlist));
@@ -112,12 +111,14 @@ export const ShopProvider = ({ children }) => {
         }
     }, [wishlist, user?.id, getWishlistKey]);
 
+    // Sync addresses to localStorage
     useEffect(() => {
         if (user?.id) {
             localStorage.setItem(`ayurveda_addresses_${user.id}`, JSON.stringify(addresses));
         }
     }, [addresses, user?.id]);
 
+    // ===== AUTH — runs once on mount =====
     useEffect(() => {
         let savedUser = null;
         const savedToken = localStorage.getItem('ayurveda_token');
@@ -156,7 +157,11 @@ export const ShopProvider = ({ children }) => {
             loadUserData(null);
             setIsAuthLoading(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
+    // ===== PRODUCTS — runs once on mount, separate from auth =====
+    useEffect(() => {
         (async () => {
             try {
                 const res = await api.products.getAll({ page: 1, limit: 100 });
@@ -192,8 +197,9 @@ export const ShopProvider = ({ children }) => {
                 console.warn('Failed to load products from API', err);
             }
         })();
-    }, [loadUserData]);
+    }, []);
 
+    // ===== SYNC cart & wishlist with server when user logs in =====
     useEffect(() => {
         if (!user?.id) return;
         const token = localStorage.getItem('ayurveda_token');
@@ -424,7 +430,6 @@ export const ShopProvider = ({ children }) => {
             console.warn('Update Profile API failed or not implemented, falling back to local only.');
         }
 
-        // Fallback for local update
         const updatedUser = { ...user, ...profileData };
         setUser(updatedUser);
         localStorage.setItem('ayurveda_user', JSON.stringify(updatedUser));
@@ -443,7 +448,7 @@ export const ShopProvider = ({ children }) => {
             };
             const res = await api.addresses.add(payload);
             if (res && (res.id || res.address)) {
-                loadUserData(user?.id); // Refresh from server
+                loadUserData(user?.id);
                 return;
             }
         } catch (err) {
@@ -465,7 +470,7 @@ export const ShopProvider = ({ children }) => {
                 isDefault: updatedData.isDefault
             };
             await api.addresses.update(id, payload);
-            loadUserData(user?.id); // Refresh from server
+            loadUserData(user?.id);
             return;
         } catch (err) {
             console.warn('Update Address API failed, updating locally.');
@@ -476,7 +481,7 @@ export const ShopProvider = ({ children }) => {
     const deleteAddress = useCallback(async (id) => {
         try {
             await api.addresses.remove(id);
-            loadUserData(user?.id); // Refresh from server
+            loadUserData(user?.id);
             return;
         } catch (err) {
             console.warn('Delete Address API failed, removing locally.');
