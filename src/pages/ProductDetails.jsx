@@ -31,7 +31,7 @@ const SLIDE_DURATION = 600;
 
 const ProductDetails = () => {
     const { id } = useParams();
-    const { products, addToCart, addToWishlist, removeFromWishlist, wishlist = [] } = useShop();
+    const { products, addToCart, toggleWishlist, wishlist = [] } = useShop();
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -54,7 +54,11 @@ const ProductDetails = () => {
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
 
-    const isInWishlist = wishlist.some(item => String(item.id) === String(product?.id));
+    const isInWishlist = wishlist.some(item =>
+        String(item.id) === String(product?.id) ||
+        String(item.productId) === String(product?.id) ||
+        String(item.product?.id) === String(product?.id)
+    );
 
     const normalizeProduct = (p) => {
         if (!p) return null;
@@ -299,13 +303,12 @@ const ProductDetails = () => {
     };
 
     const handleWishlistToggle = () => {
+        toggleWishlist(product);
         if (isInWishlist) {
-            removeFromWishlist(product.id);
             toast.success('Removed from wishlist', {
                 style: { borderRadius: '12px', background: '#22371f', color: '#fff' },
             });
         } else {
-            addToWishlist(product);
             toast.success('Added to wishlist', {
                 style: { borderRadius: '12px', background: '#22371f', color: '#fff' },
             });

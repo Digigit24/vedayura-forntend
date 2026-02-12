@@ -2,21 +2,32 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Heart, Star, Check } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import toast from 'react-hot-toast';
 import './ProductCard.css';
 
 const ProductCard = ({ product, activeCategory }) => {
-  const { addToCart, addToWishlist, wishlist = [] } = useShop();
+  const { addToCart, toggleWishlist, wishlist = [] } = useShop();
   const [isHovered, setIsHovered] = React.useState(false);
 
-
-
-  const isWishlisted = wishlist.some(item => item.id === product.id);
+  const isWishlisted = wishlist.some(item =>
+    (item.id === product.id) ||
+    (item.productId === product.id) ||
+    (item.product?.id === product.id)
+  );
   const [isAdded, setIsAdded] = React.useState(false);
 
   const handleAddToCart = () => {
     addToCart(product);
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
+  };
+
+  const handleWishlistToggle = () => {
+    toggleWishlist(product);
+    const toastMessage = isWishlisted ? 'Removed from wishlist' : 'Added to wishlist';
+    toast.success(toastMessage, {
+      style: { borderRadius: '12px', background: '#22371f', color: '#fff' },
+    });
   };
 
   return (
@@ -76,7 +87,7 @@ const ProductCard = ({ product, activeCategory }) => {
 
         <button
           className={`wishlist-btn ${isWishlisted ? 'active' : ''}`}
-          onClick={() => addToWishlist(product)}
+          onClick={handleWishlistToggle}
         >
           <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
         </button>

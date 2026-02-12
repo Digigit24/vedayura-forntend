@@ -258,3 +258,71 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Saved Addresses Selector */
+.addresses-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.saved-addr-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.saved-addr-card:hover {
+    border-color: var(--color-primary-light);
+    background: #fdfdfd;
+}
+
+.saved-addr-card.active {
+    border-color: var(--color-primary);
+    background: #f0f7f4;
+    box-shadow: 0 4px 12px rgba(23, 83, 51, 0.05);
+}
+
+.addr-check {
+    color: var(--color-primary);
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    padding-top: 2px;
+}
+
+.addr-brief strong {
+    display: block;
+    color: var(--color-primary-dark);
+    margin-bottom: 4px;
+}
+
+.addr-brief p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+}
+
+.addr-brief span {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.btn-add-new-addr {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 0;
+    font-size: 0.95rem;
+}
+
+.btn-add-new-addr:hover {
+    text-decoration: underline;
+}

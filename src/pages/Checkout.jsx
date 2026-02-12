@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../api';
 import { useNavigate } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
@@ -7,25 +7,86 @@ import { calculateCartShipping, createOrderWithShipping, verifyPaymentAndCreateS
 import './Checkout.css';
 
 const Checkout = () => {
-    const { cart, clearCart } = useShop();
+    const { cart, clearCart, addresses, getDefaultAddress, addAddress, user } = useShop();
     const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Address, 2: Payment, 3: Success
     const [paymentMethod, setPaymentMethod] = useState('razorpay');
     const [shippingCost, setShippingCost] = useState(0); // Default to 0 until calculated
     const [loading, setLoading] = useState(false);
     const [pincode, setPincode] = useState('');
+    const [showAddressForm, setShowAddressForm] = useState(addresses.length === 0);
 
     const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
     const shipping = subtotal > 999 ? 0 : 99;
     const total = subtotal + shipping;
 
-    const [addressForm, setAddressForm] = useState({ firstName: '', lastName: '', email: '', street: '', city: '', zip: '', phone: '' });
-    const [addressId, setAddressId] = useState(null);
+    const [addressForm, setAddressForm] = useState({
+        firstName: addresses[0]?.firstName || '',
+        lastName: addresses[0]?.lastName || '',
+        email: addresses[0]?.email || '',
+        street: addresses[0]?.street || '',
+        city: addresses[0]?.city || '',
+        zip: addresses[0]?.pinCode || '',
+        phone: addresses[0]?.phone || ''
+    });
+    const [addressId, setAddressId] = useState(addresses[0]?.id || null);
     const [isProcessing, setIsProcessing] = useState(false);
+
+    useEffect(() => {
+        const def = getDefaultAddress();
+        if (def) {
+            setAddressId(def.id);
+            setAddressForm({
+                firstName: def.firstName,
+                lastName: def.lastName,
+                email: def.email,
+                street: def.street,
+                city: def.city,
+                zip: def.pinCode,
+                phone: def.phone
+            });
+            setShowAddressForm(false);
+        }
+    }, [getDefaultAddress]);
+
+    const handleSelectAddress = (addr) => {
+        setAddressId(addr.id);
+        setAddressForm({
+            firstName: addr.firstName,
+            lastName: addr.lastName,
+            email: addr.email,
+            street: addr.street,
+            city: addr.city,
+            zip: addr.pinCode,
+            phone: addr.phone
+        });
+        setShowAddressForm(false);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // create address on server if possible
+
+        // 1. Save to global context/local storage for persistence in Profile
+        if (user) {
+            const newAddr = {
+                firstName: addressForm.firstName,
+                lastName: addressForm.lastName,
+                email: addressForm.email,
+                phone: addressForm.phone,
+                street: addressForm.street,
+                city: addressForm.city,
+                state: '', // Not in current form but expected by Profile
+                pinCode: addressForm.zip,
+                type: 'Home'
+            };
+
+            // Avoid adding if it's already a selected saved address
+            if (!addressId) {
+                addAddress(newAddr);
+            }
+        }
+
+        // 2. Try to sync with backend server
         try {
             const payload = {
                 street: addressForm.street,
@@ -113,45 +174,93 @@ const Checkout = () => {
                                 <MapPin size={24} className="text-primary" />
                                 <h2>Shipping Details</h2>
                             </div>
-                            <form onSubmit={handleSubmit}>
-                                <div className="form-grid">
-                                    <div>
-                                        <label>First Name</label>
-                                        <input type="text" placeholder='e.g. Rahul' required className="form-input" value={addressForm.firstName} onChange={(e) => setAddressForm(prev => ({ ...prev, firstName: e.target.value }))} />
+
+                            {addresses.length > 0 && !showAddressForm && (
+                                <div className="saved-addresses-selector mb-xl">
+                                    <h4 className="mb-md">Deliver to:</h4>
+                                    <div className="addresses-stack">
+                                        {addresses.map(addr => (
+                                            <div
+                                                key={addr.id}
+                                                className={`saved-addr-card ${addressId === addr.id ? 'active' : ''}`}
+                                                onClick={() => handleSelectAddress(addr)}
+                                            >
+                                                <div className="addr-check">
+                                                    {addressId === addr.id && <CheckCircle size={16} />}
+                                                </div>
+                                                <div className="addr-brief">
+                                                    <strong>{addr.firstName} {addr.lastName}</strong>
+                                                    <p>{addr.street}, {addr.city} {addr.pinCode}</p>
+                                                    <span>{addr.phone}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <button
+                                        className="btn-add-new-addr mt-md"
+                                        onClick={() => setShowAddressForm(true)}
+                                    >
+                                        + Add New Address
+                                    </button>
+                                </div>
+                            )}
+
+                            {(showAddressForm || addresses.length === 0) && (
+                                <form onSubmit={handleSubmit}>
+                                    <div className="form-grid">
+                                        <div>
+                                            <label>First Name</label>
+                                            <input type="text" placeholder='e.g. Rahul' required className="form-input" value={addressForm.firstName} onChange={(e) => setAddressForm(prev => ({ ...prev, firstName: e.target.value }))} />
+                                        </div>
+                                        <div>
+                                            <label>Last Name</label>
+                                            <input type="text" placeholder='e.g. Kumar' required className="form-input" value={addressForm.lastName} onChange={(e) => setAddressForm(prev => ({ ...prev, lastName: e.target.value }))} />
+                                        </div>
                                     </div>
                                     <div>
-                                        <label>Last Name</label>
-                                        <input type="text" placeholder='e.g. Kumar' required className="form-input" value={addressForm.lastName} onChange={(e) => setAddressForm(prev => ({ ...prev, lastName: e.target.value }))} />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label>Email Address</label>
-                                    <input type="email" placeholder='e.g. rahul@gmail.com' required className="form-input" value={addressForm.email} onChange={(e) => setAddressForm(prev => ({ ...prev, email: e.target.value }))} />
-                                </div>
-                                <div>
-                                    <label>Street Address</label>
-                                    <input type="text" placeholder='e.g. 14,Salt Lake City Sector 5,' required className="form-input" value={addressForm.street} onChange={(e) => setAddressForm(prev => ({ ...prev, street: e.target.value }))} />
-                                </div>
-                                <div className="form-grid">
-                                    <div>
-                                        <label>City</label>
-                                        <input type="text" placeholder='e.g. Kolkata' required className="form-input" value={addressForm.city} onChange={(e) => setAddressForm(prev => ({ ...prev, city: e.target.value }))} />
+                                        <label>Email Address</label>
+                                        <input type="email" placeholder='e.g. rahul@gmail.com' required className="form-input" value={addressForm.email} onChange={(e) => setAddressForm(prev => ({ ...prev, email: e.target.value }))} />
                                     </div>
                                     <div>
-                                        <label>Zip Code</label>
-                                        <input type="text" placeholder='e.g. 700091' required className="form-input" value={addressForm.zip} onChange={(e) => setAddressForm(prev => ({ ...prev, zip: e.target.value }))} />
+                                        <label>Street Address</label>
+                                        <input type="text" placeholder='e.g. 14,Salt Lake City Sector 5,' required className="form-input" value={addressForm.street} onChange={(e) => setAddressForm(prev => ({ ...prev, street: e.target.value }))} />
                                     </div>
-                                </div>
-                                <div>
-                                    <label>Phone Number</label>
-                                    <input type="tel" placeholder='e.g. 00000 00000' required className="form-input" value={addressForm.phone} onChange={(e) => setAddressForm(prev => ({ ...prev, phone: e.target.value }))} />
-                                </div>
-                                <button type="submit" className="checkout-btn flex items-center justify-center gap-sm">
-                                    Continue to Payment <ChevronRight size={20} />
+                                    <div className="form-grid">
+                                        <div>
+                                            <label>City</label>
+                                            <input type="text" placeholder='e.g. Kolkata' required className="form-input" value={addressForm.city} onChange={(e) => setAddressForm(prev => ({ ...prev, city: e.target.value }))} />
+                                        </div>
+                                        <div>
+                                            <label>Zip Code</label>
+                                            <input type="text" placeholder='e.g. 700091' required className="form-input" value={addressForm.zip} onChange={(e) => setAddressForm(prev => ({ ...prev, zip: e.target.value }))} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label>Phone Number</label>
+                                        <input type="tel" placeholder='e.g. 00000 00000' required className="form-input" value={addressForm.phone} onChange={(e) => setAddressForm(prev => ({ ...prev, phone: e.target.value }))} />
+                                    </div>
+                                    {addresses.length > 0 && (
+                                        <button type="button" className="btn btn-ghost mb-md" onClick={() => setShowAddressForm(false)}>
+                                            Cancel
+                                        </button>
+                                    )}
+                                    <button type="submit" className="checkout-btn flex items-center justify-center gap-sm">
+                                        Continue to Payment <ChevronRight size={20} />
+                                    </button>
+                                </form>
+                            )}
+
+                            {!showAddressForm && addresses.length > 0 && (
+                                <button
+                                    onClick={() => setStep(2)}
+                                    className="checkout-btn flex items-center justify-center gap-sm mt-xl"
+                                >
+                                    Continue with Selected Address <ChevronRight size={20} />
                                 </button>
-                            </form>
+                            )}
                         </div>
                     )}
+
 
                     {step === 2 && (
                         <div className="checkout-section">

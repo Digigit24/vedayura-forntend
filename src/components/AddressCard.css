@@ -1,0 +1,219 @@
+.address-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: var(--shadow-sm);
+}
+
+.address-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-primary-light);
+    transform: translateY(-2px);
+}
+
+.address-card.default {
+    border-color: var(--color-primary);
+    background: rgba(23, 83, 51, 0.02);
+}
+
+.default-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--color-success);
+    color: white;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.address-type {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-primary);
+}
+
+.type-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.address-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.address-name {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--color-primary-dark);
+}
+
+.address-text,
+.address-city,
+.address-phone {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+}
+
+.address-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 5px;
+    padding-top: 15px;
+    border-top: 1px dashed var(--color-border);
+}
+
+.addr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.addr-btn.edit {
+    color: var(--color-primary);
+    background: rgba(23, 83, 51, 0.05);
+}
+
+.addr-btn.edit:hover {
+    background: var(--color-primary);
+    color: white;
+}
+
+.addr-btn.delete {
+    color: var(--color-error);
+    background: rgba(220, 38, 38, 0.05);
+    padding: 8px;
+}
+
+.addr-btn.delete:hover {
+    background: var(--color-error);
+    color: white;
+}
+
+.addr-btn.set-default {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    text-decoration: underline;
+    padding: 0;
+    background: none;
+}
+
+.addr-btn.set-default:hover {
+    color: var(--color-primary);
+}
+
+/* Delete confirmation modal */
+.delete-confirm-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 63, 42, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeInOverlay 0.3s ease;
+}
+
+.delete-confirm-modal {
+    background: white;
+    padding: 25px;
+    border-radius: var(--radius-lg);
+    max-width: 320px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.delete-confirm-modal h4 {
+    margin-bottom: 10px;
+    color: var(--color-primary-dark);
+}
+
+.delete-confirm-modal p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 20px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.confirm-btn.cancel {
+    background: #f1f5f9;
+    color: var(--color-text-secondary);
+}
+
+.confirm-btn.delete {
+    background: var(--color-error);
+    color: white;
+}
+
+@keyframes fadeInOverlay {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUpModal {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .address-card {
+        padding: 15px;
+    }
+
+    .address-name {
+        font-size: 1rem;
+    }
+}

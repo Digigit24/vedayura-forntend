@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import api from '../api';
 import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
+import SettingsPanel from '../components/SettingsPanel';
 import './Profile.css';
 
 const Profile = () => {
@@ -13,6 +14,7 @@ const Profile = () => {
     const [orders, setOrders] = useState([]);
     const [refunds, setRefunds] = useState([]);
     const [activeTab, setActiveTab] = useState('orders');
+    const [showSettings, setShowSettings] = useState(false);
     const navigate = useNavigate();
 
     // Refund modal state (replaces window.prompt)
@@ -179,240 +181,244 @@ const Profile = () => {
         });
     };
 
-    const displayOrders = orders.length > 0 ? orders : [
-        { id: 'AYU1024', createdAt: '2026-01-12', totalAmount: 4500, status: 'DELIVERED' },
-        { id: 'AYU1020', createdAt: '2026-01-05', totalAmount: 1200, status: 'PROCESSING' }
-    ];
+    const displayOrders = orders;
 
     return (
         <div className="profile-page">
             <div className="container">
-                {/* Profile Header */}
-                <div className="profile-header">
-                    <div className="profile-header-content">
-                        <div className="profile-avatar">
-                            {user.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="profile-info">
-                            <h1 className="profile-name">{user.name}</h1>
-                            <p className="profile-email">
-                                <Mail size={14} />
-                                {user.email}
-                            </p>
-                            <p className="profile-member-since">
-                                <Calendar size={14} />
-                                Member since January 2026
-                            </p>
-                        </div>
-                    </div>
-                    <div className="profile-actions">
-                        <button className="btn-profile-action">
-                            <Settings size={18} />
-                            <span>Settings</span>
-                        </button>
-                        <button className="btn-profile-action btn-logout" onClick={handleLogout}>
-                            <LogOut size={18} />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
+                <div className={`profile-view-transition ${showSettings ? 'settings-active' : 'profile-active'}`}>
+                    {showSettings ? (
+                        <SettingsPanel onClose={() => setShowSettings(false)} />
+                    ) : (
+                        <div className="profile-main-content">
+                            {/* Profile Header */}
+                            <div className="profile-header">
+                                <div className="profile-header-content">
+                                    <div className="profile-avatar">
+                                        {(user?.name || user?.email || 'U').charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="profile-info">
+                                        <h1 className="profile-name">{user?.name || 'Vedayura User'}</h1>
+                                        <p className="profile-email">
+                                            <Mail size={14} />
+                                            {user?.email}
+                                        </p>
+                                        <p className="profile-member-since">
+                                            <Calendar size={14} />
+                                            Member since January 2026
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="profile-actions">
+                                    <button className="btn-profile-action" onClick={() => setShowSettings(true)}>
+                                        <Settings size={18} />
+                                        <span>Settings</span>
+                                    </button>
+                                    <button className="btn-profile-action btn-logout" onClick={handleLogout}>
+                                        <LogOut size={18} />
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            </div>
 
-                {/* Stats Cards */}
-                <div className="profile-stats">
-                    <div className="stat-card">
-                        <div className="stat-icon orders-icon">
-                            <Package size={24} />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-value">{displayOrders.length}</span>
-                            <span className="stat-label">Total Orders</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon wishlist-icon">
-                            <Heart size={24} />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-value">{wishlist.length}</span>
-                            <span className="stat-label">Wishlist Items</span>
-                        </div>
-                    </div>
-                    <div className="stat-card">
-                        <div className="stat-icon refunds-icon">
-                            <RotateCcw size={24} />
-                        </div>
-                        <div className="stat-info">
-                            <span className="stat-value">{refunds.length}</span>
-                            <span className="stat-label">Refund Requests</span>
-                        </div>
-                    </div>
-                </div>
+                            {/* Stats Cards */}
+                            <div className="profile-stats">
+                                <div className="stat-card">
+                                    <div className="stat-icon orders-icon">
+                                        <Package size={24} />
+                                    </div>
+                                    <div className="stat-info">
+                                        <span className="stat-value">{displayOrders.length}</span>
+                                        <span className="stat-label">Total Orders</span>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-icon wishlist-icon">
+                                        <Heart size={24} />
+                                    </div>
+                                    <div className="stat-info">
+                                        <span className="stat-value">{wishlist.length}</span>
+                                        <span className="stat-label">Wishlist Items</span>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-icon refunds-icon">
+                                        <RotateCcw size={24} />
+                                    </div>
+                                    <div className="stat-info">
+                                        <span className="stat-value">{refunds.length}</span>
+                                        <span className="stat-label">Refund Requests</span>
+                                    </div>
+                                </div>
+                            </div>
 
-                {/* Tab Navigation */}
-                <div className="profile-tabs">
-                    <button 
-                        className={`profile-tab ${activeTab === 'orders' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('orders')}
-                    >
-                        <Package size={18} />
-                        My Orders
-                    </button>
-                    <button 
-                        className={`profile-tab ${activeTab === 'wishlist' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('wishlist')}
-                    >
-                        <Heart size={18} />
-                        Wishlist
-                    </button>
-                    <button 
-                        className={`profile-tab ${activeTab === 'refunds' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('refunds')}
-                    >
-                        <RotateCcw size={18} />
-                        Refunds
-                    </button>
-                </div>
+                            {/* Tab Navigation */}
+                            <div className="profile-tabs">
+                                <button
+                                    className={`profile-tab ${activeTab === 'orders' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('orders')}
+                                >
+                                    <Package size={18} />
+                                    My Orders
+                                </button>
+                                <button
+                                    className={`profile-tab ${activeTab === 'wishlist' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('wishlist')}
+                                >
+                                    <Heart size={18} />
+                                    Wishlist
+                                </button>
+                                <button
+                                    className={`profile-tab ${activeTab === 'refunds' ? 'active' : ''}`}
+                                    onClick={() => setActiveTab('refunds')}
+                                >
+                                    <RotateCcw size={18} />
+                                    Refunds
+                                </button>
+                            </div>
 
-                {/* Tab Content */}
-                <div className="profile-content">
-                    {/* Orders Tab */}
-                    {activeTab === 'orders' && (
-                        <div className="orders-section">
-                            {displayOrders.length > 0 ? (
-                                <div className="orders-list">
-                                    {displayOrders.map(order => (
-                                        <div key={order.id} className="order-card">
-                                            <div className="order-header">
-                                                <div className="order-id-section">
-                                                    <span className="order-id">#{String(order.id).substring(0, 12)}</span>
-                                                    <span className={`order-status ${getStatusColor(order.status)}`}>
-                                                        {order.status || 'PROCESSING'}
-                                                    </span>
-                                                </div>
-                                                <span className="order-date">{formatDate(order.createdAt)}</span>
+                            {/* Tab Content */}
+                            <div className="profile-content">
+                                {/* Orders Tab */}
+                                {activeTab === 'orders' && (
+                                    <div className="orders-section">
+                                        {displayOrders.length > 0 ? (
+                                            <div className="orders-list">
+                                                {displayOrders.map(order => (
+                                                    <div key={order.id} className="order-card">
+                                                        <div className="order-header">
+                                                            <div className="order-id-section">
+                                                                <span className="order-id">#{String(order.id).substring(0, 12)}</span>
+                                                                <span className={`order-status ${getStatusColor(order.status)}`}>
+                                                                    {order.status || 'PROCESSING'}
+                                                                </span>
+                                                            </div>
+                                                            <span className="order-date">{formatDate(order.createdAt)}</span>
+                                                        </div>
+
+                                                        <div className="order-body">
+                                                            <div className="order-amount">
+                                                                <span className="amount-label">Total Amount</span>
+                                                                <span className="amount-value">₹{order.totalAmount || order.total || order.subtotalAmount || '—'}</span>
+                                                            </div>
+
+                                                            <div className="order-actions">
+                                                                <button
+                                                                    className="btn-order-action btn-track"
+                                                                    onClick={() => handleTrackOrder(order.id)}
+                                                                >
+                                                                    <Truck size={16} />
+                                                                    Track
+                                                                </button>
+                                                                <button
+                                                                    className="btn-order-action btn-invoice"
+                                                                    onClick={() => handleInvoice(order.id)}
+                                                                >
+                                                                    <FileText size={16} />
+                                                                    Invoice
+                                                                </button>
+                                                                <button
+                                                                    className="btn-order-action btn-refund"
+                                                                    onClick={() => handleRequestRefund(order.id)}
+                                                                >
+                                                                    <RotateCcw size={16} />
+                                                                    Refund
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            
-                                            <div className="order-body">
-                                                <div className="order-amount">
-                                                    <span className="amount-label">Total Amount</span>
-                                                    <span className="amount-value">₹{order.totalAmount || order.total || order.subtotalAmount || '—'}</span>
-                                                </div>
-                                                
-                                                <div className="order-actions">
-                                                    <button 
-                                                        className="btn-order-action btn-track"
-                                                        onClick={() => handleTrackOrder(order.id)}
+                                        ) : (
+                                            <div className="empty-state">
+                                                <Package size={48} />
+                                                <h3>No Orders Yet</h3>
+                                                <p>Start shopping to see your orders here</p>
+                                                <Link to="/shop" className="btn btn-primary">Browse Products</Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Wishlist Tab */}
+                                {activeTab === 'wishlist' && (
+                                    <div className="wishlist-section">
+                                        {wishlist.length > 0 ? (
+                                            <div className="wishlist-grid">
+                                                {wishlist.map(item => (
+                                                    <div
+                                                        key={item.id}
+                                                        className="wishlist-card"
+                                                        onClick={() => navigate(`/product/${item.id}`)}
                                                     >
-                                                        <Truck size={16} />
-                                                        Track
-                                                    </button>
-                                                    <button 
-                                                        className="btn-order-action btn-invoice"
-                                                        onClick={() => handleInvoice(order.id)}
-                                                    >
-                                                        <FileText size={16} />
-                                                        Invoice
-                                                    </button>
-                                                    <button 
-                                                        className="btn-order-action btn-refund"
-                                                        onClick={() => handleRequestRefund(order.id)}
-                                                    >
-                                                        <RotateCcw size={16} />
-                                                        Refund
-                                                    </button>
-                                                </div>
+                                                        <div className="wishlist-image">
+                                                            <img
+                                                                src={item.image || item.imageUrls?.[0] || '/assets/product-placeholder.png'}
+                                                                alt={item.name}
+                                                            />
+                                                        </div>
+                                                        <div className="wishlist-details">
+                                                            <h4 className="wishlist-name">{item.name}</h4>
+                                                            <p className="wishlist-category">{item.category || 'Ayurvedic'}</p>
+                                                            <p className="wishlist-price">₹{item.price || item.discountedPrice}</p>
+                                                        </div>
+                                                        <ChevronRight size={20} className="wishlist-arrow" />
+                                                    </div>
+                                                ))}
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <Package size={48} />
-                                    <h3>No Orders Yet</h3>
-                                    <p>Start shopping to see your orders here</p>
-                                    <Link to="/shop" className="btn btn-primary">Browse Products</Link>
-                                </div>
-                            )}
-                        </div>
-                    )}
+                                        ) : (
+                                            <div className="empty-state">
+                                                <Heart size={48} />
+                                                <h3>Wishlist is Empty</h3>
+                                                <p>Save items you love to your wishlist</p>
+                                                <Link to="/shop" className="btn btn-primary">Explore Products</Link>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                    {/* Wishlist Tab */}
-                    {activeTab === 'wishlist' && (
-                        <div className="wishlist-section">
-                            {wishlist.length > 0 ? (
-                                <div className="wishlist-grid">
-                                    {wishlist.map(item => (
-                                        <div 
-                                            key={item.id} 
-                                            className="wishlist-card"
-                                            onClick={() => navigate(`/product/${item.id}`)}
-                                        >
-                                            <div className="wishlist-image">
-                                                <img 
-                                                    src={item.image || item.imageUrls?.[0] || '/assets/product-placeholder.png'} 
-                                                    alt={item.name} 
-                                                />
+                                {/* Refunds Tab */}
+                                {activeTab === 'refunds' && (
+                                    <div className="refunds-section">
+                                        {refunds.length > 0 ? (
+                                            <div className="refunds-list">
+                                                {refunds.map(refund => (
+                                                    <div key={refund.id} className="refund-card">
+                                                        <div className="refund-header">
+                                                            <div className="refund-order">
+                                                                <span className="refund-label">Order</span>
+                                                                <span className="refund-order-id">#{String(refund.orderId).substring(0, 8)}...</span>
+                                                            </div>
+                                                            <span className={`refund-status ${refund.status === 'COMPLETED' ? 'status-completed' :
+                                                                refund.status === 'REJECTED' ? 'status-rejected' :
+                                                                    'status-pending'
+                                                                }`}>
+                                                                {refund.status}
+                                                            </span>
+                                                        </div>
+                                                        <div className="refund-body">
+                                                            <div className="refund-amount">
+                                                                <span className="amount-label">Refund Amount</span>
+                                                                <span className="amount-value">₹{refund.amount}</span>
+                                                            </div>
+                                                            <div className="refund-reason">
+                                                                <span className="reason-label">Reason</span>
+                                                                <span className="reason-text">{refund.reason}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
                                             </div>
-                                            <div className="wishlist-details">
-                                                <h4 className="wishlist-name">{item.name}</h4>
-                                                <p className="wishlist-category">{item.category || 'Ayurvedic'}</p>
-                                                <p className="wishlist-price">₹{item.price || item.discountedPrice}</p>
+                                        ) : (
+                                            <div className="empty-state">
+                                                <RotateCcw size={48} />
+                                                <h3>No Refund Requests</h3>
+                                                <p>You haven't requested any refunds yet</p>
                                             </div>
-                                            <ChevronRight size={20} className="wishlist-arrow" />
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <Heart size={48} />
-                                    <h3>Wishlist is Empty</h3>
-                                    <p>Save items you love to your wishlist</p>
-                                    <Link to="/shop" className="btn btn-primary">Explore Products</Link>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Refunds Tab */}
-                    {activeTab === 'refunds' && (
-                        <div className="refunds-section">
-                            {refunds.length > 0 ? (
-                                <div className="refunds-list">
-                                    {refunds.map(refund => (
-                                        <div key={refund.id} className="refund-card">
-                                            <div className="refund-header">
-                                                <div className="refund-order">
-                                                    <span className="refund-label">Order</span>
-                                                    <span className="refund-order-id">#{String(refund.orderId).substring(0, 8)}...</span>
-                                                </div>
-                                                <span className={`refund-status ${
-                                                    refund.status === 'COMPLETED' ? 'status-completed' :
-                                                    refund.status === 'REJECTED' ? 'status-rejected' :
-                                                    'status-pending'
-                                                }`}>
-                                                    {refund.status}
-                                                </span>
-                                            </div>
-                                            <div className="refund-body">
-                                                <div className="refund-amount">
-                                                    <span className="amount-label">Refund Amount</span>
-                                                    <span className="amount-value">₹{refund.amount}</span>
-                                                </div>
-                                                <div className="refund-reason">
-                                                    <span className="reason-label">Reason</span>
-                                                    <span className="reason-text">{refund.reason}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="empty-state">
-                                    <RotateCcw size={48} />
-                                    <h3>No Refund Requests</h3>
-                                    <p>You haven't requested any refunds yet</p>
-                                </div>
-                            )}
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

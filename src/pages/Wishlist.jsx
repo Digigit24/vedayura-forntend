@@ -1,9 +1,17 @@
 import React from "react";
 import { ShoppingBag, Heart, Trash2, X } from "lucide-react";
 import { useShop } from "../context/ShopContext";
+import toast from "react-hot-toast";
 
 const Wishlist = () => {
   const { wishlist = [], addToCart, toggleWishlist, closeDrawer } = useShop();
+
+  const handleRemove = (id) => {
+    toggleWishlist({ id });
+    toast.success('Removed from wishlist', {
+      style: { borderRadius: '12px', background: '#22371f', color: '#fff' },
+    });
+  };
 
   if (wishlist.length === 0) {
     return (
@@ -70,7 +78,7 @@ const Wishlist = () => {
 
               <button
                 className="remove-btn"
-                onClick={() => toggleWishlist({ id: normalized.id })}
+                onClick={() => handleRemove(normalized.id)}
               >
                 <Trash2 size={16} />
               </button>

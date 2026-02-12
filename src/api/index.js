@@ -15,7 +15,32 @@ const api = {
       const res = await axiosClient.get('/auth/me');
       return res.data;
     },
+    update: async (data) => {
+      const res = await axiosClient.put('/auth/update', data);
+      return res.data;
+    },
   },
+
+  // ====== ADDRESSES ======
+  addresses: {
+    getAll: async () => {
+      const res = await axiosClient.get('/users/addresses');
+      return res.data;
+    },
+    add: async (data) => {
+      const res = await axiosClient.post('/users/address', data);
+      return res.data;
+    },
+    update: async (id, data) => {
+      const res = await axiosClient.put(`/users/address/${id}`, data);
+      return res.data;
+    },
+    remove: async (id) => {
+      const res = await axiosClient.delete(`/users/address/${id}`);
+      return res.data;
+    },
+  },
+
 
   // ====== PRODUCTS ======
   products: {
@@ -63,7 +88,7 @@ const api = {
 
   // ====== WISHLIST ======
   // ====== WISHLIST ======
-wishlist: {
+  wishlist: {
     get: async () => {
       const res = await axiosClient.get('/wishlist');
       return res.data;
@@ -76,7 +101,7 @@ wishlist: {
       const res = await axiosClient.delete(`/wishlist/${productId}`);
       return res.data;
     },
-},
+  },
 
   // ====== ORDERS ======
   orders: {
