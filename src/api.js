@@ -106,7 +106,7 @@ export const shipping = {
 };
 
 export const addresses = {
-  get: () => request("/users/addresses", { method: "GET" }),
+  get: () => request("/users/address", { method: "GET" }),
   add: (payload) =>
     request("/users/address", { method: "POST", body: payload }),
   update: (id, payload) =>

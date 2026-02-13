@@ -42,31 +42,42 @@ export const ShopProvider = ({ children }) => {
         }
 
         if (userId) {
-            try {
-                const res = await api.addresses.getAll();
-                if (res && (Array.isArray(res) || Array.isArray(res.addresses))) {
-                    const serverAddresses = Array.isArray(res) ? res : res.addresses;
-                    const mapped = serverAddresses.map(addr => ({
-                        id: addr.id,
-                        firstName: addr.firstName || '',
-                        lastName: addr.lastName || '',
-                        email: addr.email || '',
-                        phone: addr.phone || '',
-                        street: addr.street || '',
-                        city: addr.city || '',
-                        state: addr.state || '',
-                        pinCode: addr.pincode || addr.pinCode || '',
-                        type: addr.type || 'Home',
-                        isDefault: addr.isDefault || false
-                    }));
-                    setAddresses(mapped);
-                    localStorage.setItem(`ayurveda_addresses_${userId}`, JSON.stringify(mapped));
-                } else {
+            const token = localStorage.getItem('ayurveda_token');
+            // Ensure token is present and not a stringified "null" or "undefined"
+            if (token && token !== 'null' && token !== 'undefined') {
+                try {
+                    const res = await api.addresses.get();
+                    if (res && (Array.isArray(res) || Array.isArray(res.addresses))) {
+                        const serverAddresses = Array.isArray(res) ? res : res.addresses;
+                        const mapped = serverAddresses.map(addr => ({
+                            id: addr.id,
+                            firstName: addr.firstName || '',
+                            lastName: addr.lastName || '',
+                            email: addr.email || '',
+                            phone: addr.phone || '',
+                            street: addr.street || '',
+                            city: addr.city || '',
+                            state: addr.state || '',
+                            pinCode: addr.pincode || addr.pinCode || '',
+                            type: addr.type || 'Home',
+                            isDefault: addr.isDefault || false
+                        }));
+                        setAddresses(mapped);
+                        localStorage.setItem(`ayurveda_addresses_${userId}`, JSON.stringify(mapped));
+                    } else {
+                        const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
+                        if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+                    }
+                } catch (err) {
+                    // If error is 401/403, it's an auth issue (expired token), not a server failure.
+                    // We suppress the warning for auth issues to avoid alarming logs.
+                    if (!err.response || (err.response.status !== 401 && err.response.status !== 403)) {
+                        console.warn('Failed to fetch addresses from server, using local storage.');
+                    }
                     const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
                     if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
                 }
-            } catch (err) {
-                console.warn('Failed to fetch addresses from server, using local storage.');
+            } else {
                 const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
                 if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
             }

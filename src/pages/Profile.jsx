@@ -3,7 +3,7 @@ import { useShop } from '../context/ShopContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { Package, Heart, Settings, Bell, LogOut, RotateCcw, ChevronRight, MapPin, Phone, Mail, Calendar, Truck, FileText, AlertCircle, X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import api from '../api';
+import api from '../api/index';
 import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
 import SettingsPanel from '../components/SettingsPanel';
@@ -50,9 +50,18 @@ const Profile = () => {
     useEffect(() => {
         (async () => {
             try {
+                console.log('Fetching orders...');
                 const res = await api.orders.getAll();
-                if (res && res.orders) setOrders(res.orders);
-                else if (Array.isArray(res)) setOrders(res);
+                console.log('Orders API response:', res);
+                if (res && res.orders) {
+                    console.log('Setting orders from res.orders:', res.orders);
+                    setOrders(res.orders);
+                } else if (Array.isArray(res)) {
+                    console.log('Setting orders from array:', res);
+                    setOrders(res);
+                } else {
+                    console.warn('Unexpected orders response structure:', res);
+                }
             } catch (err) {
                 console.error('Failed to load orders', err);
             }

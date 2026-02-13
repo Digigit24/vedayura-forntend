@@ -7,7 +7,11 @@ const ScrollToTop = () => {
 
     useEffect(() => {
         // Immediately scrolls to the top (0, 0) whenever the path changes
-        window.scrollTo(0, 0);
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant",
+        });
     }, [pathname]);
 
     return null; // This component doesn't render anything visually
