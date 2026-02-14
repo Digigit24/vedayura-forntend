@@ -8,6 +8,7 @@ import { requestRefund, getMyRefundRequests } from '../api/refundService';
 import { trackOrder } from '../api/shippingService';
 import SettingsPanel from '../components/SettingsPanel';
 import './Profile.css';
+import generateInvoice from '../utils/generateInvoice';
 
 const Profile = () => {
     const { user, logout, wishlist } = useShop();
@@ -105,12 +106,17 @@ const Profile = () => {
         }
     };
 
-    const handleInvoice = (id) => {
-        toast.success(`Downloading invoice for Order #${id}...`, {
+   const handleInvoice = (id) => {
+        const order = orders.find(o => o.id === id);
+        if (!order) {
+            toast.error('Order not found', { style: toastStyle });
+            return;
+        }
+        generateInvoice(order);
+        toast.success('Invoice downloaded!', {
             style: toastStyle,
             icon: '📄',
             position: 'top-center',
-            duration: 3000,
         });
     };
 

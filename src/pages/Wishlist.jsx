@@ -31,6 +31,7 @@ const Wishlist = () => {
     return {
       id: product.id || item.id,
       name: product.name || item.name || "Unknown Product",
+      variant: product.variant || item.variant || null,
       image: product.imageUrls?.[0] || product.images?.[0] || item.images?.[0] || item.image || "/assets/product-placeholder.png",
       price: product.discountedPrice || product.price || item.discount_price || item.price || 0,
       stock: product.stockQuantity ?? product.stock ?? item.stock,
@@ -65,7 +66,10 @@ const Wishlist = () => {
               <img src={normalized.image} alt={normalized.name} />
 
               <div className="cart-item-info">
-                <h4>{normalized.name}</h4>
+               <h4>
+                  {normalized.name}
+                  {normalized.variant && <span className="cart-item-variant"> — {normalized.variant.charAt(0) + normalized.variant.slice(1).toLowerCase()}</span>}
+                </h4>
                 <span className="price">₹{normalized.price}</span>
 
                 <button

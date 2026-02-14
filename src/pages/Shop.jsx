@@ -67,40 +67,49 @@ const Shop = () => {
         return '/assets/product-placeholder.png';
     };
 
-    // Filter Logic
-    useEffect(() => {
-        let result = [...products];
+   // Filter Logic
+useEffect(() => {
+    let result = [...products];
 
-        // 1. Category
-        if (selectedCategory !== 'All') {
-            result = result.filter(p => p.category === selectedCategory);
-        }
+    // 1. Category
+    if (selectedCategory !== 'All') {
+        result = result.filter(p => p.category === selectedCategory);
+    }
 
-        // 2. Search
-        if (activeSearch) {
-            const q = activeSearch.toLowerCase();
-            result = result.filter(p =>
-                p.name?.toLowerCase().includes(q) ||
-                (p.description && p.description.toLowerCase().includes(q)) ||
-                (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
-            );
-        }
+    // 2. Search
+    if (activeSearch) {
+        const q = activeSearch.toLowerCase();
+        result = result.filter(p =>
+            p.name?.toLowerCase().includes(q) ||
+            (p.description && p.description.toLowerCase().includes(q)) ||
+            (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
+        );
+    }
 
-        // 3. Price
-        result = result.filter(p => {
-            const price = p.discount_price || p.price || 0;
-            return price <= priceRange;
-        });
+    // 3. Price
+    result = result.filter(p => {
+        const price = p.discount_price || p.price || 0;
+        return price <= priceRange;
+    });
 
-        // 4. Sort
-        if (sortBy === 'price-low') {
-            result.sort((a, b) => (a.discount_price || a.price || 0) - (b.discount_price || b.price || 0));
-        } else if (sortBy === 'price-high') {
-            result.sort((a, b) => (b.discount_price || b.price || 0) - (a.discount_price || a.price || 0));
-        }
+    // 4. Sort
+    if (sortBy === 'price-low') {
+        result.sort((a, b) => (a.discount_price || a.price || 0) - (b.discount_price || b.price || 0));
+    } else if (sortBy === 'price-high') {
+        result.sort((a, b) => (b.discount_price || b.price || 0) - (a.discount_price || a.price || 0));
+    }
 
-        setFilteredProducts(result);
-    }, [selectedCategory, activeSearch, priceRange, sortBy, products]);
+    // 5. Group by name — show only one card per product name
+    const seen = new Map();
+    result = result.filter(p => {
+        const key = p.name?.toLowerCase().trim();
+        if (seen.has(key)) return false;
+        seen.set(key, true);
+        return true;
+    });
+
+    setFilteredProducts(result);
+}, [selectedCategory, activeSearch, priceRange, sortBy, products]);
 
     useEffect(() => {
         if (initialCategory) setSelectedCategory(initialCategory);

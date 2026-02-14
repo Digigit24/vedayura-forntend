@@ -15,6 +15,7 @@ const normalizeItem = (item) => {
     id: productId,
     cartItemId: item.id,
     name: product.name || item.name || 'Unknown Product',
+    variant: product.variant || item.variant || null,
     image: product.imageUrls?.[0] || product.images?.[0] || item.images?.[0] || item.image || '/assets/product-placeholder.png',
     price: product.discountedPrice || product.price || item.discount_price || item.price || 0,
     quantity: item.quantity || 1,
@@ -79,7 +80,10 @@ const Cart = () => {
             <img src={item.image} alt={item.name} />
 
             <div className="cart-item-info">
-              <h4>{item.name}</h4>
+             <h4>
+                {item.name}
+                {item.variant && <span className="cart-item-variant"> — {item.variant.charAt(0) + item.variant.slice(1).toLowerCase()}</span>}
+              </h4>
               <span className="price">
                 ₹{item.price}
               </span>

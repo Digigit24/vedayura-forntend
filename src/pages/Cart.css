@@ -257,3 +257,8 @@
 .add-to-cart-small:hover {
   background: var(--color-primary-dark);
 }
+.cart-item-variant {
+    font-weight: 400;
+    font-size: 0.85em;
+    color: #888;
+}
