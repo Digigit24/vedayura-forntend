@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../api';
 import ProductCard from '../components/ProductCard';
 import TopMarquee from "../components/TopMarquee";
@@ -29,20 +29,29 @@ import './ProductDetails.css';
 
 const SLIDE_DURATION = 600;
 
+const VARIANT_LABELS = {
+    CAPSULES: 'Capsules',
+    LIQUID: 'Liquid',
+    POWDER: 'Powder',
+    OTHER: 'Other',
+};
+
 const ProductDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const { products, addToCart, toggleWishlist, wishlist = [] } = useShop();
 
     const [product, setProduct] = useState(null);
+    const [otherVariants, setOtherVariants] = useState([]);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
 
-    // Slider state — rewritten for real swipe motion
+    // Slider state
     const [currentIndex, setCurrentIndex] = useState(0);
     const [nextIndex, setNextIndex] = useState(null);
-    const [slideDirection, setSlideDirection] = useState(null); // 'left' | 'right'
-    const [slidePhase, setSlidePhase] = useState('idle');       // 'idle' | 'ready' | 'animating'
+    const [slideDirection, setSlideDirection] = useState(null);
+    const [slidePhase, setSlidePhase] = useState('idle');
     const [isHovered, setIsHovered] = useState(false);
     const nextImageRef = useRef(null);
 
@@ -80,6 +89,7 @@ const ProductDetails = () => {
             benefits: Array.isArray(p.benefits || p.Benefits) ? (p.benefits || p.Benefits) : [],
             howToUse: p.howToUse || p.usage || '',
             productType: p.productType || '',
+            variant: p.variant || null,
             features: p.features || [],
             specifications: p.specifications || {},
             weight: p.weight || '',
@@ -92,6 +102,7 @@ const ProductDetails = () => {
     useEffect(() => {
         const loadProduct = async () => {
             setLoading(true);
+            setOtherVariants([]);
             let contextProduct = null;
             if (products && products.length > 0) {
                 const found = products.find(p => String(p.id) === String(id));
@@ -107,6 +118,7 @@ const ProductDetails = () => {
                 const res = await api.products.getById(id);
                 if (res?.product) {
                     setProduct(normalizeProduct(res.product));
+                    setOtherVariants(res.product.otherVariants || []);
                 } else if (!contextProduct) {
                     setProduct(null);
                 }
@@ -144,25 +156,18 @@ const ProductDetails = () => {
         setShowVideoModal(false);
     }, [id]);
 
-    // ─── Core slide function (2-phase animation) ────────────────
     const slideTo = useCallback((targetIndex, direction) => {
         if (slidePhase !== 'idle' || galleryImages.length <= 1) return;
         if (targetIndex === currentIndex) return;
-
         setNextIndex(targetIndex);
         setSlideDirection(direction);
-        setSlidePhase('ready'); // Phase 1: mount next image offscreen
+        setSlidePhase('ready');
     }, [slidePhase, galleryImages.length, currentIndex]);
 
-    // Phase 2: once next image is in DOM at its offscreen position, trigger the slide
     useEffect(() => {
         if (slidePhase !== 'ready') return;
-
-        // Force browser to acknowledge the offscreen position first
         const el = nextImageRef.current;
-        if (el) el.getBoundingClientRect(); // force reflow
-
-        // Now trigger the animation on next frame
+        if (el) el.getBoundingClientRect();
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 setSlidePhase('animating');
@@ -170,7 +175,6 @@ const ProductDetails = () => {
         });
     }, [slidePhase]);
 
-    // Phase 3: after animation completes, swap current and clean up
     useEffect(() => {
         if (slidePhase !== 'animating') return;
         const timer = setTimeout(() => {
@@ -182,7 +186,6 @@ const ProductDetails = () => {
         return () => clearTimeout(timer);
     }, [slidePhase, nextIndex]);
 
-    // ─── Navigation helpers ─────────────────────────────────────
     const nextSlide = useCallback(() => {
         const target = currentIndex === galleryImages.length - 1 ? 0 : currentIndex + 1;
         slideTo(target, 'right');
@@ -198,31 +201,18 @@ const ProductDetails = () => {
         slideTo(index, direction);
     }, [currentIndex, slideTo]);
 
-    // Auto-slide
     useEffect(() => {
         if (isHovered || galleryImages.length <= 1) return;
         const interval = setInterval(nextSlide, 4500);
         return () => clearInterval(interval);
     }, [isHovered, nextSlide, galleryImages.length]);
 
-    // ─── Touch / swipe handlers ─────────────────────────────────
-    const handleTouchStart = (e) => {
-        touchStartX.current = e.touches[0].clientX;
-    };
-
-    const handleTouchMove = (e) => {
-        touchEndX.current = e.touches[0].clientX;
-    };
-
+    const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+    const handleTouchMove = (e) => { touchEndX.current = e.touches[0].clientX; };
     const handleTouchEnd = () => {
         const diff = touchStartX.current - touchEndX.current;
-        const threshold = 50;
-        if (Math.abs(diff) > threshold) {
-            if (diff > 0) {
-                nextSlide();  // swipe left → next
-            } else {
-                prevSlide(); // swipe right → prev
-            }
+        if (Math.abs(diff) > 50) {
+            diff > 0 ? nextSlide() : prevSlide();
         }
     };
 
@@ -330,16 +320,18 @@ const ProductDetails = () => {
         });
     };
 
+    const handleVariantSwitch = (variantId) => {
+        navigate(`/product/${variantId}`);
+    };
+
     const tabs = [
         { key: 'description', label: 'Description', icon: <BookOpen size={16} /> },
         { key: 'benefits', label: 'Benefits', icon: <CheckCircle size={16} /> },
         { key: 'ingredients', label: 'Ingredients', icon: <Leaf size={16} /> },
     ];
 
-    // ─── Compute slider CSS classes ─────────────────────────────
     const getCurrentImageClass = () => {
         if (slidePhase === 'animating') {
-            // Current image exits: swipe right → current goes left, swipe left → current goes right
             return slideDirection === 'right' ? 'slider-image slide-exit-left' : 'slider-image slide-exit-right';
         }
         return 'slider-image slide-center';
@@ -347,15 +339,34 @@ const ProductDetails = () => {
 
     const getNextImageClass = () => {
         if (slidePhase === 'ready') {
-            // Offscreen starting position
             return slideDirection === 'right' ? 'slider-image slide-start-right' : 'slider-image slide-start-left';
         }
         if (slidePhase === 'animating') {
-            // Animate to center
             return 'slider-image slide-center';
         }
         return 'slider-image';
     };
+
+    // Build variant list: current product + other variants
+    const allVariants = [];
+    if (product.variant) {
+        allVariants.push({
+            id: product.id,
+            variant: product.variant,
+            price: product.price,
+            stockQuantity: product.stock,
+        });
+    }
+    otherVariants.forEach(v => {
+        allVariants.push({
+            id: v.id,
+            variant: v.variant,
+            price: Number(v.discountedPrice || v.realPrice || 0),
+            stockQuantity: Number(v.stockQuantity ?? 0),
+        });
+    });
+
+    const hasVariants = allVariants.length > 1;
 
     return (
         <div className="product-details-page">
@@ -388,7 +399,6 @@ const ProductDetails = () => {
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
                         >
-                            {/* Badges */}
                             <div className="pd-badge-overlay">
                                 {isOutOfStock && (
                                     <span className="badge-out-of-stock">Out of Stock</span>
@@ -447,15 +457,12 @@ const ProductDetails = () => {
                             )}
 
                             <div className="slider-frame">
-                                {/* Current image */}
                                 <img
                                     key={`current-${currentIndex}`}
                                     src={galleryImages[currentIndex]}
                                     alt={product.name}
                                     className={getCurrentImageClass()}
                                 />
-
-                                {/* Next image (only during transition) */}
                                 {nextIndex !== null && (
                                     <img
                                         key={`next-${nextIndex}`}
@@ -474,7 +481,6 @@ const ProductDetails = () => {
                             )}
                         </div>
 
-                        {/* Thumbnails */}
                         <div className="pd-thumbnails-grid">
                             {galleryImages.map((img, idx) => (
                                 <button
@@ -510,6 +516,31 @@ const ProductDetails = () => {
                                 {product.productType && <span className="pd-product-type">({product.productType})</span>}
                             </h1>
                         </div>
+
+                        {/* ── Variant Toggle Buttons ── */}
+                        {hasVariants && (
+                            <div className="pd-variant-toggle">
+                                <span className="pd-variant-label">Available In:</span>
+                                <div className="pd-variant-buttons">
+                                    {allVariants.map((v) => (
+                                        <button
+                                            key={v.id}
+                                            className={`pd-variant-btn ${v.id === product.id ? 'active' : ''} ${v.stockQuantity === 0 ? 'out-of-stock' : ''}`}
+                                            onClick={() => {
+                                                if (v.id !== product.id) handleVariantSwitch(v.id);
+                                            }}
+                                            disabled={v.stockQuantity === 0}
+                                            title={v.stockQuantity === 0 ? 'Out of stock' : `Switch to ${VARIANT_LABELS[v.variant] || v.variant}`}
+                                        >
+                                            <span className="pd-variant-btn-name">
+                                                {VARIANT_LABELS[v.variant] || v.variant}
+                                            </span>
+                                            <span className="pd-variant-btn-price">₹{v.price}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         <div className="pd-price-block">
                             <span className="price-label">MRP (Inclusive of taxes)</span>

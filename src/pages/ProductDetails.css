@@ -921,3 +921,66 @@
     margin-bottom: 2rem;
     max-width: 500px;
 }
+
+/* ── Variant Toggle ── */
+.pd-variant-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.pd-variant-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.pd-variant-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pd-variant-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pd-variant-btn:hover {
+    border-color: #22371f;
+}
+
+.pd-variant-btn.active {
+    border-color: #22371f;
+    background: #22371f;
+    color: #fff;
+}
+
+.pd-variant-btn.active .pd-variant-btn-price {
+    color: #c5e1c0;
+}
+
+.pd-variant-btn.out-of-stock {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.pd-variant-btn-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.pd-variant-btn-price {
+    font-size: 0.78rem;
+    color: #888;
+}
