@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Search, Menu, X, LogOut, UserCircle } from 'lucide-react';
+import { ShoppingBag, Heart, User, Search, Menu, X, LogOut, UserCircle, Leaf } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Navbar.css';
@@ -14,49 +14,39 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [showGuestDropdown, setShowGuestDropdown] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
   const userBtnRef = React.useRef(null);
   const guestBtnRef = React.useRef(null);
 
-  // Check if user is in guest mode (stored in localStorage or context)
   const isGuest = !user && localStorage.getItem('guestMode') === 'true';
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
   }, [isMenuOpen]);
 
   useEffect(() => {
     setIsMenuOpen(false);
     setShowUserDropdown(false);
     setShowGuestDropdown(false);
+    setSearchOpen(false);
   }, [location]);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/shop?search=${searchQuery}`);
       setSearchQuery('');
+      setSearchOpen(false);
       setIsMenuOpen(false);
     }
   };
@@ -82,373 +72,245 @@ const Navbar = () => {
     navigate('/login');
   };
 
+  const openDropdown = (ref, setter) => {
+    if (ref.current) {
+      const r = ref.current.getBoundingClientRect();
+      setDropdownPos({ top: r.bottom + 10, right: window.innerWidth - r.right });
+    }
+    setter(v => !v);
+  };
+
   return (
     <>
-      {/* Top bar */}
-      <div className="top-bar py-xs text-sm">
-        <div className="container flex justify-center items-center">
-          <p>🌿 Free Shipping on Orders Over ₹999 | Pure Ayurvedic Healing</p>
-        </div>
-      </div>
-
-      {/* Header */}
       <header className={`main-header ${scrolled ? 'scrolled' : ''}`}>
-        <div className="container flex justify-between items-center">
+        {/* ── Desktop ── */}
+        <div className="nav-container hidden-mobile">
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="btn btn-icon hidden-desktop"
-            onClick={toggleMenu}
-            aria-label="Toggle Menu"
-            style={{ zIndex: 3000, position: 'sticky' }}
-          >
-            {isMenuOpen ? <X size={24} color="#175333" /> : <Menu size={24} />}
-          </button>
-
-          {/* Logo */}
-          <Link to="/" className="logo">
-            <img src="/logo-03.png" alt="Vedayura" style={{ height: 50 }} />
+          {/* Logo — left */}
+          <Link to="/" className="nav-logo">
+            <img src="/logo-03.png" alt="Vedayura" />
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="desktop-nav hidden-mobile">
-            <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""}>Home</NavLink>
-            <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""}>Shop</NavLink>
-            <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""}>About Us</NavLink>
-            <NavLink to="/catalog" className={({ isActive }) => isActive ? "active" : ""}>Catalog</NavLink>
-            <NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""}>Contact</NavLink>
+          {/* Nav links — center */}
+          <nav className="nav-links-center">
+            <NavLink to="/" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Home</NavLink>
+            <NavLink to="/shop" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Shop</NavLink>
+            <NavLink to="/about" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>About</NavLink>
+            <NavLink to="/catalog" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Catalog</NavLink>
+            <NavLink to="/contact" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>Contact</NavLink>
           </nav>
 
-          {/* Actions */}
-          <div className="header-actions flex items-center">
-            <form onSubmit={handleSearch} className="search-form hidden-mobile">
-              <button type="submit">
-                <Search size={18} />
-              </button>
-              <input
-                type="text"
-                placeholder="Search wellness..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </form>
+          {/* Actions — right */}
+          <div className="nav-actions">
+            <button className="nav-icon-btn" onClick={() => setSearchOpen(v => !v)} aria-label="Search">
+              {searchOpen ? <X size={18} /> : <Search size={18} />}
+            </button>
 
-            <div className="flex items-center gap-md">
-              <button onClick={openWishlist} className="icon-link">
-                <Heart size={22} />
-                {wishlist.length > 0 && <span className="badge">{wishlist.length}</span>}
-              </button>
+            <button className="nav-icon-btn" onClick={openWishlist} aria-label="Wishlist">
+              <Heart size={18} />
+              {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
+            </button>
 
-              <button onClick={openCart} className="icon-link">
-                <ShoppingBag size={22} />
-                {cart.length > 0 && <span className="badge">{cart.length}</span>}
-              </button>
+            <button className="nav-icon-btn" onClick={openCart} aria-label="Cart">
+              <ShoppingBag size={18} />
+              {cart.length > 0 && <span className="nav-badge">{cart.length}</span>}
+            </button>
 
-              {/* User Auth Button */}
-              {user ? (
-                /* --- Logged-in User --- */
-                <div className="nav-user-wrapper">
-                  <button
-                    ref={userBtnRef}
-                    className="nav-user-btn"
-                    onClick={() => {
-                      if (!showUserDropdown && userBtnRef.current) {
-                        const rect = userBtnRef.current.getBoundingClientRect();
-                        setDropdownPos({
-                          top: rect.bottom + 8,
-                          right: window.innerWidth - rect.right,
-                        });
-                      }
-                      setShowUserDropdown(!showUserDropdown);
-                    }}
-                  >
-                    <div className="nav-user-avatar">
-                      {user.name?.charAt(0)?.toUpperCase()}
+            {user ? (
+              <div className="nav-user-wrapper">
+                <button ref={userBtnRef} className="nav-avatar-btn" onClick={() => openDropdown(userBtnRef, setShowUserDropdown)}>
+                  <div className="nav-avatar">{user.name?.charAt(0)?.toUpperCase()}</div>
+                </button>
+                {showUserDropdown && createPortal(
+                  <>
+                    <div className="nav-dropdown-backdrop" onClick={() => setShowUserDropdown(false)} />
+                    <div className="nav-dropdown" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
+                      <div className="nav-dropdown-profile">
+                        <div className="nav-dropdown-avatar">{user.name?.charAt(0)?.toUpperCase()}</div>
+                        <div>
+                          <p className="nav-dropdown-name">{user.name}</p>
+                          <p className="nav-dropdown-email">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="nav-dropdown-divider" />
+                      <Link to="/profile" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}><User size={14} /> My Profile</Link>
+                      {user.role === 'ADMIN' && (
+                        <Link to="/admin" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}><Menu size={14} /> Admin Panel</Link>
+                      )}
+                      <div className="nav-dropdown-divider" />
+                      <button className="nav-dropdown-item nav-dropdown-logout" onClick={handleLogout}><LogOut size={14} /> Logout</button>
                     </div>
-                    <span className="nav-user-name hidden-mobile">{user.name?.split(' ')[0]}</span>
-                  </button>
-
-                  {/* Dropdown via Portal */}
-                  {showUserDropdown && createPortal(
-                    <>
-                      <div
-                        className="nav-dropdown-backdrop"
-                        onClick={() => setShowUserDropdown(false)}
-                      />
-                      <div
-                        className="nav-user-dropdown"
-                        style={{ top: dropdownPos.top, right: dropdownPos.right }}
-                      >
-                        <div className="nav-dropdown-header">
-                          <div className="nav-dropdown-avatar">
-                            {user.name?.charAt(0)?.toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="nav-dropdown-name">{user.name}</p>
-                            <p className="nav-dropdown-email">{user.email}</p>
-                          </div>
+                  </>,
+                  document.body
+                )}
+              </div>
+            ) : isGuest ? (
+              <div className="nav-user-wrapper">
+                <button ref={guestBtnRef} className="nav-icon-btn" onClick={() => openDropdown(guestBtnRef, setShowGuestDropdown)}>
+                  <UserCircle size={18} />
+                </button>
+                {showGuestDropdown && createPortal(
+                  <>
+                    <div className="nav-dropdown-backdrop" onClick={() => setShowGuestDropdown(false)} />
+                    <div className="nav-dropdown" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
+                      <div className="nav-dropdown-profile">
+                        <div className="nav-dropdown-avatar nav-guest-icon"><UserCircle size={18} /></div>
+                        <div>
+                          <p className="nav-dropdown-name">Guest User</p>
+                          <p className="nav-dropdown-email">Sign in for full access</p>
                         </div>
-                        <div className="nav-dropdown-divider"></div>
-                        <Link to="/profile" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}>
-                          <User size={16} />
-                          My Profile
-                        </Link>
-                        {user.role === 'ADMIN' && (
-                          <Link to="/admin" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}>
-                            <Menu size={16} />
-                            Admin Panel
-                          </Link>
-                        )}
-                        <div className="nav-dropdown-divider"></div>
-                        <button className="nav-dropdown-item nav-dropdown-logout" onClick={handleLogout}>
-                          <LogOut size={16} />
-                          Logout
-                        </button>
                       </div>
-                    </>,
-                    document.body
-                  )}
-                </div>
-              ) : isGuest ? (
-                /* --- Guest Mode --- */
-                <div className="nav-user-wrapper">
-                  <button
-                    ref={guestBtnRef}
-                    className="nav-guest-btn"
-                    onClick={() => {
-                      if (!showGuestDropdown && guestBtnRef.current) {
-                        const rect = guestBtnRef.current.getBoundingClientRect();
-                        setDropdownPos({
-                          top: rect.bottom + 8,
-                          right: window.innerWidth - rect.right,
-                        });
-                      }
-                      setShowGuestDropdown(!showGuestDropdown);
-                    }}
-                  >
-                    <div className="nav-guest-avatar">
-                      <UserCircle size={20} />
+                      <div className="nav-dropdown-divider" />
+                      <Link to="/login" className="nav-dropdown-item" onClick={() => setShowGuestDropdown(false)}><User size={14} /> Sign In / Register</Link>
+                      <div className="nav-dropdown-divider" />
+                      <button className="nav-dropdown-item nav-dropdown-logout" onClick={handleExitGuestMode}><LogOut size={14} /> Exit Guest Mode</button>
                     </div>
-                    <span className="nav-user-name hidden-mobile">Guest</span>
-                  </button>
-
-                  {showGuestDropdown && createPortal(
-                    <>
-                      <div
-                        className="nav-dropdown-backdrop"
-                        onClick={() => setShowGuestDropdown(false)}
-                      />
-                      <div
-                        className="nav-user-dropdown"
-                        style={{ top: dropdownPos.top, right: dropdownPos.right }}
-                      >
-                        <div className="nav-dropdown-header">
-                          <div className="nav-guest-avatar-lg">
-                            <UserCircle size={24} />
-                          </div>
-                          <div>
-                            <p className="nav-dropdown-name">Guest User</p>
-                            <p className="nav-dropdown-email nav-guest-hint">Sign in for full features</p>
-                          </div>
-                        </div>
-                        <div className="nav-dropdown-divider"></div>
-                        <Link to="/login" className="nav-dropdown-item" onClick={() => setShowGuestDropdown(false)}>
-                          <User size={16} />
-                          Sign In / Register
-                        </Link>
-                        <div className="nav-dropdown-divider"></div>
-                        <button className="nav-dropdown-item nav-dropdown-logout" onClick={handleExitGuestMode}>
-                          <LogOut size={16} />
-                          Exit Guest Mode
-                        </button>
+                  </>,
+                  document.body
+                )}
+              </div>
+            ) : (
+              <div className="nav-user-wrapper">
+                <button ref={guestBtnRef} className="nav-icon-btn" onClick={() => openDropdown(guestBtnRef, setShowGuestDropdown)}>
+                  <User size={18} />
+                </button>
+                {showGuestDropdown && createPortal(
+                  <>
+                    <div className="nav-dropdown-backdrop" onClick={() => setShowGuestDropdown(false)} />
+                    <div className="nav-dropdown" style={{ top: dropdownPos.top, right: dropdownPos.right }}>
+                      <div className="nav-auth-header">
+                        <p className="nav-auth-title">Welcome to Vedayura</p>
+                        <p className="nav-auth-sub">How would you like to continue?</p>
                       </div>
-                    </>,
-                    document.body
-                  )}
-                </div>
-              ) : (
-                /* --- Not logged in, not guest: show auth options --- */
-                <div className="nav-user-wrapper">
-                  <button
-                    ref={guestBtnRef}
-                    className="btn btn-icon"
-                    onClick={() => {
-                      if (!showGuestDropdown && guestBtnRef.current) {
-                        const rect = guestBtnRef.current.getBoundingClientRect();
-                        setDropdownPos({
-                          top: rect.bottom + 8,
-                          right: window.innerWidth - rect.right,
-                        });
-                      }
-                      setShowGuestDropdown(!showGuestDropdown);
-                    }}
-                  >
-                    <User size={22} />
-                  </button>
-
-                  {showGuestDropdown && createPortal(
-                    <>
-                      <div
-                        className="nav-dropdown-backdrop"
-                        onClick={() => setShowGuestDropdown(false)}
-                      />
-                      <div
-                        className="nav-user-dropdown nav-auth-dropdown"
-                        style={{ top: dropdownPos.top, right: dropdownPos.right }}
-                      >
-                        <div className="nav-auth-dropdown-header">
-                          <p className="nav-auth-title">Welcome to Vedayura</p>
-                          <p className="nav-auth-subtitle">Choose how you'd like to continue</p>
-                        </div>
-                        <div className="nav-dropdown-divider"></div>
-                        <Link
-                          to="/login"
-                          className="nav-dropdown-item nav-auth-signin"
-                          onClick={() => setShowGuestDropdown(false)}
-                        >
-                          <User size={16} />
-                          Sign In / Register
-                        </Link>
-                        <button
-                          className="nav-dropdown-item nav-auth-guest"
-                          onClick={handleContinueAsGuest}
-                        >
-                          <UserCircle size={16} />
-                          Continue as Guest
-                        </button>
-                      </div>
-                    </>,
-                    document.body
-                  )}
-                </div>
-              )}
-            </div>
+                      <div className="nav-dropdown-divider" />
+                      <Link to="/login" className="nav-dropdown-item nav-signin-item" onClick={() => setShowGuestDropdown(false)}><User size={14} /> Sign In / Register</Link>
+                      <button className="nav-dropdown-item" onClick={handleContinueAsGuest}><UserCircle size={14} /> Continue as Guest</button>
+                    </div>
+                  </>,
+                  document.body
+                )}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* ── Mobile bar ── */}
+        <div className="nav-mobile hidden-desktop">
+          <button className="nav-icon-btn" onClick={() => setIsMenuOpen(true)} aria-label="Menu">
+            <Menu size={22} />
+          </button>
+          <Link to="/" className="nav-logo">
+            <img src="/logo-03.png" alt="Vedayura" />
+          </Link>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <button className="nav-icon-btn" onClick={openWishlist} aria-label="Wishlist">
+              <Heart size={20} />
+              {wishlist.length > 0 && <span className="nav-badge">{wishlist.length}</span>}
+            </button>
+            <button className="nav-icon-btn" onClick={openCart} aria-label="Cart">
+              <ShoppingBag size={20} />
+              {cart.length > 0 && <span className="nav-badge">{cart.length}</span>}
+            </button>
+          </div>
+        </div>
+
+        {/* ── Search bar ── */}
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div
+              className="nav-search-bar"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <form onSubmit={handleSearch} className="nav-search-form">
+                <Search size={16} />
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search for Ayurvedic products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit">Search</button>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      {/* Mobile Menu Overlay */}
+      {/* ── Mobile Drawer ── */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
-            {/* Backdrop */}
-            <motion.div
-              className="mobile-menu-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <motion.div className="mobile-backdrop"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
             />
-
-            {/* Slide-in Menu */}
-            <motion.div
-              className="mobile-menu"
-              initial={{ x: '-100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
+            <motion.div className="mobile-drawer"
+              initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+              transition={{ type: 'tween', duration: 0.28, ease: 'easeOut' }}
             >
-              <button
-                className="btn btn-icon"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <X size={28} />
-              </button>
-
-              <div className="mobile-menu-content">
-                {/* Mobile User Info */}
-                {user ? (
-                  <div className="mobile-user-info">
-                    <div className="mobile-user-avatar">
-                      {user.name?.charAt(0)?.toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="mobile-user-name">{user.name}</p>
-                      <p className="mobile-user-email">{user.email}</p>
-                    </div>
-                  </div>
-                ) : isGuest ? (
-                  <div className="mobile-user-info mobile-guest-info">
-                    <div className="mobile-guest-avatar">
-                      <UserCircle size={24} />
-                    </div>
-                    <div>
-                      <p className="mobile-user-name">Guest User</p>
-                      <p className="mobile-user-email">Browsing as guest</p>
-                    </div>
-                  </div>
-                ) : null}
-
-                <div className="mobile-search-container">
-                  <form onSubmit={handleSearch}>
-                    <div className="mobile-search-input">
-                      <Search size={18} />
-                      <input
-                        type="text"
-                        placeholder="Search wellness..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </div>
-                  </form>
-                </div>
-
-                <nav className="mobile-nav-links">
-                  <NavLink to="/" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Home</NavLink>
-                  <NavLink to="/shop" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Shop Collection</NavLink>
-                  <NavLink to="/about" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Our Story</NavLink>
-                  <NavLink to="/catalog" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Catalog</NavLink>
-                  <NavLink to="/contact" className={({ isActive }) => isActive ? "active" : ""} onClick={() => setIsMenuOpen(false)}>Contact Us</NavLink>
-                </nav>
-
-                {/* Mobile Auth Links */}
-                <div className="mobile-auth-links">
-                  {user ? (
-                    <>
-                      <NavLink to="/profile" className="mobile-auth-link" onClick={() => setIsMenuOpen(false)}>
-                        <User size={18} />
-                        My Profile
-                      </NavLink>
-                      {user.role === 'ADMIN' && (
-                        <NavLink to="/admin" className="mobile-auth-link" onClick={() => setIsMenuOpen(false)}>
-                          <Menu size={18} />
-                          Admin Panel
-                        </NavLink>
-                      )}
-                      <button className="mobile-auth-link mobile-logout-btn" onClick={() => { handleLogout(); setIsMenuOpen(false); }}>
-                        <LogOut size={18} />
-                        Logout
-                      </button>
-                    </>
-                  ) : isGuest ? (
-                    <>
-                      <NavLink to="/login" className="mobile-auth-link" onClick={() => setIsMenuOpen(false)}>
-                        <User size={18} />
-                        Sign In / Register
-                      </NavLink>
-                      <button className="mobile-auth-link mobile-logout-btn" onClick={() => { handleExitGuestMode(); setIsMenuOpen(false); }}>
-                        <LogOut size={18} />
-                        Exit Guest Mode
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <NavLink to="/login" className="mobile-auth-link" onClick={() => setIsMenuOpen(false)}>
-                        <User size={18} />
-                        Sign In / Register
-                      </NavLink>
-                      <button className="mobile-auth-link mobile-guest-btn" onClick={handleContinueAsGuest}>
-                        <UserCircle size={18} />
-                        Continue as Guest
-                      </button>
-                    </>
-                  )}
-                </div>
-
-                <div className="mobile-menu-footer">
-                  <p className="text-secondary text-sm">🌿 Authentic Vedic Wisdom</p>
-                </div>
+              <div className="drawer-header">
+                <img src="/logo-03.png" alt="Vedayura" className="drawer-logo" />
+                <button className="drawer-close" onClick={() => setIsMenuOpen(false)}><X size={20} /></button>
               </div>
+
+              {user ? (
+                <div className="drawer-user-card">
+                  <div className="drawer-avatar">{user.name?.charAt(0)?.toUpperCase()}</div>
+                  <div>
+                    <p className="drawer-user-name">{user.name}</p>
+                    <p className="drawer-user-email">{user.email}</p>
+                  </div>
+                </div>
+              ) : isGuest ? (
+                <div className="drawer-user-card drawer-guest-card">
+                  <div className="drawer-avatar drawer-guest-avatar"><UserCircle size={20} /></div>
+                  <div>
+                    <p className="drawer-user-name">Guest User</p>
+                    <p className="drawer-user-email">Browsing as guest</p>
+                  </div>
+                </div>
+              ) : null}
+
+              <form onSubmit={handleSearch} className="drawer-search">
+                <Search size={15} />
+                <input type="text" placeholder="Search wellness..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+              </form>
+
+              <nav className="drawer-nav">
+                <NavLink to="/" className={({ isActive }) => `drawer-link${isActive ? ' active' : ''}`} onClick={() => setIsMenuOpen(false)}>Home</NavLink>
+                <NavLink to="/shop" className={({ isActive }) => `drawer-link drawer-shop${isActive ? ' active' : ''}`} onClick={() => setIsMenuOpen(false)}>Shop Collection</NavLink>
+                <NavLink to="/about" className={({ isActive }) => `drawer-link${isActive ? ' active' : ''}`} onClick={() => setIsMenuOpen(false)}>About Us</NavLink>
+                <NavLink to="/catalog" className={({ isActive }) => `drawer-link${isActive ? ' active' : ''}`} onClick={() => setIsMenuOpen(false)}>Catalog</NavLink>
+                <NavLink to="/contact" className={({ isActive }) => `drawer-link${isActive ? ' active' : ''}`} onClick={() => setIsMenuOpen(false)}>Contact</NavLink>
+              </nav>
+
+              <div className="drawer-divider" />
+
+              <div className="drawer-auth">
+                {user ? (
+                  <>
+                    <NavLink to="/profile" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><User size={15} /> My Profile</NavLink>
+                    {user.role === 'ADMIN' && <NavLink to="/admin" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><Menu size={15} /> Admin Panel</NavLink>}
+                    <button className="drawer-auth-link drawer-logout" onClick={() => { handleLogout(); setIsMenuOpen(false); }}><LogOut size={15} /> Logout</button>
+                  </>
+                ) : isGuest ? (
+                  <>
+                    <NavLink to="/login" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><User size={15} /> Sign In / Register</NavLink>
+                    <button className="drawer-auth-link drawer-logout" onClick={() => { handleExitGuestMode(); setIsMenuOpen(false); }}><LogOut size={15} /> Exit Guest Mode</button>
+                  </>
+                ) : (
+                  <>
+                    <NavLink to="/login" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><User size={15} /> Sign In / Register</NavLink>
+                    <button className="drawer-auth-link" onClick={handleContinueAsGuest}><UserCircle size={15} /> Continue as Guest</button>
+                  </>
+                )}
+              </div>
+
+              <div className="drawer-footer"><Leaf size={12} /> Authentic Vedic Wellness</div>
             </motion.div>
           </>
         )}

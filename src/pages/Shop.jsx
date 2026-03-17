@@ -1,353 +1,258 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-import { ChevronDown, Search, X, ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { Search, X, SlidersHorizontal, Leaf, ShieldCheck } from 'lucide-react';
 import './Shop.css';
-import Marquee from 'react-fast-marquee';
+
+const CATS = ['All', 'Liquid', 'Powder', 'Capsules', 'Other'];
+const PER_PAGE = 12;
 
 const Shop = () => {
     const { products } = useShop();
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location.search);
-    const initialCategory = searchParams.get('category');
-    const searchQuery = searchParams.get('search');
+    const location  = useLocation();
+    const params    = new URLSearchParams(location.search);
+    const tabsRef   = useRef(null);
 
-    // Filter States
-    const [filteredProducts, setFilteredProducts] = useState(products);
-    const [selectedCategory, setSelectedCategory] = useState(initialCategory || 'All');
-    const [priceRange, setPriceRange] = useState(2000);
-    const [sortBy, setSortBy] = useState('featured');
-    const [activeSearch, setActiveSearch] = useState(searchQuery || '');
+    const [filtered,  setFiltered]  = useState(products);
+    const [cat,       setCat]       = useState(params.get('category') || 'All');
+    const [price,     setPrice]     = useState(2000);
+    const [sort,      setSort]      = useState('featured');
+    const [query,     setQuery]     = useState(params.get('search') || '');
+    const [drawer,    setDrawer]    = useState(false);
+    const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+    const [page,      setPage]      = useState(1);
 
-    // UI State: Drawer
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-    // Pagination State
-    const [currentPage, setCurrentPage] = useState(1);
-    const [productsPerPage] = useState(8);
-
-    // Reset page on filter change
+    /* sliding tab indicator */
     useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedCategory, activeSearch, priceRange, sortBy]);
+        if (!tabsRef.current) return;
+        const btn = tabsRef.current.querySelector('.cat-tab.active');
+        if (!btn) return;
+        const parent = tabsRef.current.getBoundingClientRect();
+        const rect   = btn.getBoundingClientRect();
+        setIndicator({ left: rect.left - parent.left, width: rect.width });
+    }, [cat]);
 
-    useEffect(() => {
-        document.documentElement.style.scrollBehavior = isDrawerOpen ? 'auto' : 'smooth';
-    }, [isDrawerOpen]);
-
-    // Pagination Logic
-    const indexOfLastProduct = currentPage * productsPerPage;
-    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-    const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-    const paginate = (pageNumber) => {
-        setCurrentPage(pageNumber);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const categories = ['All', 'Liquid', 'Powder', 'Capsules', 'Other'];
-
-    // Helper function to get product image safely
-    const getProductImage = (product, index = 0) => {
-        // Try images array first (local data format)
-        if (product.images && product.images[index]) {
-            return product.images[index];
-        }
-        // Try single image property (API format)
-        if (product.image) {
-            return product.image;
-        }
-        // Try imageUrls array (raw API format)
-        if (product.imageUrls && product.imageUrls[index]) {
-            return product.imageUrls[index];
-        }
-        // Fallback
-        return '/assets/product-placeholder.png';
-    };
-
-   // Filter Logic
-useEffect(() => {
-    let result = [...products];
-
-    // 1. Category
-    if (selectedCategory !== 'All') {
-        result = result.filter(p => p.category === selectedCategory);
-    }
-
-    // 2. Search
-    if (activeSearch) {
-        const q = activeSearch.toLowerCase();
-        result = result.filter(p =>
-            p.name?.toLowerCase().includes(q) ||
-            (p.description && p.description.toLowerCase().includes(q)) ||
-            (p.Ingredients && p.Ingredients.toLowerCase().includes(q))
-        );
-    }
-
-    // 3. Price
-    result = result.filter(p => {
-        const price = p.discount_price || p.price || 0;
-        return price <= priceRange;
-    });
-
-    // 4. Sort
-    if (sortBy === 'price-low') {
-        result.sort((a, b) => (a.discount_price || a.price || 0) - (b.discount_price || b.price || 0));
-    } else if (sortBy === 'price-high') {
-        result.sort((a, b) => (b.discount_price || b.price || 0) - (a.discount_price || a.price || 0));
-    }
-
-    // 5. Group by name — show only one card per product name
-    const seen = new Map();
-    result = result.filter(p => {
-        const key = p.name?.toLowerCase().trim();
-        if (seen.has(key)) return false;
-        seen.set(key, true);
-        return true;
-    });
-
-    setFilteredProducts(result);
-}, [selectedCategory, activeSearch, priceRange, sortBy, products]);
+    useEffect(() => { document.body.style.overflow = drawer ? 'hidden' : ''; }, [drawer]);
 
     useEffect(() => {
-        if (initialCategory) setSelectedCategory(initialCategory);
-        if (searchQuery) setActiveSearch(searchQuery);
-    }, [initialCategory, searchQuery]);
-
-    const resetFilters = () => {
-        setSelectedCategory('All');
-        setPriceRange(2000);
-        setSortBy('featured');
-    };
-
-    // Prevent body scroll when drawer is open
-    useEffect(() => {
-        if (isDrawerOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
+        let r = [...products];
+        if (cat !== 'All') r = r.filter(p => p.category === cat);
+        if (query) {
+            const q = query.toLowerCase();
+            r = r.filter(p => p.name?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q));
         }
-    }, [isDrawerOpen]);
+        r = r.filter(p => (p.discount_price || p.price || 0) <= price);
+        if (sort === 'price-low')  r.sort((a, b) => (a.discount_price||a.price||0) - (b.discount_price||b.price||0));
+        if (sort === 'price-high') r.sort((a, b) => (b.discount_price||b.price||0) - (a.discount_price||a.price||0));
+        const seen = new Set();
+        r = r.filter(p => { if (seen.has(p.id)) return false; seen.add(p.id); return true; });
+        setFiltered(r);
+        setPage(1);
+    }, [cat, query, price, sort, products]);
+
+    useEffect(() => {
+        const c = params.get('category'), q = params.get('search');
+        if (c) setCat(c);
+        if (q) setQuery(q);
+    }, [location.search]);
+
+    const reset      = () => { setCat('All'); setPrice(2000); setSort('featured'); setQuery(''); };
+    const hasFilters = cat !== 'All' || price < 2000 || sort !== 'featured' || query;
+
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+    const paged      = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    const goToPage = (n) => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
     return (
         <div className="shop-page">
-            {/* Hero Section */}
-            <div className="container" style={{ padding: 0 }}>
-                <div className="shop-hero">
-                    <div className="shop-hero-inner">
-                        <div className="hero-left">
-                            <h1 className="vedayura-title">Our Collection</h1>
-                            <div className="shop-divider"></div>
-                            <p className="text-large">
-                                Natural. Powerful. Timeless. <br />
-                                Discover our collection of Ayurvedic products crafted to restore balance.
-                            </p>
-                        </div>
-                        <div className="hero-right">
-                            {products.length > 0 ? (
-                                <Marquee speed={40} pauseOnHover gradient={false}>
-                                    {products.map((product) => (
-                                        <div key={product.id} className="slider-item">
-                                            <Link to={`/product/${product.id}`}>
-                                                <img
-                                                    src={getProductImage(product, 3) || getProductImage(product, 0)}
-                                                    alt={`${product.name} ${product.category}`}
-                                                    onError={(e) => {
-                                                        e.target.src = '/assets/product-placeholder.png';
-                                                    }}
-                                                />
-                                            </Link>
-                                        </div>
-                                    ))}
-                                </Marquee>
-                            ) : (
-                                <div className="marquee-placeholder">
-                                    <p>Loading products...</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+
+            {/* ── STICKY TOP BAR ── */}
+            <div className="shop-bar">
+                <div className="bar-search">
+                    <Search size={14} />
+                    <input
+                        placeholder="Search products…"
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                    />
+                    {query && <button className="bar-clear" onClick={() => setQuery('')}><X size={12} /></button>}
                 </div>
+                <button className={`bar-filter${hasFilters ? ' on' : ''}`} onClick={() => setDrawer(true)}>
+                    <SlidersHorizontal size={14} />
+                    <span>Filter & Sort</span>
+                    {hasFilters && <em className="bar-dot" />}
+                </button>
             </div>
 
-            <div className="container section">
-                <div className="shop-layout">
-                    {/* TOOLBAR: Search + Filter Button */}
-                    <div className="shop-toolbar sticky-toolbar">
-                        <div className="search-input-wrapper">
-                            <Search className="search-icon" size={18} />
-                            <input
-                                type="text"
-                                placeholder="Search...."
-                                value={activeSearch}
-                                onChange={(e) => setActiveSearch(e.target.value)}
-                            />
-                            {activeSearch && (
-                                <button className="clear-search" onClick={() => setActiveSearch('')}>
-                                    <X size={16} />
-                                </button>
-                            )}
+            {/* ── PAGE HEADER ── */}
+            <header className="shop-header">
+                <div className="sh-heading-wrap">
+                    
+                    <h1 className="sh-heading">
+                        Our<br />
+                        <em>Collection.</em>
+                    </h1>
+                </div>
+              
+            </header>
+
+            {/* ── CATEGORY TABS + SLIDING INDICATOR ── */}
+            <div className="cat-bar">
+                <div className="cat-tabs" ref={tabsRef}>
+                    {/* sliding underline */}
+                    <span
+                        className="cat-indicator"
+                        style={{ left: indicator.left, width: indicator.width }}
+                    />
+                    {CATS.map(c => {
+                        const n = c === 'All' ? products.length : products.filter(p => p.category === c).length;
+                        return (
+                            <button
+                                key={c}
+                                className={`cat-tab${cat === c ? ' active' : ''}`}
+                                onClick={() => setCat(c)}
+                            >
+                                {c}
+                                <span className="cat-n">{n}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+                <p className="cat-count">{filtered.length} result{filtered.length !== 1 ? 's' : ''}</p>
+            </div>
+
+            {/* ── GRID ── */}
+            <main className="shop-main">
+                {filtered.length > 0 ? (
+                    <>
+                        <div className="product-grid" key={cat + sort + page}>
+                            {paged.map(p => (
+                                <ProductCard key={p.id} product={p} activeCategory={cat} />
+                            ))}
                         </div>
 
-                        <button
-                            className={`btn-filter-trigger ${isDrawerOpen ? 'active' : ''}`}
-                            onClick={() => setIsDrawerOpen(true)}
-                        >
-                            <SlidersHorizontal size={18} />
-                            <span>Filters</span>
-                            {(selectedCategory !== 'All' || priceRange < 2000 || sortBy !== 'featured') &&
-                                <span className="filter-badge"></span>
-                            }
-                        </button>
-                    </div>
+                        {totalPages > 1 && (
+                            <div className="pagination">
+                                <button
+                                    className="pg-btn"
+                                    disabled={page === 1}
+                                    onClick={() => goToPage(page - 1)}
+                                >
+                                    ← Prev
+                                </button>
 
-                    {/* Product Grid */}
-                    <main className="shop-main">
-                        {filteredProducts.length > 0 ? (
-                            <>
-                                <div className="product-grid-wrapper animate-fade-in">
-                                    <div className="product-grid">
-                                        {currentProducts.map(product => (
-                                            <ProductCard
-                                                key={product.id}
-                                                product={product}
-                                                activeCategory={selectedCategory}
-                                            />
-                                        ))}
-                                    </div>
+                                <div className="pg-pages">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => {
+                                        const isEdge = n === 1 || n === totalPages;
+                                        const isNear = Math.abs(n - page) <= 1;
+                                        if (!isEdge && !isNear) {
+                                            if (n === 2 || n === totalPages - 1) return <span key={n} className="pg-ellipsis">…</span>;
+                                            return null;
+                                        }
+                                        return (
+                                            <button
+                                                key={n}
+                                                className={`pg-num${page === n ? ' active' : ''}`}
+                                                onClick={() => goToPage(n)}
+                                            >
+                                                {n}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
 
-                                {/* Pagination */}
-                                {totalPages > 1 && (
-                                  <div className="pagination">
-  <button
-    className={`page-nav-btn ${currentPage === 1 ? 'is-disabled' : ''}`}
-    onClick={() => paginate(currentPage - 1)}
-    disabled={currentPage === 1}
-  >
-    <ChevronLeft />
-  </button>
-
-  {[...Array(totalPages)].map((_, i) => (
-    <button
-      key={i + 1}
-      className={`page-number-btn ${currentPage === i + 1 ? 'is-active' : ''}`}
-      onClick={() => paginate(i + 1)}
-    >
-      {i + 1}
-    </button>
-  ))}
-
-  <button
-    className={`page-nav-btn ${currentPage === totalPages ? 'is-disabled' : ''}`}
-    onClick={() => paginate(currentPage + 1)}
-    disabled={currentPage === totalPages}
-  >
-    <ChevronRight />
-  </button>
-</div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="no-products-premium">
-                                <div className="no-products-icon">
-                                    <Search size={48} />
-                                </div>
-                                <h3>No matching products found</h3>
-                                <p>Try adjusting your search or filters.</p>
-                                <button className="btn btn-primary" onClick={resetFilters}>
-                                    Reset All Filters
+                                <button
+                                    className="pg-btn"
+                                    disabled={page === totalPages}
+                                    onClick={() => goToPage(page + 1)}
+                                >
+                                    Next →
                                 </button>
                             </div>
                         )}
-                    </main>
-                </div>
-            </div>
+                    </>
+                ) : (
+                    <div className="empty-state">
+                        <Search size={28} strokeWidth={1} />
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filters.</p>
+                        <button onClick={reset}>Reset</button>
+                    </div>
+                )}
+            </main>
 
-            {/* Bottom Drawer */}
-            <div
-                className={`drawer-backdrop ${isDrawerOpen ? 'open' : ''}`}
-                onClick={() => setIsDrawerOpen(false)}
-            ></div>
-
-            <div className={`bottom-drawer ${isDrawerOpen ? 'open' : ''}`}>
-                <div className="drawer-header">
+            {/* ── FILTER DRAWER (left) ── */}
+            <div className={`drw-bg${drawer ? ' on' : ''}`} onClick={() => setDrawer(false)} />
+            <div className={`drw${drawer ? ' on' : ''}`}>
+                <div className="drw-head">
                     <h3>Filter & Sort</h3>
-                    <button className="btn btn-icon" onClick={() => setIsDrawerOpen(false)}>
-                        <X size={24} />
-                    </button>
+                    <button onClick={() => setDrawer(false)}><X size={18} /></button>
                 </div>
 
-                <div className="drawer-body">
-                    {/* Categories */}
-                    <div className="drawer-section">
-                        <h4>Categories</h4>
-                        <div className="drawer-chips">
-                            {categories.map(cat => {
-                                const count = cat === 'All'
-                                    ? products.length
-                                    : products.filter(p => p.category === cat).length;
-                                return (
-                                    <button
-                                        key={cat}
-                                        className={`chip ${selectedCategory === cat ? 'active' : ''}`}
-                                        onClick={() => setSelectedCategory(cat)}
-                                    >
-                                        {cat} <span className="chip-count">{count}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
+                <div className="drw-body">
+                    {/* Category */}
+                    <div className="drw-sec">
+                        <p className="drw-lbl">Category</p>
+                        {CATS.map(c => {
+                            const n = c === 'All' ? products.length : products.filter(p => p.category === c).length;
+                            return (
+                                <button
+                                    key={c}
+                                    className={`drw-row${cat === c ? ' on' : ''}`}
+                                    onClick={() => setCat(c)}
+                                >
+                                    <span>{c}</span>
+                                    <span className="drw-n">{n}</span>
+                                </button>
+                            );
+                        })}
                     </div>
 
-                    {/* Price Range */}
-                    <div className="drawer-section">
-                        <div className="drawer-row-between">
-                            <h4>Max Price</h4>
-                            <span className="price-tag">₹{priceRange}</span>
+                    {/* Sort */}
+                    <div className="drw-sec">
+                        <p className="drw-lbl">Sort By</p>
+                        {[
+                            ['featured',   'Featured'],
+                            ['price-low',  'Price: Low → High'],
+                            ['price-high', 'Price: High → Low'],
+                        ].map(([v, l]) => (
+                            <button key={v} className={`drw-row${sort === v ? ' on' : ''}`} onClick={() => setSort(v)}>
+                                <span>{l}</span>
+                                {sort === v && <span className="drw-tick">✓</span>}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Price */}
+                    <div className="drw-sec">
+                        <div className="drw-row-between">
+                            <p className="drw-lbl">Max Price</p>
+                            <span className="drw-pval">₹{price}</span>
                         </div>
                         <input
-                            type="range"
-                            className="styled-range"
-                            min="0"
-                            max="2000"
-                            step="100"
-                            value={priceRange}
-                            onChange={(e) => setPriceRange(Number(e.target.value))}
+                            type="range" min="0" max="2000" step="100"
+                            value={price}
+                            onChange={e => setPrice(Number(e.target.value))}
+                            className="drw-range"
                         />
+                        <div className="drw-range-ends"><span>₹0</span><span>₹2,000</span></div>
                     </div>
 
-                    {/* Sort By */}
-                    <div className="drawer-section">
-                        <h4>Sort By</h4>
-                        <div className="select-wrapper">
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="drawer-select"
-                            >
-                                <option value="featured">Featured</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                            </select>
-                            <ChevronDown size={16} className="select-icon" />
-                        </div>
+                    {/* Trust */}
+                    <div className="drw-trust">
+                        <span><Leaf size={11} /> 100% Natural</span>
+                        <span><ShieldCheck size={11} /> GMP Certified</span>
                     </div>
                 </div>
 
-               <div className="drawer-footer">
-  <button className="btn btn-outline btn-drawer-reset" onClick={resetFilters}>
-    Reset
-  </button>
-  <button
-    className="btn btn-outline btn-drawer-reset"
-    onClick={() => setIsDrawerOpen(false)}
-  >
-    Show {filteredProducts.length} Results
-  </button>
-</div>
+                <div className="drw-foot">
+                    {hasFilters && <button className="drw-reset" onClick={reset}>Clear All</button>}
+                    <button className="drw-apply" onClick={() => setDrawer(false)}>
+                        Show {filtered.length} Products
+                    </button>
+                </div>
             </div>
         </div>
     );

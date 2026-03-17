@@ -175,9 +175,23 @@ export const ShopProvider = ({ children }) => {
     useEffect(() => {
         (async () => {
             try {
-                const res = await api.products.getAll({ page: 1, limit: 100 });
+                const LIMIT = 100;
+                const res = await api.products.getAll({ page: 1, limit: LIMIT });
                 if (res && Array.isArray(res.products)) {
-                    const mappedProducts = res.products.map(p => {
+                    let allProducts = res.products;
+                    const total = res.total ?? res.totalCount ?? res.totalProducts ?? null;
+                    if (total && allProducts.length < total) {
+                        const totalPages = Math.ceil(total / LIMIT);
+                        const pagePromises = [];
+                        for (let p = 2; p <= totalPages; p++) {
+                            pagePromises.push(api.products.getAll({ page: p, limit: LIMIT }));
+                        }
+                        const results = await Promise.all(pagePromises);
+                        for (const r of results) {
+                            if (r && Array.isArray(r.products)) allProducts = [...allProducts, ...r.products];
+                        }
+                    }
+                    const mappedProducts = allProducts.map(p => {
                         const localMatch = productsData.find(local =>
                             (p.name || '').toLowerCase().trim() === (local.name || '').toLowerCase().trim() &&
                             (p.category?.name || p.category || '').toLowerCase().trim() === (local.category || '').toLowerCase().trim()
@@ -208,7 +222,7 @@ export const ShopProvider = ({ children }) => {
                 console.warn('Failed to load products from API', err);
             }
         })();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // ===== SYNC cart & wishlist with server when user logs in =====
     useEffect(() => {
