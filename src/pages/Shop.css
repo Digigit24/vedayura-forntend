@@ -219,7 +219,7 @@
 
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 20px;
     animation: gridIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }

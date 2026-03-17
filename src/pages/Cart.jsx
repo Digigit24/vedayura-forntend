@@ -1,16 +1,12 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShoppingBag, X } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
 import './Cart.css';
 
-// Normalize cart items to a consistent shape
-// Server items: { id, quantity, productId, product: { id, name, imageUrls, discountedPrice, ... } }
-// Local items:  { id, name, images, price, discount_price, quantity, ... }
 const normalizeItem = (item) => {
   const product = item.product || item;
   const productId = product.id || item.productId || item.id;
-
   return {
     id: productId,
     cartItemId: item.id,
@@ -23,43 +19,36 @@ const normalizeItem = (item) => {
   };
 };
 
-const Cart = () => {
-  const {
-    cart = [],
-    updateQuantity,
-    removeFromCart,
-    closeDrawer,
-  } = useShop();
+const itemVariants = {
+  hidden: { opacity: 0, x: 24 },
+  visible: (i) => ({ opacity: 1, x: 0, transition: { delay: i * 0.055, duration: 0.28, ease: 'easeOut' } }),
+  exit:   { opacity: 0, x: 40, transition: { duration: 0.22, ease: 'easeIn' } },
+};
 
+const Cart = () => {
+  const { cart = [], updateQuantity, removeFromCart, closeDrawer } = useShop();
   const navigate = useNavigate();
 
   const normalizedCart = cart.map(normalizeItem);
-
-  const subtotal = normalizedCart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
-
+  const subtotal = normalizedCart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const shipping = subtotal > 999 ? 0 : 99;
   const total = subtotal + shipping;
 
   if (normalizedCart.length === 0) {
     return (
-      <div className="cart-empty">
-        <ShoppingBag size={48} className="text-muted" strokeWidth={1.5} />
+      <motion.div
+        className="cart-empty"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <ShoppingBag size={44} strokeWidth={1.2} />
         <h3>Your cart is empty</h3>
-        <p>Looks like you haven't added anything to your cart yet.</p>
-
-        <button
-          className="btn btn-outline"
-          onClick={() => {
-            closeDrawer();
-            navigate('/shop');
-          }}
-        >
+        <p>Looks like you haven't added anything yet.</p>
+        <button className="btn btn-outline" onClick={() => { closeDrawer(); navigate('/shop'); }}>
           Start Shopping
         </button>
-      </div>
+      </motion.div>
     );
   }
 
@@ -67,86 +56,90 @@ const Cart = () => {
     <div className="cart-drawer-content">
       {/* Header */}
       <div className="cart-drawer-header">
-        <h3>My Cart</h3>
-        <button className="drawer-close" onClick={closeDrawer}>
-          <X size={22} />
-        </button>
+        <h3>
+          My Cart
+          <span className="cart-header-meta">{normalizedCart.length} item{normalizedCart.length !== 1 ? 's' : ''}</span>
+        </h3>
       </div>
 
       {/* Items */}
       <div className="cart-items">
-        {normalizedCart.map(item => (
-          <div key={item.cartItemId || item.id} className="cart-item">
-            <img src={item.image} alt={item.name} />
-
-            <div className="cart-item-info">
-             <h4>
-                {item.name}
-                {item.variant && <span className="cart-item-variant"> — {item.variant.charAt(0) + item.variant.slice(1).toLowerCase()}</span>}
-              </h4>
-              <span className="price">
-                ₹{item.price}
-              </span>
-
-              <div className="qty-controls">
-                <button
-                  onClick={() =>
-                    updateQuantity(item.id, item.quantity - 1)
-                  }
-                  disabled={item.quantity <= 1}
-                >
-                  <Minus size={14} />
-                </button>
-
-                <span>{item.quantity}</span>
-
-                <button
-                  onClick={() =>
-                    updateQuantity(item.id, item.quantity + 1)
-                  }
-                >
-                  <Plus size={14} />
-                </button>
-              </div>
-            </div>
-
-            <button
-              className="remove-btn"
-              onClick={() => removeFromCart(item.id)}
+        <AnimatePresence initial={false}>
+          {normalizedCart.map((item, i) => (
+            <motion.div
+              key={item.cartItemId || item.id}
+              className="cart-item"
+              custom={i}
+              variants={itemVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              layout
             >
-              <Trash2 size={16} />
-            </button>
-          </div>
-        ))}
+              <img src={item.image} alt={item.name} />
+
+              <div className="cart-item-info">
+                <h4>
+                  {item.name}
+                  {item.variant && (
+                    <span className="cart-item-variant"> — {item.variant.charAt(0) + item.variant.slice(1).toLowerCase()}</span>
+                  )}
+                </h4>
+                <span className="price">₹{item.price.toLocaleString()}</span>
+
+                <div className="qty-controls">
+                  <button onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                    <Minus size={13} />
+                  </button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                    <Plus size={13} />
+                  </button>
+                </div>
+              </div>
+
+              <button className="remove-btn" onClick={() => removeFromCart(item.id)}>
+                <Trash2 size={15} />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {/* Summary */}
-      <div className="cart-summary">
+      <motion.div
+        className="cart-summary"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, duration: 0.28 }}
+      >
         <div className="row">
           <span>Subtotal</span>
           <span>₹{subtotal.toLocaleString()}</span>
         </div>
-
-        <div className="row">
-          <span>Shipping Charge</span>
-          <span>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+        <div className={`row${shipping === 0 ? ' free' : ''}`}>
+          <span>Shipping</span>
+          <span>{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
         </div>
 
+        {shipping > 0 && (
+          <div className="free-shipping-notice">
+            Add ₹{(999 - subtotal + 1).toLocaleString()} more for free shipping
+          </div>
+        )}
+
         <div className="row total">
-          <span>Total Amount</span>
+          <span>Total</span>
           <span>₹{total.toLocaleString()}</span>
         </div>
 
         <button
-          className="btn btn-primary"
-          onClick={() => {
-            closeDrawer();
-            navigate('/checkout');
-          }}
+          className="btn-checkout"
+          onClick={() => { closeDrawer(); navigate('/checkout'); }}
         >
-          Checkout Now
+          Checkout <ArrowRight size={16} />
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 };

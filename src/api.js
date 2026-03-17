@@ -114,4 +114,11 @@ export const addresses = {
   remove: (id) => request(`/users/address/${id}`, { method: "DELETE" }),
 };
 
-export default { auth, products, cart, wishlist, orders, shipping, addresses };
+export const reviews = {
+  getByProduct: (productId) =>
+    request(`/products/${productId}/reviews`, { method: "GET", auth: false }),
+  create: (productId, payload) =>
+    request(`/products/${productId}/reviews`, { method: "POST", body: payload }),
+};
+
+export default { auth, products, cart, wishlist, orders, shipping, addresses, reviews };

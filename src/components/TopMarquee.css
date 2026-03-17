@@ -1,43 +1,49 @@
 .top-marquee {
-  position: sticky;
-  top: 0;
-  height: 30px;
-  background: #f6ff00;
+  width: 100%;
+  height: 34px;
+  background: #111;
   overflow: hidden;
-  z-index: 999;
+  position: relative;
+  z-index: 1001;
 }
 
 .marquee-track {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
-  display: inline-block;
-  min-width: 200%;
-  padding-left: 100%;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  line-height: 26px;
-  color: #000000;
-  text-transform: uppercase;
-  animation: marquee-scroll 18s linear infinite;
-
+  height: 100%;
+  animation: marquee-scroll 30s linear infinite;
+  will-change: transform;
 }
 
-
-@keyframes marquee-scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
 .top-marquee:hover .marquee-track {
   animation-play-state: paused;
 }
-@media (max-width: 768px) {
-  .marquee-track {
-    animation-duration: 20s;
-  }
+
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  padding: 0 8px;
 }
 
+.marquee-dot {
+  font-size: 0.5rem;
+  color: #c9a84c;
+  opacity: 0.8;
+}
 
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (max-width: 768px) {
+  .marquee-track { animation-duration: 22s; }
+  .marquee-item  { font-size: 0.65rem; }
+}

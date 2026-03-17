@@ -79,7 +79,7 @@
 .form-group label {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: #e2e8f0;
 }
 
 .error-msg {
