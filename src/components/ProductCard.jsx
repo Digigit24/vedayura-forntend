@@ -33,15 +33,27 @@ const ProductCard = ({ product, activeCategory }) => {
   return (
     <div className="product-card" data-category={activeCategory}>
       <div className="product-image-container">
-        <Link to={`/product/${product.id}`} className="product-image-link">
+        <Link
+          to={`/product/${product.id}`}
+          className="product-image-link"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
           <div className="product-image-wrapper">
+            {/* primary image */}
             <img
-              src={isHovered && product.images && product.images[3] ? product.images[3] : (product.images ? product.images[0] : product.image)}
+              src={product.images?.[0] || product.image || '/assets/product-placeholder.png'}
               alt={product.name}
-              className="product-image"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
+              className={`product-image product-image-primary${isHovered && product.images?.[1] ? ' faded' : ''}`}
             />
+            {/* hover image — only rendered if a second image exists */}
+            {product.images?.[1] && (
+              <img
+                src={product.images[1]}
+                alt={product.name}
+                className={`product-image product-image-hover${isHovered ? ' visible' : ''}`}
+              />
+            )}
           </div>
         </Link>
 

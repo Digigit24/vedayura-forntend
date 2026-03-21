@@ -14,8 +14,8 @@ import TopMarquee from '../components/TopMarquee';
 import { useShop } from '../context/ShopContext';
 import './ProductDetails.css';
 
-const SLIDE_DURATION = 500;
-const VARIANT_LABELS = { CAPSULES: 'Capsules', LIQUID: 'Liquid', POWDER: 'Powder', OTHER: 'Other' };
+const SLIDE_DURATION = 550;
+const VARIANT_LABELS = { CAPSULES: 'Capsules', JUICE: 'Juice', POWDER: 'Powder', OTHER: '' };
 
 const Stars = ({ rating = 4.5 }) => (
   <div className="pd-stars">
@@ -31,6 +31,7 @@ const ProductDetails = () => {
   const { products, addToCart, toggleWishlist, wishlist = [], user } = useShop();
 
   const [product, setProduct]           = useState(null);
+  const [apiProductId, setApiProductId] = useState(null);
   const [otherVariants, setOtherVariants] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [quantity, setQuantity]         = useState(1);
@@ -46,6 +47,7 @@ const ProductDetails = () => {
   const [activeVideo, setActiveVideo]       = useState(null);
 
   const [reviews, setReviews]             = useState([]);
+  const [reviewStats, setReviewStats]     = useState(null);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewRating, setReviewRating]   = useState(0);
   const [reviewHover, setReviewHover]     = useState(0);
@@ -75,8 +77,9 @@ const ProductDetails = () => {
       ingredients: p.ingredients || p.Ingredients || '',
       benefits: Array.isArray(p.benefits || p.Benefits) ? (p.benefits || p.Benefits) : [],
       howToUse: p.howToUse || p.usage || '',
+      servingSize: p.servingSize || null,
       productType: p.productType || '',
-      variant: p.variant || null,
+      variant: p.variant || { Juice: 'JUICE', Capsules: 'CAPSULES', Powder: 'POWDER', Coffee: 'OTHER', Kit: 'OTHER', 'Personal Care': 'OTHER' }[p.category] || null,
       features: p.features || [],
       weight: p.weight || '',
       shelfLife: p.shelfLife || '',
@@ -91,12 +94,22 @@ const ProductDetails = () => {
       let ctx = null;
       if (products?.length) {
         const found = products.find(p => String(p.id) === String(id));
-        if (found) { ctx = normalizeProduct(found); setProduct(ctx); if (ctx.description && ctx.benefits?.length) setLoading(false); }
+        if (found) {
+          ctx = normalizeProduct(found);
+          setProduct(ctx);
+          const localOthers = products.filter(p => p.name === found.name && String(p.id) !== String(id));
+          if (localOthers.length) setOtherVariants(localOthers.map(normalizeProduct));
+          if (ctx.description && ctx.benefits?.length) setLoading(false);
+        }
       }
       try {
         const res = await api.products.getById(id);
-        if (res?.product) { setProduct(normalizeProduct(res.product)); setOtherVariants(res.product.otherVariants || []); }
-        else if (!ctx) setProduct(null);
+        const apiProduct = res?.product ?? (res?.id ? res : null);
+        if (apiProduct) {
+          setProduct(normalizeProduct(apiProduct));
+          setApiProductId(apiProduct.id);
+          setOtherVariants(apiProduct.otherVariants || []);
+        } else if (!ctx) setProduct(null);
       } catch { if (!ctx) setProduct(null); }
       finally { setLoading(false); }
     };
@@ -117,17 +130,31 @@ const ProductDetails = () => {
     window.scrollTo(0, 0);
     setCurrentIndex(0); setNextIndex(null); setSlideDirection(null); setSlidePhase('idle');
     setQuantity(1); setShowVideoModal(false); setActiveTab('overview');
-    setReviews([]); setReviewRating(0); setReviewComment('');
+    setReviews([]); setReviewStats(null); setReviewRating(0); setReviewComment('');
+    setReviewsLoading(true);
+    setApiProductId(null);
   }, [id]);
 
   useEffect(() => {
-    if (!product?.id) return;
+    if (!apiProductId) return;
+    let cancelled = false;
     setReviewsLoading(true);
-    api.reviews.getByProduct(product.id)
-      .then(data => setReviews(Array.isArray(data) ? data : data?.reviews || []))
-      .catch(() => setReviews([]))
-      .finally(() => setReviewsLoading(false));
-  }, [product?.id]);
+    api.reviews.getByProduct(apiProductId)
+      .then(data => {
+        if (!cancelled) {
+          const list = Array.isArray(data) ? data
+            : Array.isArray(data?.reviews) ? data.reviews
+            : Array.isArray(data?.data) ? data.data
+            : [];
+          setReviews(list);
+          if (data?.stats) setReviewStats(data.stats);
+          else if (data?.distribution || data?.average != null) setReviewStats(data);
+        }
+      })
+      .catch(() => { if (!cancelled) setReviews([]); })
+      .finally(() => { if (!cancelled) setReviewsLoading(false); });
+    return () => { cancelled = true; };
+  }, [apiProductId]);
 
   const slideTo = useCallback((target, dir) => {
     if (slidePhase !== 'idle' || galleryImages.length <= 1 || target === currentIndex) return;
@@ -189,7 +216,7 @@ const ProductDetails = () => {
 
   const allVariants = [];
   if (product.variant) allVariants.push({ id: product.id, variant: product.variant, price: product.price, stockQuantity: product.stock });
-  otherVariants.forEach(v => allVariants.push({ id: v.id, variant: v.variant, price: Number(v.discountedPrice || v.realPrice || 0), stockQuantity: Number(v.stockQuantity ?? 0) }));
+  otherVariants.forEach(v => allVariants.push({ id: v.id, variant: v.variant, price: Number(v.discountedPrice || v.realPrice || v.price || 0), stockQuantity: Number(v.stockQuantity ?? v.stock ?? 0) }));
   const hasVariants = allVariants.length > 1;
 
   const productFeatures = product.features?.length ? product.features : [
@@ -223,15 +250,15 @@ const ProductDetails = () => {
   const handleQty         = val => { const n = quantity + val; if (n >= 1 && n <= (product.stock || 99)) setQuantity(n); };
   const handleAddToCart   = () => { if (isOutOfStock) return; addToCart(product, quantity); toast.success(`Added to cart`, { style: ts, icon: '✓' }); };
 
-  // Review stats
-  const avgRating = reviews.length
-    ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10
-    : 0;
-  const starCounts = [5,4,3,2,1].map(n => ({
-    star: n,
-    count: reviews.filter(r => r.rating === n).length,
-    pct: reviews.length ? Math.round((reviews.filter(r => r.rating === n).length / reviews.length) * 100) : 0,
-  }));
+  // Review stats — prefer server-computed values when available
+  const totalReviews = reviewStats?.total ?? reviewStats?.totalReviews ?? reviews.length;
+  const avgRating = reviewStats?.average ?? reviewStats?.averageRating
+    ?? (reviews.length ? Math.round((reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) * 10) / 10 : 0);
+  const dist = reviewStats?.distribution ?? {};
+  const starCounts = [5,4,3,2,1].map(n => {
+    const count = dist[n] ?? reviews.filter(r => r.rating === n).length;
+    return { star: n, count, pct: totalReviews ? Math.round((count / totalReviews) * 100) : 0 };
+  });
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -239,8 +266,19 @@ const ProductDetails = () => {
     setSubmittingReview(true);
     try {
       const saved = await api.reviews.create(product.id, { rating: reviewRating, comment: reviewComment.trim() });
-      const newReview = saved?.review || saved;
-      setReviews(prev => [{ ...newReview, user: { name: user?.name || 'You' } }, ...prev]);
+      const newReview = saved?.review ?? (saved?.id ? saved : null);
+      if (newReview) {
+        setReviews(prev => [{ ...newReview, user: { name: user?.name || 'You' } }, ...prev]);
+      } else {
+        // API didn't return the review object — refetch to stay in sync
+        api.reviews.getByProduct(apiProductId)
+          .then(data => {
+            const list = Array.isArray(data) ? data : Array.isArray(data?.reviews) ? data.reviews : [];
+            setReviews(list);
+            if (data?.stats) setReviewStats(data.stats);
+          })
+          .catch(() => {});
+      }
       setReviewRating(0); setReviewComment('');
       toast.success('Review submitted!', { style: ts });
     } catch {
@@ -254,9 +292,9 @@ const ProductDetails = () => {
   const tabs = [
     product.description || product.benefits?.length ? { id: 'overview', label: 'Overview' } : null,
     product.ingredients                             ? { id: 'ingredients', label: 'Ingredients' } : null,
-    howToUseSteps.length                            ? { id: 'usage', label: 'How to Use' } : null,
+    (howToUseSteps.length || product.servingSize)   ? { id: 'usage', label: 'How to Use' } : null,
     specs.length                                    ? { id: 'details', label: 'Details' } : null,
-    { id: 'reviews', label: `Reviews${reviews.length ? ` (${reviews.length})` : ''}` },
+    { id: 'reviews', label: `Reviews${totalReviews ? ` (${totalReviews})` : ''}` },
   ].filter(Boolean);
 
   return (
@@ -278,6 +316,7 @@ const ProductDetails = () => {
       </div>
 
       {/* ── 2-COL HERO ── */}
+      <div className="pd-hero-bg">
       <div className="pd-hero-wrap">
         <div className="pd-hero">
 
@@ -357,9 +396,15 @@ const ProductDetails = () => {
 
             {/* Rating */}
             <div className="pd-rating-row">
-              <Stars rating={avgRating || 4.5} />
-              <span className="pd-rating-val">{avgRating || '—'}</span>
-              <span className="pd-rating-count">{reviews.length ? `${reviews.length} review${reviews.length !== 1 ? 's' : ''}` : 'No reviews yet'}</span>
+              {totalReviews > 0 ? (
+                <>
+                  <Stars rating={avgRating} />
+                  <span className="pd-rating-val">{avgRating.toFixed(1)}</span>
+                  <span className="pd-rating-count">{totalReviews} review{totalReviews !== 1 ? 's' : ''}</span>
+                </>
+              ) : (
+                <span className="pd-rating-count">No reviews yet</span>
+              )}
             </div>
 
             <div className="pd-info-divider" />
@@ -379,6 +424,18 @@ const ProductDetails = () => {
             {/* Short description */}
             {product.description && (
               <p className="pd-info-desc">{product.description}</p>
+            )}
+
+            {/* Top benefits preview */}
+            {product.benefits?.length > 0 && (
+              <ul className="pd-benefits-preview">
+                {product.benefits.slice(0, 3).map((b, i) => (
+                  <li key={i}>
+                    <CheckCircle size={14} />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
             )}
 
             {/* Variants */}
@@ -459,10 +516,15 @@ const ProductDetails = () => {
                 </div>
 
                 {/* CTA */}
-                <button className="pd-cta" onClick={handleAddToCart}>
-                  Add to Cart
-                  <span className="pd-cta-price">₹{(product.price * quantity).toFixed(0)}</span>
-                </button>
+                <div className="pd-cta-row">
+                  <button className="pd-cta" onClick={handleAddToCart}>
+                    Add to Cart
+                    <span className="pd-cta-price">₹{(product.price * quantity).toFixed(0)}</span>
+                  </button>
+                  <button className="pd-cta-secondary" onClick={() => { handleAddToCart(); navigate('/cart'); }}>
+                    Buy Now
+                  </button>
+                </div>
               </>
             )}
 
@@ -474,36 +536,37 @@ const ProductDetails = () => {
 
             {/* Delivery */}
             <div className="pd-delivery-strip">
-              <div className="pd-delivery-item">
-                <Truck size={14} />
-                <span>Free delivery over ₹999</span>
-              </div>
-              <div className="pd-delivery-item">
-                <RotateCcw size={14} />
-                <span>7-day returns</span>
-              </div>
-              <div className="pd-delivery-item">
-                <ShieldCheck size={14} />
-                <span>Secure checkout</span>
-              </div>
+              {[
+                { icon: <Truck size={15} />,      text: 'Free delivery over ₹999' },
+                { icon: <RotateCcw size={15} />,  text: '7-day easy returns' },
+                { icon: <ShieldCheck size={15} />, text: 'Secure & safe checkout' },
+              ].map((item, i) => (
+                <div key={i} className="pd-delivery-item">
+                  <span className="pd-delivery-icon">{item.icon}</span>
+                  <span>{item.text}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </div>
+      </div>{/* /pd-hero-bg */}
 
       {/* ── FULL-WIDTH TAB PANEL ── */}
       {tabs.length > 0 && (
         <div className="pd-tabs-section">
           <div className="pd-tabs-nav">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                className={`pd-tab-btn${activeTab === tab.id ? ' active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
-              >
-                {tab.label}
-              </button>
-            ))}
+            <div className="pd-tabs-inner">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  className={`pd-tab-btn${activeTab === tab.id ? ' active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="pd-tab-body">
@@ -557,14 +620,29 @@ const ProductDetails = () => {
                     <div className="pd-tab-pane">
                       <div className="pd-tab-block">
                         <h3 className="pd-tab-sub">How to Use</h3>
-                        <ol className="pd-steps">
-                          {howToUseSteps.map((step, i) => (
-                            <li key={i}>
-                              <span className="pd-step-num">{i + 1}</span>
-                              <p>{step.trim()}{step.trim().endsWith('.') ? '' : '.'}</p>
-                            </li>
-                          ))}
-                        </ol>
+                        {howToUseSteps.length > 0 && (
+                          <ol className="pd-steps">
+                            {howToUseSteps.map((step, i) => (
+                              <li key={i}>
+                                <span className="pd-step-num">{i + 1}</span>
+                                <p>{step.trim()}{step.trim().endsWith('.') ? '' : '.'}</p>
+                              </li>
+                            ))}
+                          </ol>
+                        )}
+                        {product.servingSize && (
+                          <div className="pd-serving-size">
+                            <h4 className="pd-serving-title">Serving Size</h4>
+                            <div className="pd-serving-list">
+                              {Object.entries(product.servingSize).map(([type, dose]) => (
+                                <div key={type} className="pd-serving-row">
+                                  <span className="pd-serving-type">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                                  <span className="pd-serving-dose">{dose}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div className="pd-usage-tip">
                         <span className="pd-usage-tip-label">Pro Tip</span>
@@ -597,12 +675,12 @@ const ProductDetails = () => {
                     <div className="pd-tab-pane">
 
                       {/* Rating summary */}
-                      {reviews.length > 0 && (
+                      {totalReviews > 0 && (
                         <div className="pd-reviews-summary">
                           <div className="pd-reviews-score">
                             <span className="pd-score-big">{avgRating.toFixed(1)}</span>
                             <Stars rating={avgRating} />
-                            <span className="pd-score-count">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</span>
+                            <span className="pd-score-count">{totalReviews} review{totalReviews !== 1 ? 's' : ''}</span>
                           </div>
                           <div className="pd-rating-bars">
                             {starCounts.map(({ star, count, pct }) => (
@@ -692,7 +770,7 @@ const ProductDetails = () => {
                         </form>
                       ) : (
                         <div className="pd-review-login-prompt">
-                          <span>Please <a href="/login">sign in</a> to leave a review.</span>
+                          <span>Please <Link to="/login">sign in</Link> to leave a review.</span>
                         </div>
                       )}
 
@@ -735,14 +813,14 @@ const ProductDetails = () => {
       {/* Trust strip */}
       <div className="pd-trust-strip">
         {[
-          { icon: <ShieldCheck size={18} />, label: 'Secure Checkout', sub: '256-bit SSL' },
-          { icon: <RotateCcw size={18} />,   label: 'Easy Returns',     sub: '7-day policy' },
-          { icon: <Package size={18} />,     label: 'Discreet Packing', sub: 'Unmarked boxes' },
-          { icon: <Award size={18} />,       label: 'GMP Certified',    sub: 'Quality assured' },
+          { icon: <ShieldCheck size={20} />, label: 'Secure Checkout', sub: '256-bit SSL encryption' },
+          { icon: <RotateCcw size={20} />,   label: 'Easy Returns',    sub: '7-day hassle-free policy' },
+          { icon: <Package size={20} />,     label: 'Discreet Packing', sub: 'Plain unmarked boxes' },
+          { icon: <Award size={20} />,       label: 'GMP Certified',   sub: 'Quality assured facility' },
         ].map((t, i) => (
           <div key={i} className="pd-trust-item">
-            {t.icon}
-            <div>
+            <div className="pd-trust-icon">{t.icon}</div>
+            <div className="pd-trust-text">
               <strong>{t.label}</strong>
               <span>{t.sub}</span>
             </div>

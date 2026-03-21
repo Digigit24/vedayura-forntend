@@ -129,12 +129,16 @@ const api = {
 
   // ====== REVIEWS ======
   reviews: {
-    getByProduct: async (productId) => {
-      const res = await axiosClient.get(`/products/${productId}/reviews`);
+    getByProduct: async (productId, page = 1) => {
+      const res = await axiosClient.get(`/reviews/product/${productId}`, { params: { page } });
+      return res.data;
+    },
+    getTop: async () => {
+      const res = await axiosClient.get('/reviews/top');
       return res.data;
     },
     create: async (productId, data) => {
-      const res = await axiosClient.post(`/products/${productId}/reviews`, data);
+      const res = await axiosClient.post(`/reviews/product/${productId}`, data);
       return res.data;
     },
   },

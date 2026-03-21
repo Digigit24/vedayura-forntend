@@ -1,331 +1,371 @@
 const products = [
     {
         id: 1,
-        name: "Arthofit",
-        category: "Capsules",
-        price: 878.52,
-        Ingredients: "Shallaki (Boswellia serrata)  Helps reduce swelling and pain, Nirgundi (Vitex negundo) Provides relief from stiffness, Methi Seeds  Strengthens bones, Triphala  Cleanses the body and improves digestion, Shuddha Guggul  Supports joint repair and care, Shuddha Laksha  Promotes bone health.Chopochini Extract  Helps manage diabetes",
+        name: "Diabocare Kit",
+        category: "Kit",
+        price: 0.0,
+        Ingredients: "Bitter Gourd, Neem, Java Plum Seed, Colocynth, Giloy, Drumstick, Black Seed, Madagascar Periwinkle, Karanja Seed, Cinnamon, Bitter Almond, Fenugreek Seed, Tulsi, Arjuna Bark, Golden Shower leaf, Indian Rennet, Ginger, Bitter Chirata, Gymnema, Wild Asparagus, Ginseng, Ashwagandha, and Ivy Gourd.",
         Benefits: [
-            "Promotes Joint Flexibility and Comfort",
-            "Reduces Inflammation and Relieves Joint Pain",
-            "Strengthens Bones and Connective Tissues",
-            "Enhances Mobility and Physical Well-Being",
-            "Safe, Natural, and Gentle Ayurvedic Formulation"
+            "Improves the body's insulin response and helps maintain stable glucose levels.",
+            "Supports better metabolism of sugar, carbohydrates & Digestive System.",
+            "Helps reduce sugar cravings, Fat Metabolism & support Lifestyle eating habits."
         ],
-        productType: "Herbal Joint Support",
+        productType: "Blood Sugar Support Kit",
+        productsInside: [
+            "Diabocare Juice - 1000ml",
+            "Diabocare Capsule - 120 capsules"
+        ],
+        servingSize: {
+            liquid: "15 to 30 ml twice a day",
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/arthofit-capsules-box.png",
-            "/assets/arthofit-capsules-front.png",
-            "/assets/arthofit-capsules-back.png",
-            "/assets/arthofit-capsules-front-tr.png"
+            "/assets/diabocare-kit.png",
+            "/assets/diabocare-kit-view.png",
+            "/assets/diabocare-capsules.png",
+            "/assets/diabocare-juice.png"
         ],
         stock: 50,
     },
     {
         id: 2,
-        name: "Diabofit",
-        category: "Capsules",
-        price: 878.52,
-        Ingredients: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
+        name: "Garcinia Plus",
+        category: "Juice",
+        price: 0.0,
+        Ingredients: "Colocynth Fruit, Spreading Hogweed, Senna Leaves, Long Pepper, Cumin, Carom Seeds, Dry Ginger, Black Salt, Rock Salt, Borax, Flax Seed, Garcinia Cambogia, Soda, Black Seed, Elva, Garden Cress Seeds, Sakmuniya, Fennel Seeds, Black Pepper, Clove, Lemon, Cinnamon, Drumstick, Rhubarb Root, Qust-e-Shireen-Costus Root.",
         Benefits: [
-            "Enhanced immunity",
-            "Better blood purification",
-            "Liver Protective, Improved digestion",
-            "Reduced oxidative stress",
-            "Maintain Wellness",
-            "Good for Homeostasis ",
-            "Helps Controlled Sugar Levels"
+            "Supports healthy weight management by helping control fat buildup.",
+            "Helps reduce hunger and unnecessary cravings.",
+            "Supports metabolism and helps to burn stored fat for energy.",
+            "Improves digestion and supports natural body detox.",
+            "Helps reduce sugar cravings, Fat Metabolism & support Lifestyle eating habits."
         ],
-        productType: "Blood Sugar Support",
+        productType: "For Weight Loss",
+        servingSize: {
+            liquid: "15 to 30 ml twice a day"
+        },
         images: [
-            "/assets/diabofit-capsules-878.png",
-            "/assets/diabofit-capsules-878.png",
-            "/assets/diabofit-capsules-878.png",
-            "/assets/diabofit-capsules-878.png"
+            "/assets/garcinia-plus-juice-box.png",
+            "/assets/garcinia-plus-juice.png",
+            "/assets/garcinia-plus-all.png"
         ],
-        stock: 30,
+        stock: 50,
     },
     {
         id: 3,
-        name: "DigiFit",
-        category: "Powder",
-        price: 878.52,
-        Ingredients: "Triphala Powder (Emblica officinalis, Terminalia chebula, Terminalia belerica) , Ajma (Carum copticum) , Jeera (Cuminum cyminum) , Indrajav (Wrightia tinctoria) tinctoria), Sunthi (Zingiber officinale), Harde (Terminalia chebula), Kutaj (Holarrhena antidysenterica) , Kala Namak, Badi Saunf (Foeniculum vulgare).",
+        name: "Garcinia Plus",
+        category: "Capsules",
+        price: 0.0,
+        Ingredients: "Colocynth Fruit, Spreading Hogweed, Senna Leaves, Long Pepper, Cumin, Carom Seeds, Dry Ginger, Black Salt, Rock Salt, Borax, Flax Seed, Garcinia Cambogia, Soda, Black Seed, Elva, Garden Cress Seeds, Sakmuniya, Fennel Seeds, Black Pepper, Clove, Lemon, Cinnamon, Drumstick, Rhubarb Root, Qust-e-Shireen-Costus Root.",
         Benefits: [
-            "Improves Digestion & Appetite",
-            "Relieves Gas,  Bloating, & Acidity",
-            "Aids in Smooth Bowel Movement",
-            "Reduces Indigestion & Discomfort",
-            "100% Natural & Safe Herbal Formula",
-            "Stimulates Digestion and Reduces Bloating",
-            "Supports Intestinal Health and Balance"
+            "Supports healthy weight management by helping control fat buildup.",
+            "Helps reduce hunger and unnecessary cravings.",
+            "Supports metabolism and helps to burn stored fat for energy.",
+            "Improves digestion and supports natural body detox.",
+            "Helps reduce sugar cravings, Fat Metabolism & support Lifestyle eating habits."
         ],
-        productType: "Digestive Health Formula",
+        productType: "For Weight Loss",
+        servingSize: {
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder.png",
-            "/assets/product-placeholder-tr.png"
+            "/assets/garcinia-plus-capsules-box.png",
+            "/assets/garcinia-plus-capsules.png",
+            "/assets/garcinia-plus-all.png"
         ],
-        stock: 100,
+        stock: 50,
     },
     {
         id: 4,
-        name: "Garcinia Plus",
+        name: "Arthroplus",
         category: "Capsules",
-        price: 878.52,
-        Ingredients: "Garcinia comogia (Vriksamla) Alma, Harde, Beheda, Sunthi, Miri, Pippali, Trimard, Orange Peel, Blac Salt etc.  **CONTAINS PERMITTED CLASS II PRESERVATIVE (INS211) CONTAINS NO COLOR, NO FLAVOUR AND NO SYNTHETIC VITAMINS & MINERALS. Benefits are non synthetic, therefore, slight variation in colour taste, viscosity and some sediments are natural.**",
+        price: 0.0,
+        Ingredients: "Ashwagandha, Black Nightshade, Giloy, Dodder, Mexican Poppy, Arjuna Bark, Suranjal Shirn, Extract Onion, Extract Garlic, Extract Ginger, Colocynth, Hardal Varkiya, Sangruf Rumi, Aloe Vera, Drumstick, Syrian Rue.",
         Benefits: [
-            "Weight Loss: Prevents fat storage",
-            "Appetite Control: Reduces cravings",
-            "Metabolism Boost: Enhances fat burning",
-            "Cholesterol Support: Improves cholesterol levels",
-            "Blood Sugar Regulation Controls sugar levels"
+            "Helps reduce joint pain and stiffness.",
+            "Supports better joint flexibility and movement.",
+            "Helps reduce inflammation in joints.",
+            "Supports stronger bones and joint health."
         ],
-        productType: "FOR WEIGHT LOSS",
+        productType: "Herbal Joint Support",
+        servingSize: {
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/garcinia-plus-capsules-box.png",
-            "/assets/garcinia-plus-capsules-box.png",
-            "/assets/garcinia-plus-capsules-box.png",
-            "/assets/garcinia-plus-capsules-box-tr.png"
+            "/assets/arthoplus-capsules-box.png",
+            "/assets/arthoplus-capsules.png",
+            "/assets/arthoplus-capsules-both.png"
         ],
-        stock: 20,
+        stock: 50,
     },
     {
         id: 5,
-        name: "Garcinia Plus",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: "Garcinia comogia (Vriksamla) Alma, Harde, Beheda, Sunthi, Miri, Pippali, Trimard, Orange Peel, Blac Salt etc. CONTAINS PERMITTED CLASS II PRESERVATIVE (INS211) CONTAINS NO COLOR, NO FLAVOUR AND NO SYNTHETIC VITAMINS & MINERALS. Ingredients are non synthetic, therefore, slight variation in colour taste, viscosity and some sediments are natural.",
+        name: "Digestive Churna",
+        category: "Powder",
+        price: 0.0,
+        Ingredients: "Colocynth Fruit, Spreading Hogweed, Senna Leaves, Long Pepper, Cumin, Carom Seeds, Dry Ginger, Black Salt, Rock Salt, Borax, Flax Seed, Garcinia Cambogia, Soda, Black Seed, Elva, Garden Cress Seeds, Sakmuniya, Fennel Seeds, Black Pepper, Clove, Lemon, Cinnamon, Drumstick, Rhubarb Root, Licorice, Triphala, Mint, Kishti Shiri, Psyllium Husk, Qust-e-Shireen-Costus Root.",
         Benefits: [
-            "Weight Loss: Prevents fat storage",
-            "Appetite Control: Reduces cravings",
-            "Metabolism Boost: Enhances fat burning",
-            "Cholesterol Support: Improves cholesterol levels",
-            "Blood Sugar Regulation: Controls sugar levels"
+            "Supports healthy digestion.",
+            "Helps relieve gas and bloating.",
+            "Improves metabolism & enzymes.",
+            "Helps reduce acidity and indigestion.",
+            "Supports overall gut health."
         ],
-        productType: "FOR WEIGHT LOSS",
+        productType: "Digestive Health Formula",
+        servingSize: {
+            powder: "1 teaspoon"
+        },
         images: [
-            "/assets/garcinia-plus-liquid.png",
-            "/assets/garcinia-plus-liquid.png",
-            "/assets/garcinia-plus-liquid-back.png",
-            "/assets/garcinia-plus-liquid-tr.png"
+            "/assets/digestive-churna-box.webp",
+            "/assets/digestive-churna.png",
+            "/assets/digestive-churna-both.png"
         ],
-        stock: 80,
+        stock: 50,
     },
     {
         id: 6,
-        name: "LivoFit",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: "Kutki (Picrorhiza curroa), Pippali (Piper longum) Kalmegh(Andrographis panniculanta) ,Triphala(Emblica officinalia, Terminalia chebula, Terminalia belerica), Punarnava (Boerhavia diffusa)Sharpunkha(Teprolosia purpura) Other ingredients: Sodium Benzoate IP, Citric Acid IP",
+        name: "Immunity Booster Coffee",
+        category: "Coffee",
+        price: 0.0,
+        Ingredients: "Tulsi, Soybean, Ginger, Cardamom, Lemon, Arjuna Bark, Fennel Seeds, Carom Seeds, Mint, Qust-e-Shireen-Costus Root.",
         Benefits: [
-            "Supports Liver Health: Helps correct liver dysfunction and damage.",
-            "Protects Against Toxins: Shields liver from harmful substances.",
-            "Promotes Digestion: Stimulates appetite for better digestion.",
-            "Boosts Growth: Supports healthy bodily growth.",
-            "Natural Detox: Aids in natural detoxification of the liver"
+            "It has high protein intake.",
+            "Boosts natural energy and reduces fatigue.",
+            "Supports digestion and gut health.",
+            "Helps improve focus and mental alertness.",
+            "Rich in herbs that support overall wellness.",
+            "Aids metabolism and daily vitality.",
+            "Boosts immunity and helps the body fight viral infections."
         ],
-        productType: "Liver Support Juice",
+        productType: "Immunity Booster",
+        servingSize: {
+            powder: "1 teaspoon"
+        },
         images: [
-            "/assets/livofit-liquid.png",
-            "/assets/livofit-liquid-back.png",
-            "/assets/livofit-liquid.png",
-            "/assets/livofit-liquid-tr.png"
+            "/assets/immunity-booster-coffee-front.webp",
+            "/assets/immunity-booster-coffee-back.png",
+            "/assets/coffee-front-back.png"
         ],
-        stock: 60,
+        stock: 50,
     },
     {
         id: 7,
-        name: "Pilotox",
+        name: "Apro-x",
         category: "Capsules",
-        price: 878.52,
-        Ingredients: "Patha Extract, Mustha Extract, Bilva Extract, Pipalimool & Nagkeshar Extracts, Jamikand & Khunkharaba Extracts, DesiKapoor, Kakmachi Extract.",
+        price: 0.0,
+        Ingredients: "Ashwagandha, Wild Asparagus, Shilajit, White Musli, Velvet Bean Seeds, Hibiscus, Puncture Vine, Clove, Nutmeg, Salep Orchid, Pellitory Root, Indian Kudzu, Long Pepper, Saffron, Hygrophila Seeds.",
         Benefits: [
-            "Helps Reduce Foin, Swelling & Inflammation to Piles.",
-            "Aids in Shrinking Plies Moss Controlling Bleeding.",
-            "Relieves itching Burning & Discomfort.",
-            "Supports Smooth Bowel Movements & Digestive Heath.",
-            "Promotes Natural Healing Without Side Effects."
+            "Boosts male energy and stamina.",
+            "Helps reduce tiredness and fatigue.",
+            "Supports physical strength and endurance.",
+            "Improves male vitality and overall wellness.",
+            "It has no side effect."
         ],
-        productType: "Natural Piles Solution",
+        productType: "Power Boost - For Male Vitality & Strength",
+        servingSize: {
+            capsule: "1 capsule a day"
+        },
         images: [
-            "/assets/pilotox-capsules-front.png",
-            "/assets/pilotox-capsules-back.png",
-            "/assets/pilotox-capsules-box.png",
-            "/assets/pilotox-capsules-front-tr.png"
+            "/assets/aprox-capsules-box.png",
+            "/assets/aprox-capsules.png",
+            "/assets/aprox-capsules-both.png"
         ],
-        stock: 45,
+        stock: 50,
     },
     {
         id: 8,
-        name: "Pilotox",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: "Patha Extract, Dhamasa Extract, Mustha Extract, Bilva Extract, Pipalimool & Nagkeshar Extracts, Jamikand & Khunkharaba Extracts, Desi Kapoor, Kakmachi Extract.",
+        name: "H-Care",
+        category: "Capsules",
+        price: 0.0,
+        Ingredients: "Arjuna Bark, Jawahar Mohra, Saffron, Black Pepper, Fennel Seeds, Guggul, Black Seed, Bay Leaf, Calcined Crab Preparation, Flax Seeds, Marigold Flower, Apple Vinegar, Giloy, Garlic, Greater Galangal, Indian Gooseberry, Fagonia, Nutmeg, Sandalwood, Desmostachya Grass.",
         Benefits: [
-            "Helps Reduce Foin, Swelling & Inflammation to Piles.",
-            "Aids in Shrinking Plies Moss Controlling Bleeding.",
-            "Relieves itching Burning & Discomfort.",
-            "Supports Smooth Bowel Movements & Digestive Heath.",
-            "Promotes Natural Healing Without Side Effects."
+            "Supports healthy heart function and circulation.",
+            "Helps maintain balanced cholesterol levels.",
+            "Supports healthy blood pressure management.",
+            "Helps improve overall cardiovascular health."
         ],
-        productType: "Natural Piles Solution",
+        productType: "For Healthy Blood Circulation",
+        servingSize: {
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/pilotox-liquid-bottle.png",
-            "/assets/pilotox-liquid-back.png",
-            "/assets/pilotox-liquid-bottle.png",
-            "/assets/pilotox-liquid-bottle-tr.png"
+            "/assets/hcare-capsules-box.png",
+            "/assets/hcare-capsules.png",
+            "/assets/hcare-capsules-both.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 9,
-        name: "ArthoFit",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: "Shallaki (Boswellia serrata), Nirgundi (Vitex negundo) ,Methi Seeds, Triphala, Shuddha Guggul, Shuddha Laksha, Chopochini Extract.",
+        name: "L-Care",
+        category: "Juice",
+        price: 0.0,
+        Ingredients: "Colocynth Fruit, Spreading Hogweed, Senna Leaves, Long Pepper, Cumin, Carom Seeds, Dry Ginger, Black Salt, Rock Salt, Borax, Flax Seed, Garcinia Cambogia, Soda, Black Seed, Elva, Garden Cress Seeds, Convolvulus Scammonia, Fennel Seeds, Black Pepper, Clove, Lemon Cinnamon, Drumstick, Rhubarb Root, Licorice, Triphala, Mint, Psyllium Husk, Chicory, Tree Turmeric, Cubeb Pepper, Qust-e-Shireen-Costus Root, Ammonium Chloride, Bitter Chirata, Puncture.",
         Benefits: [
-            "Promotes Joint Flexibility and Comfort",
-            "Reduces Inflammation and Relieves Joint Pain",
-            "Strengthens Bones and Connective Tissues",
-            "Enhances Mobility and Physical Well-Being",
-            "Safe, Natural, and Gentle Ayurvedic Formulation"
+            "Supports healthy liver function and detoxification.",
+            "Helps improve appetite and digestion naturally.",
+            "Supports better metabolism and nutrient absorption.",
+            "Helps boost overall energy and digestive health.",
+            "Supports better absorption of nutrients from food.",
+            "Helps maintain overall digestive balance and energy levels."
         ],
-        productType: "Herbal Joint Support",
+        productType: "Appetite Boost Juice",
+        servingSize: {
+            liquid: "15 to 30 ml twice a day"
+        },
         images: [
-            "/assets/arthofit-623.png",
-            "/assets/arthofit-623.png",
-            "/assets/arthofit-623.png",
-            "/assets/arthofit-623.png"
+            "/assets/lcare-juice-box.png",
+            "/assets/lcare-juice.png",
+            "/assets/lcare-all.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 10,
-        name: "DiaboFit",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: "Jamun seed, Paneerful, Triphala (E. officinalis, T.chebula, T. belerica), Karela (M. charantia), Guduchi (T. cordifolia), S. cumini, Methi (T. foenum graecum), Ginger (Z. officinale), Neem Leaves (A. indica), Kadu Chirayata (Swertia), Gudmar (G.sylvestre), Adulsa (J. Adhatoda), Shatawari (Asparagus racemosus), Water (DM), Ginseng (Panax quinquefolius L), Ashwagandha (Withania somnifera), and Kundru (Cephalandra indica). The excipients used include INS 211 and 330.",
+        name: "L-Care",
+        category: "Capsules",
+        price: 0.0,
+        Ingredients: "Colocynth Fruit, Spreading Hogweed, Senna Leaves, Long Pepper, Cumin, Carom Seeds, Dry Ginger, Black Salt, Rock Salt, Borax, Flax Seed, Garcinia Cambogia, Soda, Black Seed, Elva, Garden Cress Seeds, Convolvulus Scammonia, Fennel Seeds, Black Pepper, Clove, Lemon Cinnamon, Drumstick, Rhubarb Root, Licorice, Triphala, Mint, Psyllium Husk, Chicory, Tree Turmeric, Cubeb Pepper, Qust-e-Shireen-Costus Root, Ammonium Chloride, Bitter Chirata, Puncture.",
         Benefits: [
-            "Enhanced immunity",
-            "Better blood purification",
-            "Liver Protective, Improved digestion",
-            "Reduced oxidative stress",
-            "Maintain Wellness",
-            "Good for Homeostasis ",
-            "Helps Controlled Sugar Levels"
+            "Supports healthy liver function and detoxification.",
+            "Helps improve appetite and digestion naturally.",
+            "Supports better metabolism and nutrient absorption.",
+            "Helps boost overall energy and digestive health.",
+            "Supports better absorption of nutrients from food.",
+            "Helps maintain overall digestive balance and energy levels."
         ],
-        productType: "Blood Sugar Support",
+        productType: "Appetite Boost Capsule",
+        servingSize: {
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/diabofit-juice.jpeg",
-            "/assets/diabofit-juice.jpeg",
-            "/assets/diabofit-juice.jpeg",
-            "/assets/diabofit-juice.jpeg"
+            "/assets/lcare-capsules-box.png",
+            "/assets/lcare-capsules.png",
+            "/assets/lcare-all.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 11,
-        name: "Skin Care",
-        category: "Capsules",
-        price: 878.52,
-        Ingredients: ".",
+        name: "Femveda - PCOD",
+        category: "Juice",
+        price: 0.0,
+        Ingredients: "Arjuna Bark, Ashoka Bark, Mustard Seeds, Mountain Ebony, Punarnava, Cumin, Carom Seeds, Dry Ginger, Flax Seed, Black Seed, Elva, Fennel Seeds, Black Pepper, Clove, Lemon, Cinnamon, Fenugreek Seed, Alkanet Root, Cassia Seed, Heera Kashish, Majusab, Puncture Vine, Akki Ki Jad, Samar Musali-Fruit, Saffron, Zaffrl, Rue, Turmeric, Black Nightshade, Ashwagandha, Chicory, Alum.",
         Benefits: [
+            "Supports PCOD/PCOS management.",
+            "Helps regulate menstrual cycles.",
+            "Supports hormonal balance.",
+            "Promotes ovarian and reproductive health.",
+            "Made with natural herbs (extract)."
         ],
-        productType: "For Skin Problems",
+        productType: "Femora Herbal Syrup - For Female Reproductive System",
+        servingSize: {
+            liquid: "15 to 30 ml twice a day"
+        },
         images: [
-            "/assets/skin-care-capsule-front.png",
-            "/assets/skin-care-capsules-box.png",
-            "/assets/skin-care-capsules-front.png",
-            "/assets/skin-care-capsule-front-tr.png"
+            "/assets/femveda-juice-box.png",
+            "/assets/femveda-juice.png",
+            "/assets/femveda-juice-both.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 12,
-        name: "immuntity Booster",
-        category: "Capsules",
-        price: 878.52,
-        Ingredients: ".",
+        name: "K-Care",
+        category: "Juice",
+        price: 0.0,
+        Ingredients: "Gokhru Salt Extract, Makho Salt Extract, Radish Salt, Giloy Salt Extract, Harmal Salt Extract, Potash, Natural Alkali, Spreading Hogweed Salt Extract, Qust-e-Shireen-Costus Root, Turmeric, Carom Seeds, Fenugreek Seed, Kachnar, Black Nightshade, Badhiyan, Alum.",
         Benefits: [
-            "Strengthens daily immunity",
-            "Boosts energy without jitters",
-            "Supports respiratory health",
-            "Rich in natural antioxidants",
-            "Helps manage stress and fatigue",
-            "Reduces inflammation naturally",
+            "Supports healthy kidney function.",
+            "Helps flush toxins from the body.",
+            "Supports urinary tract health.",
+            "Helps reduce burning urination and discomfort.",
+            "Made with natural herbs (extract)."
         ],
-        productType: "For Energy",
+        productType: "For Kidney Care",
+        servingSize: {
+            liquid: "15 to 30 ml twice a day"
+        },
         images: [
-            "/assets/immunity-booster-capsules-front.png",
-            "/assets/immunity-booster-capsules-box.png",
-            "/assets/immunity-booster-capsules-back.png",
-            "/assets/immunity-booster-capsules-front-tr.png"
+            "/assets/kcare-juice-box.png",
+            "/assets/kcare-juice.png",
+            "/assets/kcare-juice-both.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 13,
-        name: "immuntity Booster",
-        category: "Liquid",
-        price: 623.52,
-        Ingredients: ".",
+        name: "Skin Care",
+        category: "Juice",
+        price: 0.0,
+        Ingredients: "Soapberry, Black Pepper, Black Cumin, East Indian Globe Thistle, Sarsaparilla, China Root, Neem, Jujube, Surphukha, Fagonia, White Sandalwood, Cutch Tree, Cinnamon, Mahamnajistha, Orange Peel, Rose Flower, Shatra, Amla Extract, Tulsi, Rhubarb, Senna, Zedoary, Cassia Seed, Rock Sugar, Coffee Senna, Bitter Chirata, Red Sandalwood, Giloy, Indian Rosewood, Chebulic Myrobalan, Mountain Ebony.",
         Benefits: [
-            "Strengthens daily immunity",
-            "Boosts energy without jitters",
-            "Supports respiratory health",
-            "Rich in natural antioxidants",
-            "Helps manage stress and fatigue",
-            "Reduces inflammation naturally",
+            "Helps reduce acne, pimples, and skin irritation.",
+            "Supports natural skin glow and smoother texture.",
+            "Helps detoxify the body and remove toxins.",
+            "Nourishes skin from within for healthier skin.",
+            "Skin Moisturizes."
         ],
-        productType: "For Energy",
+        productType: "Derma Herb Plus - Skin Problems",
+        servingSize: {
+            liquid: "15 to 30 ml twice a day"
+        },
         images: [
-            "/assets/immunity-booster-liquid.png",
-            "/assets/immunity-booster-liquid-back.png",
-            "/assets/immunity-booster-liquid.png",
-            "/assets/immunity-booster-liquid-tr.png"
+            "/assets/skin-care-juice-box.png",
+            "/assets/skin-care-juice.png",
+            "/assets/skin-care-all.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 14,
-        name: "Heart Care",
+        name: "Skin Care",
         category: "Capsules",
-        price: 878.52,
-        Ingredients: ".",
+        price: 0.0,
+        Ingredients: "Soapberry, Black Pepper, Black Cumin, East Indian Globe Thistle, Sarsaparilla, China Root, Neem, Jujube, Surphukha, Fagonia, White Sandalwood, Cutch Tree, Cinnamon, Mahamnajistha, Orange Peel, Rose Flower, Shatra, Amla Extract, Tulsi, Rhubarb, Senna, Zedoary, Cassia Seed, Rock Sugar, Coffee Senna, Bitter Chirata, Red Sandalwood, Giloy, Indian Rosewood, Chebulic Myrobalan, Mountain Ebony.",
         Benefits: [
-            "Supports healthy heart function",
-            "Helps maintain normal blood circulation",
-            "Aids in balancing cholestrol levels",
-            "Supports healthy blood pressure",
-            "Helps reduce stress on heart"
+            "Helps reduce acne, pimples, and skin irritation.",
+            "Supports natural skin glow and smoother texture.",
+            "Helps detoxify the body and remove toxins.",
+            "Nourishes skin from within for healthier skin.",
+            "Skin Moisturizes."
         ],
-        productType: "For Healthy Blood Circulation",
+        productType: "Derma Herb Plus - Skin Problems",
+        servingSize: {
+            capsule: "2 capsules twice a day"
+        },
         images: [
-            "/assets/heart-care-capsules-front.png",
-            "/assets/heart-care-capsules-box.png",
-            "/assets/heart-care-capsules-back.png",
-            "/assets/heart-care-capsules-front-tr.png"
+            "/assets/skin-care-capsules-box.png",
+            "/assets/skin-care-capsules.png",
+            "/assets/skin-care-all.png"
         ],
-        stock: 35,
+        stock: 50,
     },
     {
         id: 15,
-        name: "Coffee",
-        category: "Other",
+        name: "Sanitary Pad",
+        category: "Personal Care",
         price: 0.0,
-        Ingredients: "Arjun bark (100 gm), green cardamom (50 gm), desi garlic (50 gm), roasted soybean (200 gm), desi mint (50 gm), dry ginger (sonth) (50 gm), carom seeds (ajwain) (50 gm), fennel seeds (badisop) (50 gm), holy basil (tulsi) (50 gm), ashwagandha (50 gm), cinnamon (50 gm), dried lemon (50 gm).",
+        Ingredients: "",
         Benefits: [
+            "Balances pH and hormone levels.",
+            "Eliminates unwanted odour.",
+            "Protects against germs in the air.",
+            "Reduces inflammation.",
+            "Fights against vaginal infections & irritations.",
+            "Comfortable, breathable, and highly absorbent."
         ],
-        productType: "Energy",
+        productType: "FAR-IR-ANION Anti-bacterial Sanitary Pads",
+        details: {
+            quantity: "6 Pads",
+            size: "XL / XXL (330mm)",
+            technology: "Active Oxygen & Negative Ion and Far-IR",
+            material: "100% Natural Organic Cotton"
+        },
         images: [
-            "/assets/coffee-pouch-front.png",
-            "/assets/coffee-pouch-back.png",
-            "/assets/coffee-pouch-front.png",
-            "/assets/coffee-pouch-front-tr.png"
+            "/assets/sanitary-box.png"
         ],
-        stock: 35,
+        stock: 50,
     }
 ];
 

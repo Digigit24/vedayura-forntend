@@ -207,13 +207,20 @@ export const ShopProvider = ({ children }) => {
                             category: p.category?.name || (typeof p.category === 'string' ? p.category : 'Uncategorized'),
                             categoryId: p.categoryId,
                             price: Number(p.discountedPrice || p.realPrice || 0),
+                            realPrice: Number(p.realPrice || 0),
+                            discountedPrice: Number(p.discountedPrice || p.realPrice || 0),
                             stock: p.stockQuantity ?? 0,
+                            stockQuantity: p.stockQuantity ?? 0,
                             image: finalImages[0],
                             images: finalImages,
                             imageUrls: p.imageUrls || finalImages,
-                            ingredients: p.ingredients || '',
-                            benefits: p.benefits || [],
+                            ingredients: p.ingredients || localMatch?.Ingredients || '',
+                            benefits: Array.isArray(p.benefits) && p.benefits.length ? p.benefits : (localMatch?.Benefits || []),
                             description: p.description || '',
+                            productType: p.productType || localMatch?.productType || '',
+                            variant: p.variant || null,
+                            howToUse: p.howToUse || '',
+                            servingSize: localMatch?.servingSize || p.servingSize || null,
                         };
                     });
                     setProducts(mappedProducts);

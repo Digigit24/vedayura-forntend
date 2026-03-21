@@ -9,7 +9,7 @@ const Catalog = () => {
     const { products } = useShop();
     
     // ✅ ADDED "Oils" to the categories array here
-    const categories = ['Liquid', 'Powder', 'Capsules', 'Other'];
+    const categories = ['Kit', 'Juice', 'Capsules', 'Powder', 'Coffee', 'Personal Care'];
     
     const [searchTerm, setSearchTerm] = useState('');
 

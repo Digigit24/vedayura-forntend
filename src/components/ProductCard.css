@@ -45,15 +45,34 @@
 }
 
 .product-image {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   padding: 14px;
-  transition: transform 0.5s ease;
+  transition: opacity 0.4s ease, transform 0.5s ease;
 }
 
-.product-card:hover .product-image {
-  transform: scale(1.2);
+.product-image-primary {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 1;
+}
+
+.product-image-primary.faded {
+  opacity: 0;
+}
+
+.product-image-hover {
+  opacity: 0;
+  transform: scale(1.05);
+  z-index: 2;
+}
+
+.product-image-hover.visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* =====================================
@@ -251,7 +270,7 @@
 
 @media (max-width: 768px) {
   .product-image {
-    padding: 6px;
+    padding: 8px;
   }
 
   .card-actions {

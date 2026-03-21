@@ -115,10 +115,12 @@ export const addresses = {
 };
 
 export const reviews = {
-  getByProduct: (productId) =>
-    request(`/products/${productId}/reviews`, { method: "GET", auth: false }),
+  getByProduct: (productId, page = 1) =>
+    request(`/reviews/product/${productId}?page=${page}`, { method: "GET", auth: false }),
+  getTop: () =>
+    request(`/reviews/top`, { method: "GET", auth: false }),
   create: (productId, payload) =>
-    request(`/products/${productId}/reviews`, { method: "POST", body: payload }),
+    request(`/reviews`, { method: "POST", body: { productId, ...payload } }),
 };
 
 export default { auth, products, cart, wishlist, orders, shipping, addresses, reviews };

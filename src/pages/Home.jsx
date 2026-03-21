@@ -7,32 +7,32 @@ import { Leaf, ShieldCheck } from "lucide-react";
 import "./Home.css";
 
 const colA = [
-  "/assets/arthofit-capsules-front-tr.png",
-  "/assets/garcinia-plus-liquid-tr.png",
-  "/assets/immunity-booster-capsules-front-tr.png",
-  "/assets/pilotox-liquid-bottle-tr.png",
-  "/assets/skin-care-capsule-front-tr.png",
+  "/assets/arthoplus-capsules.png",
+  "/assets/garcinia-plus-juice.png",
+  "/assets/immunity-booster-coffee-front.webp",
+  "/assets/kcare-juice.png",
+  "/assets/skin-care-capsules.png",
 ];
 const colB = [
-  "/assets/heart-care-capsules-front-tr.png",
-  "/assets/livofit-liquid-tr.png",
-  "/assets/garcinia-plus-capsules-box-tr.png",
-  "/assets/pilotox-capsules-front-tr.png",
-  "/assets/immunity-booster-liquid-tr.png",
+  "/assets/hcare-capsules.png",
+  "/assets/lcare-juice.png",
+  "/assets/garcinia-plus-capsules-box.png",
+  "/assets/aprox-capsules.png",
+  "/assets/diabocare-juice.png",
 ];
 const colC = [
-  "/assets/coffee-pouch-front-tr.png",
-  "/assets/arthofit-capsules-front-tr.png",
-  "/assets/pilotox-liquid-bottle-tr.png",
-  "/assets/livofit-liquid-tr.png",
-  "/assets/garcinia-plus-liquid-tr.png",
+  "/assets/coffee-front-back.png",
+  "/assets/arthoplus-capsules.png",
+  "/assets/femveda-juice.png",
+  "/assets/lcare-capsules.png",
+  "/assets/garcinia-plus-juice.png",
 ];
 const colD = [
-  "/assets/immunity-booster-capsules-front-tr.png",
-  "/assets/skin-care-capsule-front-tr.png",
-  "/assets/heart-care-capsules-front-tr.png",
-  "/assets/garcinia-plus-capsules-box-tr.png",
-  "/assets/coffee-pouch-front-tr.png",
+  "/assets/immunity-booster-coffee-back.png",
+  "/assets/skin-care-juice.png",
+  "/assets/hcare-capsules.png",
+  "/assets/digestive-churna.png",
+  "/assets/coffee-front-back.png",
 ];
 
 const Home = () => {
@@ -106,12 +106,12 @@ const Home = () => {
         {/* Mobile top zone — outside hero-center so it positions to the section */}
         <div className="hero-mobile-bg">
           {[
-            "/assets/arthofit-capsules-front-tr.png",
-            "/assets/garcinia-plus-liquid-tr.png",
-            "/assets/immunity-booster-capsules-front-tr.png",
-            "/assets/pilotox-capsules-front-tr.png",
-            "/assets/heart-care-capsules-front-tr.png",
-            "/assets/livofit-liquid-tr.png",
+            "/assets/arthoplus-capsules.png",
+            "/assets/garcinia-plus-juice.png",
+            "/assets/immunity-booster-coffee-front.webp",
+            "/assets/aprox-capsules.png",
+            "/assets/hcare-capsules.png",
+            "/assets/lcare-juice.png",
           ].map((src, i) => (
             <div className="hero-mobile-grid-card" key={i}>
               <img src={src} alt="" />
@@ -362,7 +362,7 @@ const Home = () => {
           </div>
         </div>
         <p className="testimonial-text">
-          "Nothing comes close to the authenticity of Vedayura. The <strong>Arthofit</strong> capsules are a game-changer — my joints feel more flexible and the pain has significantly reduced."
+          "Nothing comes close to the authenticity of Vedayura. The <strong>Arthroplus</strong> capsules are a game-changer — my joints feel more flexible and the pain has significantly reduced."
         </p>
       </div>
 
@@ -375,7 +375,7 @@ const Home = () => {
           </div>
         </div>
         <p className="testimonial-text">
-          "Finally found a <strong>Diabofit</strong> liquid that is pure and effective. My sugar levels are better controlled and I feel more energized throughout the day."
+          "Finally found a <strong>Diabocare</strong> juice that is pure and effective. My sugar levels are better controlled and I feel more energized throughout the day."
         </p>
       </div>
 

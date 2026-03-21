@@ -40,7 +40,7 @@ const About = () => {
 
     const timeline = [
         { year: "2008", title: "The Seed is Planted", text: "A small family kitchen in Kerala becomes the birthplace of VedAyura, guided by generations of Vaidya knowledge." },
-        { year: "2013", title: "First Formulations", text: "Our flagship ArthoFit and DiaboFit blends receive recognition from the Ayurvedic Practitioners Association of India." },
+        { year: "2013", title: "First Formulations", text: "Our flagship Arthroplus and Diabocare blends receive recognition from the Ayurvedic Practitioners Association of India." },
         { year: "2018", title: "Science Meets Tradition", text: "We establish our research lab, partnering with ayurvedic universities to validate ancient formulas through modern clinical study." },
         { year: "2024", title: "A Complete Wellness Range", text: "VedAyura now offers 15+ formulations — from joint care and blood sugar support to liver health, digestion, and immunity." },
     ];
@@ -49,21 +49,21 @@ const About = () => {
         {
             icon: <Shield size={24} />,
             name: "Joint & Bone Care",
-            description: "ArthoFit harnesses Shallaki (Boswellia serrata) and Shuddha Guggul to ease inflammation, restore flexibility, and strengthen connective tissue.",
-            tag: "Capsules & Liquid",
+            description: "Arthroplus harnesses Shallaki (Boswellia serrata) and Shuddha Guggul to ease inflammation, restore flexibility, and strengthen connective tissue.",
+            tag: "Capsules",
             color: "#E8F0E9"
         },
         {
             icon: <Droplets size={24} />,
             name: "Blood Sugar Support",
-            description: "DiaboFit blends Karela, Jamun seed, Guduchi, and Ashwagandha — a time-tested combination for homeostasis and controlled sugar levels.",
-            tag: "Capsules & Liquid",
+            description: "Diabocare blends Karela, Jamun seed, Guduchi, and Ashwagandha — a time-tested combination for homeostasis and controlled sugar levels.",
+            tag: "Juice & Capsules",
             color: "#EAF0E8"
         },
         {
             icon: <Wind size={24} />,
             name: "Digestive Health",
-            description: "DigiFit powder with Triphala, Ajwain, Jeera, and Kutaj relieves gas, bloating, and acidity while restoring natural digestive rhythm.",
+            description: "Digestive Churna with Triphala, Ajwain, Jeera, and Kutaj relieves gas, bloating, and acidity while restoring natural digestive rhythm.",
             tag: "Powder",
             color: "#F0EDE8"
         },
@@ -71,21 +71,21 @@ const About = () => {
             icon: <Zap size={24} />,
             name: "Weight Management",
             description: "Garcinia Plus uses Vriksamla (Garcinia cambogia), Triphala, and Trikatu to prevent fat storage, curb cravings, and boost metabolism.",
-            tag: "Capsules & Liquid",
+            tag: "Juice & Capsules",
             color: "#EDE8F0"
         },
         {
             icon: <Heart size={24} />,
             name: "Liver & Heart Care",
-            description: "LivoFit with Kutki and Punarnava shields the liver from toxins, while Heart Care capsules support healthy circulation and balanced cholesterol.",
-            tag: "Capsules & Liquid",
+            description: "L-Care with Kutki and Punarnava shields the liver from toxins, while H-Care capsules support healthy circulation and balanced cholesterol.",
+            tag: "Juice & Capsules",
             color: "#F0E8E8"
         },
         {
             icon: <Sun size={24} />,
             name: "Immunity & Energy",
             description: "Our Immunity Booster and Ayurvedic Coffee — crafted with Ashwagandha, Tulsi, Arjun bark, and adaptogens — fuel daily vitality naturally.",
-            tag: "Capsules, Liquid & Coffee",
+            tag: "Coffee & Capsules",
             color: "#F0EFE8"
         },
     ];
@@ -281,7 +281,7 @@ const About = () => {
                         <span className="soft-tag" style={{ textAlign: 'center', display: 'block' }}>What We Make</span>
                         <h2>Six Pillars of Wellness</h2>
                         <p className="section-desc">
-                            Every VedAyura formulation targets a specific concern — available as capsules, liquids, or powders — so your healing path is never one-size-fits-all.
+                            Every VedAyura formulation targets a specific concern — available as capsules, juices, powders, or coffee — so your healing path is never one-size-fits-all.
                         </p>
                     </motion.div>
 

@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard';
 import { Search, X, SlidersHorizontal, Leaf, ShieldCheck } from 'lucide-react';
 import './Shop.css';
 
-const CATS = ['All', 'Liquid', 'Powder', 'Capsules', 'Other'];
+const CATS = ['All', 'Kit', 'Juice', 'Capsules', 'Powder', 'Coffee', 'Personal Care'];
 const PER_PAGE = 12;
 
 const Shop = () => {
@@ -88,15 +88,19 @@ const Shop = () => {
 
             {/* ── PAGE HEADER ── */}
             <header className="shop-header">
-                <div className="sh-heading-wrap">
-                    
+                <div className="sh-text">
+                    <span className="sh-eyebrow">✦ Ayurvedic Wellness</span>
                     <h1 className="sh-heading">
                         Our<br />
                         <em>Collection.</em>
                     </h1>
+                    <p className="sh-tagline">15+ handcrafted formulations — capsules, juices, powders &amp; more.</p>
                 </div>
-              
+                <div className="sh-hero-img-wrap">
+                    <img src="/assets/all-products-tr.png" alt="Vedayura product range" className="sh-hero-img" />
+                </div>
             </header>
+
 
             {/* ── CATEGORY TABS + SLIDING INDICATOR ── */}
             <div className="cat-bar">
