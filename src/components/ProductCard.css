@@ -273,12 +273,14 @@
     padding: 8px;
   }
 
+  .product-image-container {
+    padding-bottom: 52px; /* room for always-visible card-actions */
+  }
+
   .card-actions {
     transform: translateY(0);
     opacity: 1;
-    position: static;
-    border-top: none;
-    padding-top: 10px;
+    /* stays position:absolute so it doesn't escape the container */
   }
 
   .action-btn {

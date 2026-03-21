@@ -68,24 +68,6 @@ const Shop = () => {
     return (
         <div className="shop-page">
 
-            {/* ── STICKY TOP BAR ── */}
-            <div className="shop-bar">
-                <div className="bar-search">
-                    <Search size={14} />
-                    <input
-                        placeholder="Search products…"
-                        value={query}
-                        onChange={e => setQuery(e.target.value)}
-                    />
-                    {query && <button className="bar-clear" onClick={() => setQuery('')}><X size={12} /></button>}
-                </div>
-                <button className={`bar-filter${hasFilters ? ' on' : ''}`} onClick={() => setDrawer(true)}>
-                    <SlidersHorizontal size={14} />
-                    <span>Filter & Sort</span>
-                    {hasFilters && <em className="bar-dot" />}
-                </button>
-            </div>
-
             {/* ── PAGE HEADER ── */}
             <header className="shop-header">
                 <div className="sh-text">
@@ -101,11 +83,29 @@ const Shop = () => {
                 </div>
             </header>
 
+            {/* ── STICKY CONTROLS BAR (search + filter + category tabs) ── */}
+            <div className="shop-bar">
+                {/* row 1: search + filter */}
+                <div className="bar-top-row">
+                    <div className="bar-search">
+                        <Search size={14} />
+                        <input
+                            placeholder="Search products…"
+                            value={query}
+                            onChange={e => setQuery(e.target.value)}
+                        />
+                        {query && <button className="bar-clear" onClick={() => setQuery('')}><X size={12} /></button>}
+                    </div>
+                    <button className={`bar-filter${hasFilters ? ' on' : ''}`} onClick={() => setDrawer(true)}>
+                        <SlidersHorizontal size={14} />
+                        <span>Filter & Sort</span>
+                        {hasFilters && <em className="bar-dot" />}
+                    </button>
+                    <p className="cat-count">{filtered.length} result{filtered.length !== 1 ? 's' : ''}</p>
+                </div>
 
-            {/* ── CATEGORY TABS + SLIDING INDICATOR ── */}
-            <div className="cat-bar">
+                {/* row 2: category tabs */}
                 <div className="cat-tabs" ref={tabsRef}>
-                    {/* sliding underline */}
                     <span
                         className="cat-indicator"
                         style={{ left: indicator.left, width: indicator.width }}
@@ -124,7 +124,6 @@ const Shop = () => {
                         );
                     })}
                 </div>
-                <p className="cat-count">{filtered.length} result{filtered.length !== 1 ? 's' : ''}</p>
             </div>
 
             {/* ── GRID ── */}
