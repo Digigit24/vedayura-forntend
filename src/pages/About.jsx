@@ -1,3 +1,4 @@
+//demo check
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Leaf, Sun, Droplets, Heart, Sprout, BookOpen, Globe, Award, Zap, Shield, Wind, Coffee } from 'lucide-react';
