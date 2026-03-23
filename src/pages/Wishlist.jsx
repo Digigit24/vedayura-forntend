@@ -79,7 +79,7 @@ const Wishlist = () => {
                 exit="exit"
                 layout
               >
-                <img src={normalized.image} alt={normalized.name} />
+                <img src={normalized.image} alt={normalized.name} loading="lazy" />
 
                 <div className="cart-item-info">
                   <h4>

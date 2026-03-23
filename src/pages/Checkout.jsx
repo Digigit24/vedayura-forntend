@@ -435,7 +435,7 @@ const Checkout = () => {
                                 <div key={idx} className="cart-item-mini">
                                     <div className="item-thumb">
                                         {item.image ? (
-                                            <img src={item.image} alt={item.name} />
+                                            <img src={item.image} alt={item.name} loading="lazy" />
                                         ) : (
                                             <Package size={20} />
                                         )}

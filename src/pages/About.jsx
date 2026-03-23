@@ -96,7 +96,7 @@ const About = () => {
             {/* HERO */}
             <section className="ethereal-hero" ref={heroRef}>
                 <motion.div className="hero-bg-img" style={{ y: heroY }}>
-                    <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2940&auto=format&fit=crop" alt="Ayurvedic Forest" />
+                    <img src="https://images.unsplash.com/photo-1473448912268-2022ce9509d8?q=80&w=2940&auto=format&fit=crop" alt="Ayurvedic Forest" loading="lazy" />
                     <div className="hero-overlay" />
                 </motion.div>
 
@@ -371,7 +371,7 @@ const About = () => {
                         {team.map((member, i) => (
                             <motion.div key={i} className="team-card" variants={fadeInUp}>
                                 <div className="team-img-wrap">
-                                    <img src={member.img} alt={member.name} />
+                                    <img src={member.img} alt={member.name} loading="lazy" />
                                     <div className="team-img-overlay" />
                                 </div>
                                 <div className="team-info">
@@ -387,7 +387,7 @@ const About = () => {
             {/* CTA */}
             <section className="cta-section">
                 <div className="cta-bg-img">
-                    <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1800&fit=crop" alt="Ayurvedic herbs" />
+                    <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1800&fit=crop" alt="Ayurvedic herbs" loading="lazy" />
                     <div className="cta-overlay" />
                 </div>
                 <motion.div

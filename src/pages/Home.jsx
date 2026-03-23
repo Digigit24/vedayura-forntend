@@ -253,7 +253,7 @@ const Home = () => {
             <div className="about-img-frame">
               <div className="about-img-accent-block" aria-hidden="true" />
               <div className="about-img-inner">
-                <img src="/ancient_wisdom.png" alt="Ancient Ayurvedic ingredients and wisdom" />
+                <img src="/ancient_wisdom.png" alt="Ancient Ayurvedic ingredients and wisdom" loading="lazy" />
                
               </div>
             </div>

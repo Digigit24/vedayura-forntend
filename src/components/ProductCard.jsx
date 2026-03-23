@@ -45,6 +45,7 @@ const ProductCard = ({ product, activeCategory }) => {
               src={product.images?.[0] || product.image || '/assets/product-placeholder.png'}
               alt={product.name}
               className={`product-image product-image-primary${isHovered && product.images?.[1] ? ' faded' : ''}`}
+              loading="lazy"
             />
             {/* hover image — only rendered if a second image exists */}
             {product.images?.[1] && (
@@ -52,6 +53,7 @@ const ProductCard = ({ product, activeCategory }) => {
                 src={product.images[1]}
                 alt={product.name}
                 className={`product-image product-image-hover${isHovered ? ' visible' : ''}`}
+                loading="lazy"
               />
             )}
           </div>

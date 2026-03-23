@@ -353,7 +353,7 @@ const ProductDetails = () => {
               <div className="pd-img-frame">
                 <img key={`c-${currentIndex}`} src={galleryImages[currentIndex]} alt={product.name} className={getCurClass()} />
                 {nextIndex !== null && (
-                  <img key={`n-${nextIndex}`} ref={nextImageRef} src={galleryImages[nextIndex]} alt={product.name} className={getNxtClass()} />
+                  <img key={`n-${nextIndex}`} ref={nextImageRef} src={galleryImages[nextIndex]} alt={product.name} className={getNxtClass()} loading="lazy" />
                 )}
               </div>
 
@@ -371,12 +371,12 @@ const ProductDetails = () => {
             <div className="pd-thumbs">
               {galleryImages.slice(0, 5).map((img, i) => (
                 <button key={i} className={`pd-thumb${currentIndex === i ? ' active' : ''}`} onClick={() => goToSlide(i)}>
-                  <img src={img} alt={`View ${i + 1}`} />
+                  <img src={img} alt={`View ${i + 1}`} loading="lazy" />
                 </button>
               ))}
               {productVideos.slice(0, 1).map((v, i) => (
                 <button key={`v${i}`} className="pd-thumb pd-thumb-vid" onClick={() => { setActiveVideo(v); setShowVideoModal(true); }}>
-                  <img src={v.thumbnail || galleryImages[0]} alt="Video" />
+                  <img src={v.thumbnail || galleryImages[0]} alt="Video" loading="lazy" />
                   <span className="pd-thumb-play-icon"><Play size={10} /></span>
                 </button>
               ))}
@@ -782,7 +782,7 @@ const ProductDetails = () => {
                 {/* ── Sticky sidebar ── */}
                 <aside className="pd-tab-sidebar">
                   <div className="pd-sidebar-card">
-                    <img src={galleryImages[0]} alt={product.name} className="pd-sidebar-img" />
+                    <img src={galleryImages[0]} alt={product.name} className="pd-sidebar-img" loading="lazy" />
                     <div className="pd-sidebar-body">
                       <p className="pd-sidebar-name">{product.name}</p>
                       <div className="pd-sidebar-price-row">
@@ -836,7 +836,7 @@ const ProductDetails = () => {
             {productVideos.map((video, i) => (
               <div key={i} className="pd-video-card" onClick={() => { setActiveVideo(video); setShowVideoModal(true); }}>
                 <div className="pd-video-thumb">
-                  <img src={video.thumbnail || galleryImages[0]} alt={video.title || `Video ${i + 1}`} />
+                  <img src={video.thumbnail || galleryImages[0]} alt={video.title || `Video ${i + 1}`} loading="lazy" />
                   <div className="pd-video-play"><Play size={20} /></div>
                   {video.duration && <span className="pd-video-dur"><Clock size={9} /> {video.duration}</span>}
                 </div>

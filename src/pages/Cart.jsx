@@ -76,7 +76,7 @@ const Cart = () => {
               exit="exit"
               layout
             >
-              <img src={item.image} alt={item.name} />
+              <img src={item.image} alt={item.name} loading="lazy" />
 
               <div className="cart-item-info">
                 <h4>
