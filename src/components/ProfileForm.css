@@ -24,15 +24,15 @@
     gap: 8px;
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--color-primary-dark);
+    color: var(--pp-primary-dark);
 }
 
 .profile-edit-form .form-group label svg {
-    color: var(--color-primary);
+    color: var(--pp-primary);
 }
 
 .btn-save-profile {
-    background: var(--color-primary);
+    background: var(--pp-primary);
     color: white;
     padding: 14px 30px;
     border-radius: var(--radius-md);
@@ -48,7 +48,7 @@
 }
 
 .btn-save-profile:hover {
-    background: var(--color-primary-dark);
+    background: var(--pp-primary-dark);
     transform: translateY(-2px);
     box-shadow: 0 12px 25px rgba(23, 83, 51, 0.2);
 }
@@ -64,7 +64,7 @@
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background: #0F3F2A;
+    background: var(--pp-primary-dark);
     color: white;
     padding: 12px 24px;
     border-radius: var(--radius-full);

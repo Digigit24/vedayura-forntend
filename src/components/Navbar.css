@@ -191,7 +191,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #175333, #3a9463);
+  background: linear-gradient(135deg, var(--pp-primary), var(--pp-primary-light));
   color: #fff;
   font-weight: 700;
   font-size: 13px;
@@ -231,7 +231,7 @@
 .nav-dropdown-avatar {
   width: 42px; height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #175333, #3a9463);
+  background: linear-gradient(135deg, var(--pp-primary), var(--pp-primary-light));
   color: #fff; font-weight: 700; font-size: 16px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
@@ -360,7 +360,7 @@
 
 .drawer-avatar {
   width: 34px; height: 34px; border-radius: 50%;
-  background: #1a3d2e;
+  background: var(--pp-primary);
   color: #fff; font-weight: 700; font-size: 13px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;

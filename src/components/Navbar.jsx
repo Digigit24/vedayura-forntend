@@ -133,8 +133,10 @@ const Navbar = () => {
                         </div>
                       </div>
                       <div className="nav-dropdown-divider" />
-                      <Link to="/profile" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}><User size={14} /> My Profile</Link>
-                      {user.role === 'ADMIN' && (
+                      {!String(user.role || '').toLowerCase().includes('admin') && (
+                        <Link to="/profile" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}><User size={14} /> My Profile</Link>
+                      )}
+                      {String(user.role || '').toLowerCase().includes('admin') && (
                         <Link to="/admin" className="nav-dropdown-item" onClick={() => setShowUserDropdown(false)}><Menu size={14} /> Admin Panel</Link>
                       )}
                       <div className="nav-dropdown-divider" />
@@ -293,8 +295,12 @@ const Navbar = () => {
               <div className="drawer-auth">
                 {user ? (
                   <>
-                    <NavLink to="/profile" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><User size={15} /> My Profile</NavLink>
-                    {user.role === 'ADMIN' && <NavLink to="/admin" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><Menu size={15} /> Admin Panel</NavLink>}
+                    {!String(user.role || '').toLowerCase().includes('admin') && (
+                      <NavLink to="/profile" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><User size={15} /> My Profile</NavLink>
+                    )}
+                    {String(user.role || '').toLowerCase().includes('admin') && (
+                      <NavLink to="/admin" className="drawer-auth-link" onClick={() => setIsMenuOpen(false)}><Menu size={15} /> Admin Panel</NavLink>
+                    )}
                     <button className="drawer-auth-link drawer-logout" onClick={() => { handleLogout(); setIsMenuOpen(false); }}><LogOut size={15} /> Logout</button>
                   </>
                 ) : isGuest ? (

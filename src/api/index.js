@@ -24,7 +24,7 @@ const api = {
   // ====== ADDRESSES ======
   addresses: {
     getAll: async () => {
-      const res = await axiosClient.get('/users/addresses');
+      const res = await axiosClient.get('/users/address');
       return res.data;
     },
     add: async (data) => {
@@ -73,15 +73,20 @@ const api = {
       return res.data;
     },
     add: async (productId, quantity = 1) => {
-      const res = await axiosClient.post('/cart', { productId, quantity });
+      if (!productId) return null;
+      const res = await axiosClient.post('/cart/add', { productId, id: productId, quantity });
       return res.data;
     },
-    update: async (productId, quantity) => {
-      const res = await axiosClient.put('/cart', { productId, quantity });
+    update: async (itemId, quantity) => {
+      const res = await axiosClient.put(`/cart/update/${itemId}`, { quantity });
       return res.data;
     },
-    remove: async (productId) => {
-      const res = await axiosClient.delete(`/cart/${productId}`);
+    remove: async (itemId) => {
+      const res = await axiosClient.delete(`/cart/remove/${itemId}`);
+      return res.data;
+    },
+    clear: async () => {
+      const res = await axiosClient.delete('/cart/clear');
       return res.data;
     },
   },
@@ -97,8 +102,8 @@ const api = {
       const res = await axiosClient.post('/wishlist/add', { productId });  // was '/wishlist'
       return res.data;
     },
-    remove: async (productId) => {
-      const res = await axiosClient.delete(`/wishlist/${productId}`);
+    remove: async (itemId) => {
+      const res = await axiosClient.delete(`/wishlist/remove/${itemId}`);
       return res.data;
     },
   },
@@ -114,7 +119,27 @@ const api = {
       return res.data;
     },
     create: async (data) => {
-      const res = await axiosClient.post('/orders', data);
+      const res = await axiosClient.post('/orders/checkout', data);
+      return res.data;
+    },
+    cancel: async (id) => {
+      const res = await axiosClient.put(`/orders/${id}/cancel`);
+      return res.data;
+    },
+    track: async (id) => {
+      const res = await axiosClient.get(`/orders/${id}/track`);
+      return res.data;
+    },
+  },
+
+  // ====== ADMIN ORDERS ======
+  adminOrders: {
+    getAll: async () => {
+      const res = await axiosClient.get('/admin/orders');
+      return res.data;
+    },
+    updateStatus: async (id, status) => {
+      const res = await axiosClient.put(`/admin/orders/${id}/status`, { status });
       return res.data;
     },
   },
@@ -138,7 +163,7 @@ const api = {
       return res.data;
     },
     create: async (productId, data) => {
-      const res = await axiosClient.post(`/reviews/product/${productId}`, data);
+      const res = await axiosClient.post('/reviews', { productId, ...data });
       return res.data;
     },
   },

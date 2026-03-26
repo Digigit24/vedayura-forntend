@@ -41,7 +41,7 @@
 .header-title h3 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--color-primary-dark);
+    color: var(--pp-primary-dark);
 }
 
 .close-btn {
@@ -110,9 +110,9 @@
 }
 
 .type-btn.active {
-    background: var(--color-primary);
+    background: var(--pp-primary);
     color: white;
-    border-color: var(--color-primary);
+    border-color: var(--pp-primary);
     box-shadow: 0 4px 12px rgba(23, 83, 51, 0.2);
 }
 
@@ -127,7 +127,7 @@
     width: 18px;
     height: 18px;
     cursor: pointer;
-    accent-color: var(--color-primary);
+    accent-color: var(--pp-primary);
 }
 
 .form-checkbox label {
@@ -145,7 +145,7 @@
 
 .btn-save {
     flex: 2;
-    background: var(--color-primary);
+    background: var(--pp-primary);
     color: white;
     padding: 14px;
     border-radius: var(--radius-md);
@@ -158,7 +158,7 @@
 }
 
 .btn-save:hover {
-    background: var(--color-primary-dark);
+    background: var(--pp-primary-dark);
     transform: translateY(-2px);
 }
 

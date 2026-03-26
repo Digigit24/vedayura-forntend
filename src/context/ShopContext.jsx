@@ -46,7 +46,7 @@ export const ShopProvider = ({ children }) => {
             // Ensure token is present and not a stringified "null" or "undefined"
             if (token && token !== 'null' && token !== 'undefined') {
                 try {
-                    const res = await api.addresses.get();
+                    const res = await api.addresses.getAll();
                     if (res && (Array.isArray(res) || Array.isArray(res.addresses))) {
                         const serverAddresses = Array.isArray(res) ? res : res.addresses;
                         const mapped = serverAddresses.map(addr => ({
@@ -62,24 +62,55 @@ export const ShopProvider = ({ children }) => {
                             type: addr.type || 'Home',
                             isDefault: addr.isDefault || false
                         }));
-                        setAddresses(mapped);
-                        localStorage.setItem(`ayurveda_addresses_${userId}`, JSON.stringify(mapped));
+                        // Deduplicate by content (street+city+pinCode) — server may create
+                        // duplicate records if the same address was saved multiple times
+                        const seenContent = new Set();
+                        const deduped = mapped.filter(a => {
+                            const key = `${a.street}|${a.city}|${a.pinCode}`.toLowerCase();
+                            if (seenContent.has(key)) return false;
+                            seenContent.add(key);
+                            return true;
+                        });
+                        setAddresses(deduped);
+                        localStorage.setItem(`ayurveda_addresses_${userId}`, JSON.stringify(deduped));
                     } else {
                         const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
-                        if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+                        if (savedAddresses) {
+                            const parsed = JSON.parse(savedAddresses);
+                            const seenContent = new Set();
+                            setAddresses(parsed.filter(a => {
+                                const key = `${a.street}|${a.city}|${a.pinCode}`.toLowerCase();
+                                if (seenContent.has(key)) return false;
+                                seenContent.add(key);
+                                return true;
+                            }));
+                        }
                     }
                 } catch (err) {
-                    // If error is 401/403, it's an auth issue (expired token), not a server failure.
-                    // We suppress the warning for auth issues to avoid alarming logs.
-                    if (!err.response || (err.response.status !== 401 && err.response.status !== 403)) {
-                        console.warn('Failed to fetch addresses from server, using local storage.');
-                    }
                     const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
-                    if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+                    if (savedAddresses) {
+                        const parsed = JSON.parse(savedAddresses);
+                        const seenContent = new Set();
+                        setAddresses(parsed.filter(a => {
+                            const key = `${a.street}|${a.city}|${a.pinCode}`.toLowerCase();
+                            if (seenContent.has(key)) return false;
+                            seenContent.add(key);
+                            return true;
+                        }));
+                    }
                 }
             } else {
                 const savedAddresses = localStorage.getItem(`ayurveda_addresses_${userId}`);
-                if (savedAddresses) setAddresses(JSON.parse(savedAddresses));
+                if (savedAddresses) {
+                    const parsed = JSON.parse(savedAddresses);
+                    const seenContent = new Set();
+                    setAddresses(parsed.filter(a => {
+                        const key = `${a.street}|${a.city}|${a.pinCode}`.toLowerCase();
+                        if (seenContent.has(key)) return false;
+                        seenContent.add(key);
+                        return true;
+                    }));
+                }
             }
         } else {
             setAddresses([]);
@@ -88,20 +119,45 @@ export const ShopProvider = ({ children }) => {
 
     const extractCartItems = useCallback((res) => {
         if (!res) return null;
-        if (Array.isArray(res)) return res;
-        if (Array.isArray(res.cart)) return res.cart;
-        if (Array.isArray(res.items)) return res.items;
-        if (res.cart && Array.isArray(res.cart.items)) return res.cart.items;
-        return null;
+        let items = null;
+        if (Array.isArray(res)) items = res;
+        else if (Array.isArray(res.cart)) items = res.cart;
+        else if (Array.isArray(res.items)) items = res.items;
+        else if (res.cart && Array.isArray(res.cart.items)) items = res.cart.items;
+        if (!items) return null;
+        // Normalize server items: id = productId, cartItemId = server cart record id
+        return items.map(item => {
+            const productId = item.productId || item.product?.id;
+            if (!productId) return item; // local item already has id = productId
+            return {
+                ...(item.product || {}),
+                ...item,
+                id: productId,
+                cartItemId: item.id,
+                quantity: item.quantity || 1,
+            };
+        });
     }, []);
 
     const extractWishlistItems = useCallback((res) => {
         if (!res) return null;
-        if (Array.isArray(res)) return res;
-        if (Array.isArray(res.wishlist)) return res.wishlist;
-        if (res.wishlist && Array.isArray(res.wishlist.items)) return res.wishlist.items;
-        if (Array.isArray(res.items)) return res.items;
-        return null;
+        let items = null;
+        if (Array.isArray(res)) items = res;
+        else if (Array.isArray(res.wishlist)) items = res.wishlist;
+        else if (res.wishlist && Array.isArray(res.wishlist.items)) items = res.wishlist.items;
+        else if (Array.isArray(res.items)) items = res.items;
+        if (!items) return null;
+        // Normalize server items: id = productId, wishlistItemId = server wishlist record id
+        return items.map(item => {
+            const productId = item.productId || item.product?.id;
+            if (!productId) return item;
+            return {
+                ...(item.product || {}),
+                ...item,
+                id: productId,
+                wishlistItemId: item.id,
+            };
+        });
     }, []);
 
     // Sync cart to localStorage
@@ -285,36 +341,40 @@ export const ShopProvider = ({ children }) => {
     }, [loadUserData]);
 
     const addToCart = useCallback((product, quantity = 1) => {
+        const pid = product?.id || product?.productId;
+        if (!pid) return;
         setCart(prev => {
-            const existing = prev.find(item => item.id === product.id);
+            const existing = prev.find(item => item.id === pid);
             if (existing) {
-                const updated = prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item);
-                if (user?.id) api.cart.add(product.id, updated.find(i => i.id === product.id).quantity).catch(() => { });
+                const updated = prev.map(item => item.id === pid ? { ...item, quantity: item.quantity + quantity } : item);
+                if (user?.id) api.cart.add(pid, updated.find(i => i.id === pid).quantity).catch(() => { });
                 return updated;
             }
-            if (user?.id) api.cart.add(product.id, quantity).catch(() => { });
-            return [...prev, { ...product, quantity }];
+            if (user?.id) api.cart.add(pid, quantity).catch(() => { });
+            return [...prev, { ...product, id: pid, quantity }];
         });
     }, [user?.id]);
 
     const removeFromCart = useCallback((productId) => {
         setCart(prev => {
-            if (user?.id) api.cart.remove(productId).catch(() => { });
-            return prev.filter(item => item.id !== productId);
+            const item = prev.find(i => i.id === productId);
+            if (user?.id) api.cart.remove(item?.cartItemId || productId).catch(() => { });
+            return prev.filter(i => i.id !== productId);
         });
     }, [user?.id]);
 
     const updateQuantity = useCallback((productId, quantity) => {
         if (quantity < 1) return;
         setCart(prev => {
-            if (user?.id) api.cart.update(productId, quantity).catch(() => { });
-            return prev.map(item => item.id === productId ? { ...item, quantity } : item);
+            const item = prev.find(i => i.id === productId);
+            if (user?.id) api.cart.update(item?.cartItemId || productId, quantity).catch(() => { });
+            return prev.map(i => i.id === productId ? { ...i, quantity } : i);
         });
     }, [user?.id]);
 
     const clearCart = useCallback(() => {
-        setCart(prev => {
-            if (user?.id) prev.forEach(item => api.cart.remove(item.id).catch(() => { }));
+        setCart(() => {
+            if (user?.id) api.cart.clear().catch(() => { });
             return [];
         });
     }, [user?.id]);
@@ -324,7 +384,7 @@ export const ShopProvider = ({ children }) => {
             const id = product.id;
             const exists = prev.find(item => (item.productId || item.product?.id || item.id) === id);
             if (exists) {
-                if (user?.id) api.wishlist.remove(id).catch(() => { });
+                if (user?.id) api.wishlist.remove(exists.wishlistItemId || id).catch(() => { });
                 return prev.filter(item => (item.productId || item.product?.id || item.id) !== id);
             }
             if (user?.id) api.wishlist.add(id).catch(() => { });
@@ -343,8 +403,9 @@ export const ShopProvider = ({ children }) => {
 
     const removeFromWishlist = useCallback((productId) => {
         setWishlist(prev => {
-            if (user?.id) api.wishlist.remove(productId).catch(() => { });
-            return prev.filter(item => (item.productId || item.product?.id || item.id) !== productId);
+            const item = prev.find(i => (i.productId || i.product?.id || i.id) === productId);
+            if (user?.id) api.wishlist.remove(item?.wishlistItemId || productId).catch(() => { });
+            return prev.filter(i => (i.productId || i.product?.id || i.id) !== productId);
         });
     }, [user?.id]);
 
@@ -458,8 +519,8 @@ export const ShopProvider = ({ children }) => {
                 localStorage.setItem('ayurveda_user', JSON.stringify(res.user));
                 return { success: true, user: res.user };
             }
-        } catch (err) {
-            console.warn('Update Profile API failed or not implemented, falling back to local only.');
+        } catch {
+            // API not implemented yet — silently fall back to local update
         }
 
         const updatedUser = { ...user, ...profileData };
@@ -479,7 +540,8 @@ export const ShopProvider = ({ children }) => {
                 isDefault: addressData.isDefault
             };
             const res = await api.addresses.add(payload);
-            if (res && (res.id || res.address)) {
+            // Reload from server on any non-null response (catches {success:true}, {id:...}, {address:...})
+            if (res != null) {
                 loadUserData(user?.id);
                 return;
             }
@@ -488,7 +550,13 @@ export const ShopProvider = ({ children }) => {
         }
 
         const newAddress = { ...addressData, id: Date.now(), isDefault: addresses.length === 0 };
-        setAddresses(prev => [...prev, newAddress]);
+        setAddresses(prev => {
+            // Prevent duplicate local entries (same street + city + pinCode)
+            const alreadyExists = prev.some(a =>
+                a.street === newAddress.street && a.city === newAddress.city && a.pinCode === newAddress.pinCode
+            );
+            return alreadyExists ? prev : [...prev, newAddress];
+        });
     }, [addresses.length, loadUserData, user?.id]);
 
     const updateAddress = useCallback(async (id, updatedData) => {

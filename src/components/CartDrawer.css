@@ -24,7 +24,7 @@
   right: 0;
   height: 100vh;
   width: 400px;
-  max-width: 92vw;
+  max-width: 80vw;
   background: #fff;
   z-index: 1510;
   display: flex;
@@ -73,5 +73,5 @@
 .drawer-content::-webkit-scrollbar-thumb { background: #e0e0dc; border-radius: 99px; }
 
 @media (max-width: 480px) {
-  .drawer { width: 100%; max-width: 100%; border-left: none; }
+  .drawer { width: 85vw; max-width: 85vw; border-left: none; }
 }

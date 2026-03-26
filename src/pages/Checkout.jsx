@@ -15,7 +15,11 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false);
     const [showAddressForm, setShowAddressForm] = useState(addresses.length === 0);
 
-    const subtotal = cart.reduce((acc, item) => acc + (item.discount_price || item.price) * item.quantity, 0);
+    const getPrice = (item) => item.discount_price ?? item.price ?? item.product?.discountedPrice ?? item.product?.realPrice ?? 0;
+    const getName  = (item) => item.name  || item.product?.name  || 'Product';
+    const getImage = (item) => item.image || item.product?.imageUrls?.[0] || null;
+
+    const subtotal = cart.reduce((acc, item) => acc + getPrice(item) * item.quantity, 0);
     const shipping = subtotal > 999 ? 0 : 99;
     const total = subtotal + shipping;
 
@@ -431,25 +435,22 @@ const Checkout = () => {
                         <h3 className="summary-title">Order Summary</h3>
                         
                         <div className="cart-preview">
-                            {cart.slice(0, 3).map((item, idx) => (
+                            {cart.map((item, idx) => (
                                 <div key={idx} className="cart-item-mini">
                                     <div className="item-thumb">
-                                        {item.image ? (
-                                            <img src={item.image} alt={item.name} loading="lazy" />
-                                        ) : (
-                                            <Package size={20} />
-                                        )}
+                                        {getImage(item)
+                                            ? <img src={getImage(item)} alt={getName(item)} loading="lazy" />
+                                            : <Package size={18} />
+                                        }
                                         <span className="item-qty">{item.quantity}</span>
                                     </div>
                                     <div className="item-info">
-                                        <span className="item-name">{item.name}</span>
-                                        <span className="item-price">₹{((item.discount_price || item.price) * item.quantity).toLocaleString()}</span>
+                                        <span className="item-name">{getName(item)}</span>
+                                        <span className="item-unit-price">₹{getPrice(item).toLocaleString()} × {item.quantity}</span>
                                     </div>
+                                    <span className="item-total">₹{(getPrice(item) * item.quantity).toLocaleString()}</span>
                                 </div>
                             ))}
-                            {cart.length > 3 && (
-                                <div className="more-items">+{cart.length - 3} more items</div>
-                            )}
                         </div>
 
                         <div className="summary-divider"></div>

@@ -4,7 +4,7 @@ import {
   Plus, Minus, Search, X, Filter, Download,
   ArrowUpCircle, ArrowDownCircle, RotateCcw, Eye
 } from 'lucide-react';
-import api from '../api';
+import axiosClient from '../api/axiosClient';
 
 const REASON_OPTIONS = {
   IN: [
@@ -31,20 +31,29 @@ const StockManagement = ({ products = [] }) => {
   const [filterType, setFilterType] = useState('ALL');
   const [viewingHistory, setViewingHistory] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [transactionError, setTransactionError] = useState('');
 
   // ====== FETCH TRANSACTIONS FROM BACKEND ======
   const loadTransactions = async (productId = null) => {
     setLoadingTransactions(true);
+    setTransactionError('');
     try {
       const url = productId
-        ? `/api/stock/transactions?productId=${productId}`
-        : '/api/stock/transactions';
-      const res = await api.get(url);
+        ? `/stock/transactions?productId=${productId}`
+        : '/stock/transactions';
+      const res = await axiosClient.get(url);
       if (res.data?.success) {
         setTransactions(res.data.transactions || []);
+      } else {
+        setTransactions([]);
       }
     } catch (err) {
-      console.error('Failed to load stock transactions:', err);
+      const status = err?.response?.status;
+      setTransactionError(
+        status === 500
+          ? 'Server error loading transactions. Please check the backend.'
+          : 'Failed to load transactions.'
+      );
       setTransactions([]);
     } finally {
       setLoadingTransactions(false);
@@ -58,10 +67,9 @@ const StockManagement = ({ products = [] }) => {
   useEffect(() => {
     if (viewingHistory) {
       loadTransactions(viewingHistory.id);
-    } else {
-      loadTransactions();
     }
-  }, [viewingHistory]);
+    // intentionally skip null — initial load handled by the effect above
+  }, [viewingHistory?.id]);
 
   // ====== CALCULATED STATS ======
   const lowStockProducts = products.filter((p) => p.stock > 0 && p.stock <= LOW_STOCK_THRESHOLD);
@@ -106,7 +114,7 @@ const StockManagement = ({ products = [] }) => {
     }
 
     try {
-      const res = await api.post('/api/stock/adjust', {
+      const res = await axiosClient.post('/stock/adjust', {
         productId,
         type: adjustType,
         quantity,
@@ -372,6 +380,8 @@ const StockManagement = ({ products = [] }) => {
 
           {loadingTransactions ? (
             <p className="stk-no-data">Loading transactions...</p>
+          ) : transactionError ? (
+            <p className="stk-no-data" style={{ color: '#ef4444' }}>{transactionError}</p>
           ) : filteredTransactions.length === 0 ? (
             <p className="stk-no-data">No transactions found.</p>
           ) : (

@@ -8,7 +8,7 @@ import './SettingsPanel.css';
 
 const SettingsPanel = ({ onClose }) => {
     const { addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useShop();
-    const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'addresses'
+    const [activeTab, setActiveTab] = useState('profile');
     const [showAddressForm, setShowAddressForm] = useState(false);
     const [editingAddress, setEditingAddress] = useState(null);
 
@@ -102,6 +102,7 @@ const SettingsPanel = ({ onClose }) => {
                         )}
                     </div>
                 )}
+
             </div>
 
             {showAddressForm && (

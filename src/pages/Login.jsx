@@ -163,26 +163,66 @@ const Login = () => {
         setPhone('');
     };
 
+    const ease = [0.22, 1, 0.36, 1];
+
+    const fieldVariants = {
+        hidden: {},
+        show: { transition: { staggerChildren: 0.08, delayChildren: 0.55 } },
+    };
+    const fieldItem = {
+        hidden: { opacity: 0, y: 18, filter: 'blur(4px)' },
+        show:   { opacity: 1, y: 0,  filter: 'blur(0px)', transition: { duration: 0.45, ease } },
+    };
+
     return (
         <div className="login-page">
-            <div className="bg-blob bg-blob-1" />
-            <div className="bg-blob bg-blob-2" />
-            <div className="bg-blob bg-blob-3" />
 
             <div className="auth-container">
-                <div className="auth-form-panel">
+
+                {/* ── BRAND SIDE (left) ── */}
+                <motion.div
+                    className="auth-brand-panel"
+                    initial={{ x: -80, opacity: 0 }}
+                    animate={{ x: 0,   opacity: 1 }}
+                    transition={{ duration: 0.85, ease }}
+                >
+                    <img src="/assets/login-img.jpg" alt="" className="abp-img" />
+                </motion.div>
+
+                {/* ── FORM SIDE (right) ── */}
+                <motion.div
+                    className="auth-form-panel"
+                    initial={{ x: 80,  opacity: 0 }}
+                    animate={{ x: 0,   opacity: 1 }}
+                    transition={{ duration: 0.85, delay: 0.12, ease }}
+                >
                     <div className="auth-form-inner">
-                        <div className="auth-logo-top">
+                        <motion.div
+                            className="auth-logo-top"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ type: 'spring', stiffness: 280, damping: 18, delay: 0.45 }}
+                        >
                             <div className="auth-logo-badge">🌿</div>
-                        </div>
-                        <div className="auth-header">
-                            <h1>{isRegister ? 'Create Account' : 'Welcome Back'}</h1>
-                            <p className="auth-subtitle">
-                                {isRegister
-                                    ? 'Join the Vedayura family for natural wellness'
-                                    : 'Sign in to continue your wellness journey'}
-                            </p>
-                        </div>
+                        </motion.div>
+
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={isRegister ? 'reg-header' : 'login-header'}
+                                className="auth-header"
+                                initial={{ opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{   opacity: 0, y: -14 }}
+                                transition={{ duration: 0.28, ease }}
+                            >
+                                <h1>{isRegister ? 'Create Account' : 'Welcome Back'}</h1>
+                                <p className="auth-subtitle">
+                                    {isRegister
+                                        ? 'Join the Vedayura family for natural wellness'
+                                        : 'Sign in to continue your wellness journey'}
+                                </p>
+                            </motion.div>
+                        </AnimatePresence>
 
                         <AnimatePresence mode="wait">
                             {error && (
@@ -199,7 +239,12 @@ const Login = () => {
                             )}
                         </AnimatePresence>
 
-                        <form onSubmit={handleSubmit}>
+                        <motion.form
+                            onSubmit={handleSubmit}
+                            variants={fieldVariants}
+                            initial="hidden"
+                            animate="show"
+                        >
                             <AnimatePresence mode="wait">
                                 {isRegister && (
                                     <motion.div
@@ -250,7 +295,7 @@ const Login = () => {
                                 )}
                             </AnimatePresence>
 
-                            <div className={`form-group ${focusedField === 'email' ? 'focused' : ''}`}>
+                            <motion.div variants={fieldItem} className={`form-group ${focusedField === 'email' ? 'focused' : ''}`}>
                                 <label className="form-label1">Email Address</label>
                                 <div className="input-icon-wrap">
                                     <Mail size={16} className="input-icon" />
@@ -266,9 +311,9 @@ const Login = () => {
                                         disabled={loading}
                                     />
                                 </div>
-                            </div>
+                            </motion.div>
 
-                            <div className={`form-group ${focusedField === 'password' ? 'focused' : ''}`}>
+                            <motion.div variants={fieldItem} className={`form-group ${focusedField === 'password' ? 'focused' : ''}`}>
                                 <label className="form-label1">Password</label>
                                 <div className="input-icon-wrap password-input-wrapper">
                                     <Lock size={16} className="input-icon" />
@@ -305,20 +350,23 @@ const Login = () => {
                                         </span>
                                     </div>
                                 )}
-                            </div>
+                            </motion.div>
 
                             {!isRegister && (
-                                <div className="form-footer">
+                                <motion.div variants={fieldItem} className="form-footer">
                                     <button type="button" className="link-btn">
                                         Forgot Password?
                                     </button>
-                                </div>
+                                </motion.div>
                             )}
 
-                            <button
+                            <motion.button
+                                variants={fieldItem}
                                 type="submit"
                                 className="btn-auth"
                                 disabled={loading}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
                             >
                                 {loading ? (
                                     <>
@@ -331,8 +379,8 @@ const Login = () => {
                                         <ArrowRight size={18} />
                                     </>
                                 )}
-                            </button>
-                        </form>
+                            </motion.button>
+                        </motion.form>
 
                         <div className="auth-divider"><span>or</span></div>
 
@@ -350,7 +398,7 @@ const Login = () => {
                             </div>
                         )}
                     </div>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

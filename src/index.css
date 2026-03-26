@@ -11,6 +11,12 @@
 
   /* Earthy Accent */
   --color-accent: #7A642B;
+
+  /* Profile-page / navbar-avatar scoped theme (updated by theme picker) */
+  --pp-primary:       #175333;
+  --pp-primary-dark:  #0F3F2A;
+  --pp-primary-light: #1DB04C;
+  --pp-accent:        #7A642B;
   /* Pesto – premium / earthy */
 
   /* Backgrounds & Surfaces */

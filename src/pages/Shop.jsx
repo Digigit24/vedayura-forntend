@@ -2,8 +2,26 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
-import { Search, X, SlidersHorizontal, Leaf, ShieldCheck } from 'lucide-react';
+import { Search, X, SlidersHorizontal, Leaf, ShieldCheck, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import './Shop.css';
+
+const fadeUp = {
+    hidden: { opacity: 0, y: 28 },
+    visible: (delay = 0) => ({
+        opacity: 1, y: 0,
+        transition: { duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }
+    })
+};
+
+const cardVariants = {
+    hidden: { opacity: 0, y: 22 },
+    visible: (i) => ({
+        opacity: 1, y: 0,
+        transition: { duration: 0.45, delay: i * 0.045, ease: [0.22, 1, 0.36, 1] }
+    }),
+    exit: { opacity: 0, y: -10, transition: { duration: 0.2 } }
+};
 
 const CATS = ['All', 'Kit', 'Juice', 'Capsules', 'Powder', 'Coffee', 'Personal Care'];
 const PER_PAGE = 12;
@@ -13,6 +31,11 @@ const Shop = () => {
     const location  = useLocation();
     const params    = new URLSearchParams(location.search);
     const tabsRef   = useRef(null);
+
+    const heroRef = useRef(null);
+    const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+    const imgScale   = useTransform(scrollYProgress, [0, 1], [1, 0.75]);
+    const imgOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
     const [filtered,  setFiltered]  = useState(products);
     const [cat,       setCat]       = useState(params.get('category') || 'All');
@@ -63,24 +86,55 @@ const Shop = () => {
     const totalPages = Math.ceil(filtered.length / PER_PAGE);
     const paged      = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
-    const goToPage = (n) => { setPage(n); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+    const goToPage = (n) => {
+        setPage(n);
+        document.documentElement.style.scrollBehavior = 'auto';
+        window.scrollTo(0, 0);
+        document.documentElement.style.scrollBehavior = '';
+    };
 
     return (
         <div className="shop-page">
 
             {/* ── PAGE HEADER ── */}
-            <header className="shop-header">
-                <div className="sh-text">
-                    <span className="sh-eyebrow">✦ Ayurvedic Wellness</span>
-                    <h1 className="sh-heading">
-                        Our<br />
-                        <em>Collection.</em>
-                    </h1>
-                    <p className="sh-tagline">15+ handcrafted formulations — capsules, juices, powders &amp; more.</p>
-                </div>
-                <div className="sh-hero-img-wrap">
-                    <img src="/assets/all-products-tr.png" alt="Vedayura product range" className="sh-hero-img" />
-                </div>
+            <header className="shop-header" ref={heroRef}>
+                <motion.div className="sh-text" initial="hidden" animate="visible">
+                    <motion.span className="sh-eyebrow" variants={fadeUp} custom={0}>✦ Ayurvedic Wellness</motion.span>
+                    <motion.h1 className="sh-heading" variants={fadeUp} custom={0.1}>
+                        Our<br /><em>Collection.</em>
+                    </motion.h1>
+                    <motion.p className="sh-tagline" variants={fadeUp} custom={0.2}>15+ handcrafted formulations — capsules, juices, powders &amp; more.</motion.p>
+                </motion.div>
+
+                <motion.div
+                    className="sh-hero-img-wrap"
+                    initial={{ opacity: 0, y: 60 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    style={{ scale: imgScale, opacity: imgOpacity, transformOrigin: 'center bottom' }}
+                >
+                    <motion.img
+                        src="/assets/all-products-tr.png"
+                        alt="Vedayura product range"
+                        className="sh-hero-img"
+                        animate={{ y: [0, -14, 0] }}
+                        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                </motion.div>
+
+                <motion.div
+                    className="sh-scroll-hint"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1.4, duration: 0.6 }}
+                >
+                    <motion.div
+                        animate={{ y: [0, 7, 0] }}
+                        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                        <ChevronDown size={22} />
+                    </motion.div>
+                </motion.div>
             </header>
 
             {/* ── STICKY CONTROLS BAR (search + filter + category tabs) ── */}
@@ -130,10 +184,21 @@ const Shop = () => {
             <main className="shop-main">
                 {filtered.length > 0 ? (
                     <>
-                        <div className="product-grid" key={cat + sort + page}>
-                            {paged.map(p => (
-                                <ProductCard key={p.id} product={p} activeCategory={cat} />
-                            ))}
+                        <div className="product-grid">
+                            <AnimatePresence>
+                                {paged.map((p, i) => (
+                                    <motion.div
+                                        key={p.id}
+                                        custom={i}
+                                        variants={cardVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        exit="exit"
+                                    >
+                                        <ProductCard product={p} activeCategory={cat} />
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
                         </div>
 
                         {totalPages > 1 && (
@@ -177,12 +242,17 @@ const Shop = () => {
                         )}
                     </>
                 ) : (
-                    <div className="empty-state">
+                    <motion.div
+                        className="empty-state"
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                    >
                         <Search size={28} strokeWidth={1} />
                         <h3>No products found</h3>
                         <p>Try adjusting your search or filters.</p>
                         <button onClick={reset}>Reset</button>
-                    </div>
+                    </motion.div>
                 )}
             </main>
 
