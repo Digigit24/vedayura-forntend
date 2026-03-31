@@ -516,8 +516,7 @@ const DashboardHome = ({ products }) => {
       try {
         const [ordRes, usrRes, refRes] = await Promise.all([
           axiosClient.get('/admin/orders').catch(() => ({ data: {} })),
-          fetch('/api/users', { headers: { Authorization: `Bearer ${localStorage.getItem('ayurveda_token')}` } })
-            .then((r) => r.json()).catch(() => ({})),
+          axiosClient.get('/users').then((r) => r.data).catch(() => ({})),
           getAllRefunds().catch(() => ({})),
         ]);
         setOrders(ordRes.data?.orders ?? ordRes.data?.data ?? []);
@@ -1363,15 +1362,8 @@ const UserManagement = ({ showConfirm, closeConfirm }) => {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('ayurveda_token');
-      const res = await fetch('/api/users', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const data = await res.json();
+      const res = await axiosClient.get('/users');
+      const data = res.data;
 
       if (data.success) {
         setUsers(data.users);
@@ -1390,14 +1382,8 @@ const UserManagement = ({ showConfirm, closeConfirm }) => {
     setViewingUser(user);
     setLoadingDetails(true);
     try {
-      const token = localStorage.getItem('ayurveda_token');
-      const res = await fetch(`/api/users/${user.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await res.json();
+      const res = await axiosClient.get(`/users/${user.id}`);
+      const data = res.data;
       if (data.success) {
         setViewingUserDetails(data.user);
       }
@@ -1417,16 +1403,8 @@ const UserManagement = ({ showConfirm, closeConfirm }) => {
       onConfirm: async () => {
         closeConfirm();
         try {
-          const token = localStorage.getItem('ayurveda_token');
-          const res = await fetch(`/api/users/${userId}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-
-          const data = await res.json();
+          const res = await axiosClient.delete(`/users/${userId}`);
+          const data = res.data;
 
           if (data.success) {
             setUsers((prev) => prev.filter((u) => u.id !== userId));
