@@ -18,6 +18,7 @@ import ScrollToTop from './components/ScrollToTop';
 import ScrollToTopButton from './components/ScrollToTopButton';
 import ProtectedRoute from './components/ProtectedRoute';
 import PageTransition from './components/PageTransition';
+import CursorGlow from './components/CursorGlow';
 
 const toastOptions = {
   style: {
@@ -85,6 +86,7 @@ function App() {
         <Toaster position="top-left" toastOptions={toastOptions} />
         <CartDrawer />
         <ScrollToTopButton />
+        <CursorGlow />
 
         <Layout>
           <AppRoutes />
