@@ -1,4 +1,5 @@
 import { ShoppingBag, Heart, Trash2 } from "lucide-react";
+import EmptyState from "../components/EmptyState";
 import { motion, AnimatePresence } from "framer-motion";
 import { useShop } from "../context/ShopContext";
 import toast from "react-hot-toast";
@@ -42,16 +43,11 @@ const Wishlist = () => {
 
   if (wishlist.length === 0) {
     return (
-      <motion.div
-        className="drawer-empty"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Heart size={44} strokeWidth={1.2} />
-        <h3>Your wishlist is empty</h3>
-        <p>Save products you love and come back to them anytime.</p>
-      </motion.div>
+      <EmptyState
+        variant="wishlist"
+        title="Your wishlist is empty"
+        description="Save products you love and come back to them anytime. Your healing journey starts with a single herb."
+      />
     );
   }
 

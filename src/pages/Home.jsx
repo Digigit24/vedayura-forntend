@@ -1,7 +1,6 @@
 // v1.0.2
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import { useShop } from "../context/ShopContext";
 import ProductCard from "../components/ProductCard";
 import { Leaf, ShieldCheck } from "lucide-react";
@@ -413,88 +412,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <NewsletterHomeWrapper />
     </div>
-  );
-};
-
-// Internal Component for functional newsletter
-const NewsletterHomeWrapper = () => {
-  const [email, setEmail] = React.useState('');
-  const [status, setStatus] = React.useState('');
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (!email || !email.includes('@')) {
-      toast.error("Please enter a valid email address", {
-        style: {
-          borderRadius: '14px',
-          background: '#1e293b',
-          color: '#f8fafc',
-          padding: '12px 20px',
-          fontSize: '0.9rem',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.15)',
-        },
-        icon: '✉️',
-        position: 'top-center',
-        duration: 3000,
-      });
-      return;
-    }
-    setStatus('sending');
-    setTimeout(() => {
-      setStatus('success');
-      setEmail('');
-    }, 1500);
-  };
-
-  return (
-    <section className="nl-section">
-      <div className="nl-dot-grid" aria-hidden="true" />
-
-      <div className="nl-inner">
-        <span className="nl-eyebrow anim-scroll" data-delay="0">Join the Family</span>
-        <div className="about-spine anim-scroll anim-spine nl-spine" data-delay="80" />
-        <h2 className="nl-heading anim-scroll" data-delay="140">
-          Experience Wellness,<br /><em>the Ayurvedic Way</em>
-        </h2>
-        <p className="nl-subtext anim-scroll" data-delay="200">
-          Subscribe to our weekly wellness guide and get exclusive Ayurveda tips, health practices, and a special <span className="nl-highlight">10% OFF</span> on your first order.
-        </p>
-
-        <div className="nl-benefits anim-scroll" data-delay="270">
-          <span className="nl-benefit"><Leaf size={13} /> Weekly Insights</span>
-          <span className="nl-benefit"><ShieldCheck size={13} /> Exclusive Offers</span>
-          <span className="nl-benefit"><Leaf size={13} /> Early Access</span>
-        </div>
-
-        {status === 'success' ? (
-          <div className="nl-success anim-scroll" data-delay="0">
-            <div className="nl-success-check">✓</div>
-            <h4>Welcome to Vedayura!</h4>
-            <p>Your 10% discount code <strong>VEDA10</strong> has been sent to your email.</p>
-            <button onClick={() => setStatus('')} className="nl-reset-btn">Subscribe another email</button>
-          </div>
-        ) : (
-          <form className="nl-form anim-scroll" data-delay="330" onSubmit={handleSubscribe}>
-            <input
-              type="email"
-              className="nl-input"
-              placeholder="Enter your email address..."
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={status === 'sending'}
-            />
-            <button type="submit" className="nl-submit" disabled={status === 'sending'}>
-              {status === 'sending' ? 'Joining...' : 'Subscribe Now'}
-            </button>
-          </form>
-        )}
-
-        <p className="nl-privacy">No spam, ever. Unsubscribe anytime.</p>
-      </div>
-    </section>
   );
 };
 

@@ -4,6 +4,7 @@ import { useShop } from '../context/ShopContext';
 import ProductCard from '../components/ProductCard';
 import { Search, X, SlidersHorizontal, Leaf, ShieldCheck, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import EmptyState from '../components/EmptyState';
 import './Shop.css';
 
 const fadeUp = {
@@ -242,17 +243,12 @@ const Shop = () => {
                         )}
                     </>
                 ) : (
-                    <motion.div
-                        className="empty-state"
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    >
-                        <Search size={28} strokeWidth={1} />
-                        <h3>No products found</h3>
-                        <p>Try adjusting your search or filters.</p>
-                        <button onClick={reset}>Reset</button>
-                    </motion.div>
+                    <EmptyState
+                        variant="search"
+                        title="No products found"
+                        description="Try adjusting your search or filters to discover our Ayurvedic formulations."
+                        action={{ label: 'Reset Filters', onClick: reset }}
+                    />
                 )}
             </main>
 

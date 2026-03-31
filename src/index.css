@@ -704,3 +704,44 @@ img {
   color: #9ca3af;
   font-size: 0.95rem;
 }
+
+/* ── Scroll-to-top floating button ── */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 9000;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.75) translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease, background var(--transition-fast);
+}
+
+.scroll-top-btn--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+}
+
+.scroll-top-btn:hover {
+  background: var(--color-primary-dark);
+  transform: scale(1) translateY(-2px);
+}
+
+@media (max-width: 600px) {
+  .scroll-top-btn {
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+}

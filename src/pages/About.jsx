@@ -1,8 +1,17 @@
 //demo check
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Leaf, Sun, Droplets, Heart, Sprout, BookOpen, Globe, Award, Zap, Shield, Wind, Coffee } from 'lucide-react';
 import './About.css';
+
+const SectionDivider = () => (
+    <div className="section-divider">
+        <span className="divider-line" />
+        <Leaf size={14} className="divider-leaf" />
+        <span className="divider-line" />
+    </div>
+);
 
 const About = () => {
     const heroRef = useRef(null);
@@ -21,9 +30,9 @@ const About = () => {
     };
 
     const values = [
-        { icon: <Sun size={22} />, title: "Sun-Kissed Herbs", text: "Harvested at peak potency under the natural sun, following lunar cycles that ancient texts prescribe for optimal plant vitality." },
-        { icon: <Droplets size={22} />, title: "Pure Formulations", text: "No synthetic additives, no artificial colours — only what nature intended. Every ingredient traceable to its source." },
-        { icon: <Heart size={22} />, title: "Conscious Care", text: "Formulations kind to your body and the planet — from Boswellia for joints to Kutki for liver, each herb chosen with purpose." }
+        { icon: <Sun size={22} />, title: "Sun-Kissed Herbs", text: "Harvested at peak potency under the natural sun, following lunar cycles that ancient texts prescribe for optimal plant vitality.", img: "/assets/about-img-one.jpg" },
+        { icon: <Droplets size={22} />, title: "Pure Formulations", text: "No synthetic additives, no artificial colours — only what nature intended. Every ingredient traceable to its source.", img: "/assets/about-img-two.avif" },
+        { icon: <Heart size={22} />, title: "Conscious Care", text: "Formulations kind to your body and the planet — from Boswellia for joints to Kutki for liver, each herb chosen with purpose.", img: "/assets/about-img-three.jpg" }
     ];
 
     const stats = [
@@ -34,9 +43,24 @@ const About = () => {
     ];
 
     const team = [
-        { name: "Dr. Priya Sharma", role: "Chief Ayurvedic Physician", img: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop" },
-        { name: "Arun Vaidya", role: "Master Herbalist", img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop" },
-        { name: "Dr. Meera Iyer", role: "Research & Formulation", img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop" },
+        {
+            name: "Dr. Priya Sharma",
+            role: "Chief Ayurvedic Physician",
+            bio: "25+ years bridging classical Samhita texts with modern clinical outcomes across joint, metabolic, and liver care.",
+            img: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&h=400&fit=crop"
+        },
+        {
+            name: "Arun Vaidya",
+            role: "Master Herbalist",
+            bio: "Third-generation Vaidya with deep expertise in wild-crafted herb sourcing from the Western Ghats and Himalayan foothills.",
+            img: "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&h=400&fit=crop"
+        },
+        {
+            name: "Dr. Meera Iyer",
+            role: "Research & Formulation",
+            bio: "Leads clinical validation of traditional formulas in partnership with leading Ayurvedic universities across India.",
+            img: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&h=400&fit=crop"
+        },
     ];
 
     const timeline = [
@@ -52,43 +76,57 @@ const About = () => {
             name: "Joint & Bone Care",
             description: "Arthroplus harnesses Shallaki (Boswellia serrata) and Shuddha Guggul to ease inflammation, restore flexibility, and strengthen connective tissue.",
             tag: "Capsules",
-            color: "#E8F0E9"
+            color: "#E8F0E9",
+            img: "/assets/about-image-five.jpg"
         },
         {
             icon: <Droplets size={24} />,
             name: "Blood Sugar Support",
             description: "Diabocare blends Karela, Jamun seed, Guduchi, and Ashwagandha — a time-tested combination for homeostasis and controlled sugar levels.",
             tag: "Juice & Capsules",
-            color: "#EAF0E8"
+            color: "#EAF0E8",
+            img: "/assets/about-image-six.jpg"
         },
         {
             icon: <Wind size={24} />,
             name: "Digestive Health",
             description: "Digestive Churna with Triphala, Ajwain, Jeera, and Kutaj relieves gas, bloating, and acidity while restoring natural digestive rhythm.",
             tag: "Powder",
-            color: "#F0EDE8"
+            color: "#F0EDE8",
+            img: "/assets/about-image-seven.jpg"
         },
         {
             icon: <Zap size={24} />,
             name: "Weight Management",
             description: "Garcinia Plus uses Vriksamla (Garcinia cambogia), Triphala, and Trikatu to prevent fat storage, curb cravings, and boost metabolism.",
             tag: "Juice & Capsules",
-            color: "#EDE8F0"
+            color: "#EDE8F0",
+            img: "/assets/about-image-eight.jpg"
         },
         {
             icon: <Heart size={24} />,
             name: "Liver & Heart Care",
             description: "L-Care with Kutki and Punarnava shields the liver from toxins, while H-Care capsules support healthy circulation and balanced cholesterol.",
             tag: "Juice & Capsules",
-            color: "#F0E8E8"
+            color: "#F0E8E8",
+            img: "/assets/about-image-nine.jpg"
         },
         {
             icon: <Sun size={24} />,
             name: "Immunity & Energy",
             description: "Our Immunity Booster and Ayurvedic Coffee — crafted with Ashwagandha, Tulsi, Arjun bark, and adaptogens — fuel daily vitality naturally.",
             tag: "Coffee & Capsules",
-            color: "#F0EFE8"
+            color: "#F0EFE8",
+            img: "/assets/about-image-ten.jpg"
         },
+    ];
+
+    const certifications = [
+        { icon: <Award size={18} />, label: "AYUSH Certified" },
+        { icon: <Shield size={18} />, label: "GMP Compliant" },
+        { icon: <Leaf size={18} />, label: "100% Vegetarian" },
+        { icon: <Globe size={18} />, label: "Ethically Sourced" },
+        { icon: <Coffee size={18} />, label: "Cruelty Free" },
     ];
 
     return (
@@ -178,7 +216,7 @@ const About = () => {
                         >
                             <div className="img-frame">
                                 <img
-                                    src="https://wallpapersok.com/images/hd/ayurveda-hd-herbal-medicine-ota5ofqs76loufud.jpg"
+                                    src="/assets/about-img-four.jpg"
                                     alt="Ayurvedic Oils"
                                     className="fluid-img"
                                 />
@@ -231,6 +269,8 @@ const About = () => {
                 </div>
             </section>
 
+            <SectionDivider />
+
             {/* VALUES */}
             <section className="section values-section">
                 <div className="container">
@@ -257,17 +297,27 @@ const About = () => {
                                 key={index}
                                 className="soft-card"
                                 variants={fadeInUp}
-                                whileHover={{ y: -12, transition: { duration: 0.3 } }}
+                                whileHover={{ y: -8, transition: { duration: 0.3 } }}
                             >
-                                <div className="soft-icon">{item.icon}</div>
-                                <h3>{item.title}</h3>
-                                <p>{item.text}</p>
+                                <div className="soft-card-img">
+                                    <img src={item.img} alt={item.title} loading="lazy" />
+                                    <div className="soft-card-img-overlay" />
+                                </div>
+                                <div className="soft-card-divider">
+                                    <div className="soft-icon">{item.icon}</div>
+                                </div>
+                                <div className="soft-card-body">
+                                    <h3>{item.title}</h3>
+                                    <p>{item.text}</p>
+                                </div>
                                 <div className="card-accent" />
                             </motion.div>
                         ))}
                     </motion.div>
                 </div>
             </section>
+
+            <SectionDivider />
 
             {/* PRODUCT RANGE */}
             <section className="section products-overview-section">
@@ -301,10 +351,13 @@ const About = () => {
                                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
                                 style={{ '--card-bg': cat.color }}
                             >
-                                <div className="po-icon">{cat.icon}</div>
-                                <div className="po-tag">{cat.tag}</div>
-                                <h3>{cat.name}</h3>
-                                <p>{cat.description}</p>
+                                <div className="po-bg-img" style={{ backgroundImage: `url(${cat.img})` }} />
+                                <div className="po-content">
+                                    <div className="po-icon">{cat.icon}</div>
+                                    <div className="po-tag">{cat.tag}</div>
+                                    <h3>{cat.name}</h3>
+                                    <p>{cat.description}</p>
+                                </div>
                             </motion.div>
                         ))}
                     </motion.div>
@@ -341,7 +394,9 @@ const About = () => {
                                     <h3>{item.title}</h3>
                                     <p>{item.text}</p>
                                 </div>
-                                <div className="timeline-dot" />
+                                <div className="timeline-dot">
+                                    <Leaf size={14} />
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -374,6 +429,12 @@ const About = () => {
                                 <div className="team-img-wrap">
                                     <img src={member.img} alt={member.name} loading="lazy" />
                                     <div className="team-img-overlay" />
+                                    <div className="team-hover-panel">
+                                        <Leaf size={18} className="team-hover-leaf" />
+                                        <h3>{member.name}</h3>
+                                        <span>{member.role}</span>
+                                        <p>{member.bio}</p>
+                                    </div>
                                 </div>
                                 <div className="team-info">
                                     <h3>{member.name}</h3>
@@ -385,10 +446,30 @@ const About = () => {
                 </div>
             </section>
 
+            {/* CERTIFICATIONS */}
+            <section className="certs-section">
+                <div className="container">
+                    <motion.div
+                        className="certs-strip"
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
+                        variants={stagger}
+                    >
+                        {certifications.map((c, i) => (
+                            <motion.div key={i} className="cert-badge" variants={fadeInUp}>
+                                <span className="cert-icon">{c.icon}</span>
+                                <span className="cert-label">{c.label}</span>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
             {/* CTA */}
             <section className="cta-section">
                 <div className="cta-bg-img">
-                    <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=1800&fit=crop" alt="Ayurvedic herbs" loading="lazy" />
+                    <img src="/assets/about-image-eleven.jpg" alt="Ayurvedic herbs" loading="lazy" />
                     <div className="cta-overlay" />
                 </div>
                 <motion.div
@@ -401,7 +482,10 @@ const About = () => {
                     <Leaf size={40} className="cta-leaf" />
                     <h2>Begin Your Healing Journey</h2>
                     <p>Discover formulations that have stood the test of centuries — now available for you.</p>
-                   
+                    <div className="cta-buttons">
+                        <Link to="/shop" className="btn-cta-primary">Explore Products</Link>
+                        <Link to="/contact" className="btn-cta-ghost">Get in Touch</Link>
+                    </div>
                 </motion.div>
             </section>
 

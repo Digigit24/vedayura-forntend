@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Minus, Plus, Trash2, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../context/ShopContext';
+import EmptyState from '../components/EmptyState';
 import './Cart.css';
 
 const normalizeItem = (item) => {
@@ -36,19 +37,12 @@ const Cart = () => {
 
   if (normalizedCart.length === 0) {
     return (
-      <motion.div
-        className="cart-empty"
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <ShoppingBag size={44} strokeWidth={1.2} />
-        <h3>Your cart is empty</h3>
-        <p>Looks like you haven't added anything yet.</p>
-        <button className="btn btn-outline" onClick={() => { closeDrawer(); navigate('/shop'); }}>
-          Start Shopping
-        </button>
-      </motion.div>
+      <EmptyState
+        variant="cart"
+        title="Your cart is empty"
+        description="Looks like you haven't added anything yet. Browse our Ayurvedic formulations and find what your body needs."
+        action={{ label: 'Start Shopping', onClick: () => { closeDrawer(); navigate('/shop'); } }}
+      />
     );
   }
 
