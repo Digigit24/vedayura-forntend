@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { ShoppingBag, Heart, User, Search, Menu, X, LogOut, UserCircle, Leaf } from 'lucide-react';
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { cart = [], wishlist = [], openCart, openWishlist, user, logout, setGuestMode } = useShop();
+  const { cart = [], wishlist = [], openCart, openWishlist, user, logout, setGuestMode, products = [] } = useShop();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,6 +20,15 @@ const Navbar = () => {
   const [dropdownPos, setDropdownPos] = useState({ top: 0, right: 0 });
   const userBtnRef = React.useRef(null);
   const guestBtnRef = React.useRef(null);
+  const searchBarRef = useRef(null);
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q || q.length < 2) return [];
+    return products
+      .filter(p => p.name?.toLowerCase().includes(q) || p.description?.toLowerCase().includes(q))
+      .slice(0, 5);
+  }, [searchQuery, products]);
 
   const isGuest = !user && localStorage.getItem('guestMode') === 'true';
 
@@ -221,6 +230,7 @@ const Navbar = () => {
           {searchOpen && (
             <motion.div
               className="nav-search-bar"
+              ref={searchBarRef}
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -237,6 +247,39 @@ const Navbar = () => {
                 />
                 <button type="submit">Search</button>
               </form>
+              <AnimatePresence>
+                {searchResults.length > 0 && (
+                  <motion.div
+                    className="nav-search-results"
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    {searchResults.map(p => {
+                      const image = p.imageUrls?.[0] || p.images?.[0] || p.image || '/assets/product-placeholder.png';
+                      const price = p.discountedPrice || p.discount_price || p.price || 0;
+                      return (
+                        <button
+                          key={p.id}
+                          className="nav-search-result-item"
+                          onClick={() => { navigate(`/product/${p.id}`); setSearchQuery(''); setSearchOpen(false); }}
+                        >
+                          <img src={image} alt={p.name} />
+                          <div className="nav-search-result-info">
+                            <span className="nav-search-result-name">{p.name}</span>
+                            {p.category && <span className="nav-search-result-cat">{p.category}</span>}
+                          </div>
+                          <span className="nav-search-result-price">₹{Number(price).toLocaleString()}</span>
+                        </button>
+                      );
+                    })}
+                    <button className="nav-search-view-all" onClick={handleSearch}>
+                      View all results for "{searchQuery}" →
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )}
         </AnimatePresence>

@@ -48,6 +48,12 @@ export const auth = {
   register: (payload) =>
     request("/auth/register", { method: "POST", body: payload, auth: false }),
   me: () => request("/auth/me", { method: "GET" }),
+  resetPassword: (email, newPassword) =>
+    request("/auth/reset-password", {
+      method: "POST",
+      body: { email, newPassword },
+      auth: false,
+    }),
 };
 
 export const products = {

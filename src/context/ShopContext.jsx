@@ -12,6 +12,7 @@ export const ShopProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAuthLoading, setIsAuthLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(true);
     const [addresses, setAddresses] = useState([]);
 
     const getCartKey = useCallback((userId) => {
@@ -46,7 +47,7 @@ export const ShopProvider = ({ children }) => {
             // Ensure token is present and not a stringified "null" or "undefined"
             if (token && token !== 'null' && token !== 'undefined') {
                 try {
-                    const res = await api.addresses.getAll();
+                    const res = await api.addresses.get();
                     if (res && (Array.isArray(res) || Array.isArray(res.addresses))) {
                         const serverAddresses = Array.isArray(res) ? res : res.addresses;
                         const mapped = serverAddresses.map(addr => ({
@@ -283,6 +284,8 @@ export const ShopProvider = ({ children }) => {
                 }
             } catch (err) {
                 console.warn('Failed to load products from API', err);
+            } finally {
+                setProductsLoading(false);
             }
         })();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -449,6 +452,16 @@ export const ShopProvider = ({ children }) => {
         }
     }, [loadUserData]);
 
+    const resetPassword = useCallback(async (email, newPassword) => {
+        try {
+            const res = await api.auth.resetPassword(email, newPassword);
+            if (res && res.success) return { success: true };
+            return { success: false, message: res?.message || 'Reset failed. Please try again.' };
+        } catch (err) {
+            return { success: false, message: err.message || 'Reset failed. Please try again.' };
+        }
+    }, []);
+
     const toggleMenu = useCallback(() => setIsMenuOpen(prev => !prev), []);
 
     const addProduct = useCallback(async (newProduct) => {
@@ -601,11 +614,11 @@ export const ShopProvider = ({ children }) => {
     }, [addresses]);
 
     const value = {
-        products, cart, wishlist, user, drawerType, isMenuOpen, isAuthLoading, addresses,
+        products, cart, wishlist, user, drawerType, isMenuOpen, isAuthLoading, productsLoading, addresses,
         openCart, openWishlist, closeDrawer, closeCart: closeDrawer,
         addToCart, removeFromCart, updateQuantity, clearCart,
         toggleWishlist, addToWishlist, removeFromWishlist, isInWishlist,
-        login, logout, register, toggleMenu,
+        login, logout, register, resetPassword, toggleMenu,
         addProduct, updateProduct, deleteProduct,
         updateProfile, addAddress, updateAddress, deleteAddress, setDefaultAddress, getDefaultAddress
     };
@@ -617,4 +630,8 @@ export const ShopProvider = ({ children }) => {
     );
 };
 
-export const useShop = () => useContext(ShopContext);
+export const useShop = () => {
+    const context = useContext(ShopContext);
+    if (!context) throw new Error('useShop must be used within a ShopProvider');
+    return context;
+};
